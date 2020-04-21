@@ -145,7 +145,7 @@ public class DictTree <CARRIER> {
      * @param father
      */
     public void printAll(Node father) {
-        System.out.println(father.key + "|with dt: " + father.tail + "| fn: " + father.carrier);
+        System.out.println("key:" + father.key + "|isTail: " + father.tail + "|carrier: " + father.carrier);
         if (father.domains != null) {
             Iterator<Map.Entry<Character, Node>> iterator = father.domains.entrySet().iterator();
             while (iterator.hasNext()) {

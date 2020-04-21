@@ -2,6 +2,8 @@ package com.duoku.common.factory;
 
 import com.duoku.common.core.DictTree;
 import com.duoku.common.core.TreeConfigure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +16,8 @@ import java.util.Map;
  * @Date 下午2:45 20-4-21
  **/
 public class SimpleInstancer implements Instancer {
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleInstancer.class);
 
     private DictTree dictTree = null;
 
@@ -31,7 +35,8 @@ public class SimpleInstancer implements Instancer {
             Map.Entry<String, Object> next = iterator.next();
             add(next.getKey(), next.getValue());
         }
-
+        logger.info("init success");
+        this.dictTree.printAll(this.dictTree.getRoot());
     }
 
     public Collection<String> find(String keywords) {

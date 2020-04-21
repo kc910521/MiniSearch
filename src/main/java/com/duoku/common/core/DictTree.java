@@ -12,7 +12,15 @@ import java.util.*;
  **/
 public class DictTree <CARRIER> {
 
-    private static int MAX_RETURN = 5;
+    private TreeConfigure treeConfigure = null;
+
+    public DictTree() {
+        this.treeConfigure = new TreeConfigure();
+    }
+
+    public DictTree(TreeConfigure treeConfigure) {
+        this.treeConfigure = treeConfigure;
+    }
 
     private Node root = new Node();
 
@@ -20,7 +28,7 @@ public class DictTree <CARRIER> {
 
         private Character key;
 
-        // { nodeKey, nodeInfo}
+        // {nodeKey, nodeInfo}
         private HashMap<Character, Node> domains;
 
         private boolean tail;
@@ -34,6 +42,23 @@ public class DictTree <CARRIER> {
         public Character getKey() {
             return key;
         }
+    }
+
+    public synchronized void clear(Node father) {
+        if (father.domains != null) {
+            Iterator<Map.Entry<Character, Node>> iterator = father.domains.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Character, Node> next = iterator.next();
+                clear(next.getValue());
+                iterator.remove();
+            }
+        } else {
+            father.carrier = null;// help gc
+        }
+    }
+
+    public void clear() {
+        clear(root);
     }
 
 
@@ -72,28 +97,47 @@ public class DictTree <CARRIER> {
         return -1;
     }
 
-    public final static Queue beQueue(String keywords) {
-        char[] chars = keywords.toCharArray();
-        Queue<Character> cq = new LinkedList<>();
-        for (int i = 0; i < chars.length; i ++) {
-            cq.offer(chars[i]);
-        }
-        return cq;
-    }
 
-    public int insert(String keywords) {
-        char[] chars = keywords.toCharArray();
-        Queue<Character> cq = new LinkedList<>();
-        for (int i = 0; i < chars.length; i ++) {
-            cq.offer(chars[i]);
-        }
-        return insert(cq, root, (CARRIER) keywords);
+    /**
+     * insert keywords with carrier
+     *
+     * @param keywords
+     * @param carrier
+     * @return
+     */
+    public int insert(String keywords, CARRIER carrier) {
+        return insert(beQueue(keywords), root, carrier);
     }
 
 
-    public int remove(char key, Node thead) {
-
-        return -1;
+    /**
+     * '
+     * remove by keys from Q
+     * from bottom to up
+     *
+     * @param cq
+     * @param root
+     * @return
+     */
+    public int remove(Queue<Character> cq, Node root) {
+//        if (root == null) {
+//            // no exactly path found
+//            return -1;
+//        }
+//        if (cq == null || cq.size() == 0) {
+//            return 1;
+//        }
+//        Character key = cq.poll();
+//        if (1 == remove(cq, root.domains.get(key))) {
+//            Node node = root.domains.get(key);
+//
+//            node.carrier = null;// help GC
+//            node.domains.remove(key);
+//            return 1;
+//        } else {
+//            return 0;
+//        }
+        throw new RuntimeException("method not supported now.");
     }
 
     /**
@@ -126,32 +170,20 @@ public class DictTree <CARRIER> {
         }
         Character nowChar = cq.poll();
         if (!father.domains.containsKey(nowChar)) {
-            return null;
+            return treeConfigure.isFullMatch() ? null : father;
         }
         return fixPositionNode(cq, father.domains.get(nowChar));
     }
 
-//    public Node fixPositionNode(Queue<Character> cq, Node father) {
-//        if (father == null || cq.size() == 0) {
-//            return father;
-//        }
-//        Character nowChar = cq.poll();
-//        if (!father.domains.containsKey(nowChar)) {
-//            return father;
-//        }
-//        return fixPositionNode(cq, father.domains.get(nowChar));
-//    }
-
-
-    protected void ergodicAndSetBy(Node root, Collection<String> results) {
+    protected void ergodicAndSetBy(Node root, Collection<CARRIER> results) {
         if (root.key == null) {
             return;
         }
-        if (results.size() >= DictTree.MAX_RETURN) {
+        if (results.size() >= treeConfigure.getMaxFetchNum()) {
             return;
         }
         if (root.tail) {
-            results.add((String) root.carrier);
+            results.add(root.carrier);
         }
         if (root.domains != null) {
             Iterator<Map.Entry<Character, Node>> iterator = root.domains.entrySet().iterator();
@@ -166,8 +198,8 @@ public class DictTree <CARRIER> {
       * @param keywords
      * @return
      */
-    public Collection<String> fetchSimilar(String keywords) {
-        Set<String> results = new LinkedHashSet<>();
+    public Collection<CARRIER> fetchSimilar(String keywords) {
+        Set<CARRIER> results = new LinkedHashSet<>();
         // 4 root
         Node node = fixPositionNode(beQueue(keywords), root);
         if (node != null) {
@@ -176,4 +208,12 @@ public class DictTree <CARRIER> {
         return results;
     }
 
+    public final static Queue beQueue(String keywords) {
+        char[] chars = keywords.toCharArray();
+        Queue<Character> cq = new LinkedList<>();
+        for (int i = 0; i < chars.length; i++) {
+            cq.offer(chars[i]);
+        }
+        return cq;
+    }
 }

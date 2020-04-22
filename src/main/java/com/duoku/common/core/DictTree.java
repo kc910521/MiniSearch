@@ -200,6 +200,9 @@ public class DictTree <CARRIER> {
      */
     public Collection<CARRIER> fetchSimilar(String keywords) {
         Set<CARRIER> results = new LinkedHashSet<>();
+        if (root == null || root.domains == null || root.domains.isEmpty()) {
+            return results;
+        }
         // 4 root
         Node node = fixPositionNode(beQueue(keywords), root);
         if (node != null) {

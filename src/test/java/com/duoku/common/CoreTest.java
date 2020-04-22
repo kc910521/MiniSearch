@@ -78,7 +78,7 @@ public class CoreTest {
         map.put("aaaa6", new TestBean("aaaa6", 53));
         map.put("aa素", new TestBean("aa素", 553));
         map.put("po", new TestBean("po", 5553));
-
+        instance.init(new HashMap<>());
         instance.init(map);
 
         Collection<String> men2 = instance.find("男");

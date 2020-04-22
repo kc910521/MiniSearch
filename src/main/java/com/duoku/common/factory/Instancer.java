@@ -14,7 +14,7 @@ public interface Instancer {
 
     void init(Map<String, Object> data);
 
-    Collection<String> find(String keywords);
+    <CARRIER> Collection<CARRIER> find(String keywords);
 
     int add(String keywords, Object carrier);
 

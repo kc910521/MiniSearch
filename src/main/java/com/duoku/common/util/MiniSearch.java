@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * @Author caikun
- * @Description //TODO $END
+ * @Description 推荐的mini搜初始化方式，直接使用简单初始化配置
  * @Date 下午2:57 20-4-21
  **/
 public class MiniSearch {

@@ -39,7 +39,7 @@ public class SimpleInstancer implements Instancer {
         this.dictTree.printAll(this.dictTree.getRoot());
     }
 
-    public Collection<String> find(String keywords) {
+    public <CARRIER> Collection<CARRIER> find(String keywords) {
         return this.dictTree.fetchSimilar(keywords);
     }
 

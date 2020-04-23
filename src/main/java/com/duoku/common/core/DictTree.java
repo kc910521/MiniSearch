@@ -190,7 +190,7 @@ public class DictTree <CARRIER> {
             return father;
         }
         Character nowChar = cq.poll();
-        if (!father.domains.containsKey(nowChar)) {
+        if (father.domains == null || !father.domains.containsKey(nowChar)) {
             return strict ? null : father;
         }
         return fixPositionNode(cq, father.domains.get(nowChar), strict);

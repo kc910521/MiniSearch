@@ -1,7 +1,7 @@
-package com.duoku.common.factory;
+package com.duoku.common.mini.factory;
 
-import com.duoku.common.core.DictTree;
-import com.duoku.common.core.MiniSearchConfigure;
+import com.duoku.common.mini.core.DictTree;
+import com.duoku.common.mini.core.MiniSearchConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

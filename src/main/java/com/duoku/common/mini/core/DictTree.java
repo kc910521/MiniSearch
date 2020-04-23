@@ -1,4 +1,4 @@
-package com.duoku.common.core;
+package com.duoku.common.mini.core;
 
 import java.util.*;
 

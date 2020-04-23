@@ -1,6 +1,4 @@
-package com.duoku.common.factory;
-
-import com.duoku.common.core.DictTree;
+package com.duoku.common.mini.factory;
 
 import java.util.Collection;
 import java.util.Map;

@@ -1,7 +1,7 @@
-package com.duoku.common.util;
+package com.duoku.common.mini.util;
 
-import com.duoku.common.factory.Instancer;
-import com.duoku.common.factory.SimpleInstancer;
+import com.duoku.common.mini.factory.Instancer;
+import com.duoku.common.mini.factory.SimpleInstancer;
 
 import java.util.HashMap;
 import java.util.Map;

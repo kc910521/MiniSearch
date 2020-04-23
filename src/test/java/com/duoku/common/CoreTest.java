@@ -1,9 +1,7 @@
 package com.duoku.common;
 
-import com.duoku.common.core.DictTree;
-import com.duoku.common.factory.Instancer;
-import com.duoku.common.factory.SimpleInstancer;
-import com.duoku.common.util.MiniSearch;
+import com.duoku.common.mini.factory.SimpleInstancer;
+import com.duoku.common.mini.util.MiniSearch;
 
 import java.util.*;
 
@@ -67,7 +65,7 @@ public class CoreTest {
 //        Collection<String> men99 = instance.find("男");
 //        System.out.println(men99);
 //        instance.add("男士撒s");
-        Collection<String> men98 = instance.find("DNAME_a");
+        Collection<String> men98 = instance.find("");
         System.out.println(men98);
 //        Map<String, Object> map = new HashMap<>();
 //        map.put("a6", new TestBean("a6", 3));

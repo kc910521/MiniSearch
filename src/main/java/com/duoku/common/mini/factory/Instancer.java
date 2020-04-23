@@ -1,5 +1,6 @@
 package com.duoku.common.mini.factory;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public interface Instancer {
 
     void init(Map<String, Object> data);
 
-    <CARRIER> Collection<CARRIER> find(String keywords);
+    <CARRIER extends Serializable> Collection<CARRIER> find(String keywords);
 
     int add(String keywords, Object carrier);
 

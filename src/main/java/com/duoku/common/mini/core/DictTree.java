@@ -1,5 +1,6 @@
 package com.duoku.common.mini.core;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -10,7 +11,7 @@ import java.util.*;
  *
  * @Date 下午2:43 20-4-20
  **/
-public class DictTree <CARRIER> {
+public class DictTree<CARRIER extends Serializable> {
 
     private MiniSearchConfigure miniSearchConfigure = null;
 

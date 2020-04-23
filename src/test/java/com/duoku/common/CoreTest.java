@@ -1,5 +1,6 @@
 package com.duoku.common;
 
+import com.duoku.common.mini.core.MiniSearchConfigure;
 import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.factory.SimpleInstancer;
 import com.duoku.common.mini.util.MiniSearch;
@@ -15,8 +16,12 @@ public class CoreTest {
 
 
     public static void fast() {
+        // config
+        MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
+        // 放弃严格模式
+        miniSearchConfigure.setStrict(false);
         // create
-        Instancer instance = MiniSearch.findInstance("hello_world");
+        Instancer instance = MiniSearch.findInstance("hello_world", miniSearchConfigure);
         // add all into index
         instance.add("为什么放弃治疗");
         instance.add("为什么月经迟迟不来");
@@ -25,7 +30,7 @@ public class CoreTest {
         instance.add("为什么要放弃治疗");
         instance.add("为蛇要放弃治疗");
         //try searching
-        Collection<Object> result = instance.find("为什么");
+        Collection<Object> result = instance.find("为什么是我");
         System.out.println(result);
     }
 

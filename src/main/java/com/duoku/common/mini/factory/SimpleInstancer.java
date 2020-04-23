@@ -5,6 +5,7 @@ import com.duoku.common.mini.core.MiniSearchConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -48,13 +49,16 @@ public class SimpleInstancer implements Instancer {
     }
 
     public int add(String keywords, Object carrier) {
+//        if (!(carrier instanceof  Serializable)) {
+//            throw new RuntimeException("carrier is not instance of Serializable");
+//        }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
         if (keywords == null || "".equals(keywords.trim())) {
             return -1;
         }
-        return this.dictTree.insert(beQueue(keywords), carrier);
+        return this.dictTree.insert(beQueue(keywords), (Serializable) carrier);
     }
 
     /**

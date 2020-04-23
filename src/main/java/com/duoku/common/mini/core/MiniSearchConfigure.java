@@ -13,12 +13,13 @@ public class MiniSearchConfigure {
     // 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配
     private boolean strict = true;
 
-    // 推荐关闭，开启则使用KMP去匹配
+    // 推荐关闭，开启则使用KMP去匹配树头
     private boolean freeMatch = false;
 
     // 构建和搜索时忽略所有特殊字符
     private boolean ignoreSymbol = true;
 
+    // 设置忽略的正则表达式，同 @ignoreSymbol 合用
     private String symbolPattern = "[\\pP\\pS\\pZ]";
 
     // 持久化方式

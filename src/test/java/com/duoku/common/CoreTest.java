@@ -5,6 +5,7 @@ import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.factory.SimpleInstancer;
 import com.duoku.common.mini.util.MiniSearch;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -14,23 +15,28 @@ import java.util.*;
  **/
 public class CoreTest {
 
+    public static class Info implements Serializable {
+        private String i;
+
+        private Info(String i) {
+            this.i = i;
+        }
+
+        public String getI() {
+            return i;
+        }
+    }
 
     public static void fast() {
-        // config
-        MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
-        // 放弃严格模式
-        miniSearchConfigure.setStrict(false);
         // create
-        Instancer instance = MiniSearch.findInstance("hello_world", miniSearchConfigure);
+        Instancer instance = MiniSearch.findInstance("hello_world");
         // add all into index
-        instance.add("为什么放弃治疗");
-        instance.add("为什么月经迟迟不来");
-        instance.add("为什么晚上不能照镜子");
-        instance.add("为什么会痛经");
-        instance.add("为什么要放弃治疗");
-        instance.add("为蛇要放弃治疗");
+        instance.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
+        instance.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
+        instance.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
+        instance.add("为蛇要放弃治疗", new Info("weisheyaofangqizhiliao4"));
         //try searching
-        Collection<Object> result = instance.find("为什么是我");
+        Collection<Object> result = instance.find("为什么");
         System.out.println(result);
     }
 

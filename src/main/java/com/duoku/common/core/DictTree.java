@@ -101,43 +101,64 @@ public class DictTree <CARRIER> {
     /**
      * insert keywords with carrier
      *
-     * @param keywords
+     * @param cq
      * @param carrier
      * @return
      */
-    public int insert(String keywords, CARRIER carrier) {
-        return insert(beQueue(keywords), root, carrier);
+    public int insert(Queue<Character> cq, CARRIER carrier) {
+        return insert(cq, root, carrier);
     }
 
 
     /**
-     * '
      * remove by keys from Q
      * from bottom to up
      *
+     * 如果last还有下一个节点- 设置该节点tail为false.
+     * 如果无下一个节点：1设置该节点tail为false
+     * 2.删除本节点-》出递归
      * @param cq
-     * @param root
+     * @param father
      * @return
      */
-    public int remove(Queue<Character> cq, Node root) {
-//        if (root == null) {
-//            // no exactly path found
-//            return -1;
-//        }
-//        if (cq == null || cq.size() == 0) {
-//            return 1;
-//        }
-//        Character key = cq.poll();
-//        if (1 == remove(cq, root.domains.get(key))) {
-//            Node node = root.domains.get(key);
-//
-//            node.carrier = null;// help GC
-//            node.domains.remove(key);
-//            return 1;
-//        } else {
-//            return 0;
-//        }
-        throw new RuntimeException("method not supported now.");
+    public int removeToLastTail(Queue<Character> cq, final Node father) {
+        if (father == null) {
+            return -1;
+        }
+        if (cq.size() == 0) {
+            // 已经便利到尾部
+            // 将当前节点设置为非尾部
+            father.tail = false;
+            if (father.domains != null && !father.domains.isEmpty()) {
+                // 非叶子，啥也不干
+                return 0;
+            }
+            // 叶子节点，进入递归删除,
+            return 1;
+        }
+        Character nowChar = cq.poll();
+        if (father.domains == null || !father.domains.containsKey(nowChar)) {
+            return -1;
+        }
+        Node targetChild = father.domains.get(nowChar);
+        int i = removeToLastTail(cq, targetChild);
+
+        if (i == 1) {
+            // 第一次进入已经是倒数第二层
+            // targetChild为最后一层
+            // 删除下面的
+            targetChild.carrier = null;//help GC
+            father.domains.remove(targetChild);
+            if (!father.tail) {
+                // 继续
+                return 1;
+            } else {
+                // 撤销
+                return 0;
+            }
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -164,15 +185,15 @@ public class DictTree <CARRIER> {
      * @param cq
      * @param father
      */
-    protected Node fixPositionNode(Queue<Character> cq, Node father) {
+    protected Node fixPositionNode(Queue<Character> cq, Node father, boolean strict) {
         if (father == null || cq.size() == 0) {
             return father;
         }
         Character nowChar = cq.poll();
         if (!father.domains.containsKey(nowChar)) {
-            return treeConfigure.isFullMatch() ? null : father;
+            return strict ? null : father;
         }
-        return fixPositionNode(cq, father.domains.get(nowChar));
+        return fixPositionNode(cq, father.domains.get(nowChar), strict);
     }
 
     protected void ergodicAndSetBy(Node root, Collection<CARRIER> results) {
@@ -195,28 +216,21 @@ public class DictTree <CARRIER> {
     }
     /**
      * compose
-      * @param keywords
+     * @param cq
      * @return
      */
-    public Collection<CARRIER> fetchSimilar(String keywords) {
+    public Collection<CARRIER> fetchSimilar(Queue<Character> cq) {
         Set<CARRIER> results = new LinkedHashSet<>();
         if (root == null || root.domains == null || root.domains.isEmpty()) {
             return results;
         }
         // 4 root
-        Node node = fixPositionNode(beQueue(keywords), root);
+        Node node = fixPositionNode(cq, root, treeConfigure.isStrict());
         if (node != null) {
             ergodicAndSetBy(node, results);
         }
         return results;
     }
 
-    public final static Queue beQueue(String keywords) {
-        char[] chars = keywords.toCharArray();
-        Queue<Character> cq = new LinkedList<>();
-        for (int i = 0; i < chars.length; i++) {
-            cq.offer(chars[i]);
-        }
-        return cq;
-    }
+
 }

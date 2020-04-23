@@ -51,44 +51,49 @@ public class CoreTest {
         instance.add("abc");
         instance.add("abcd");
         instance.add("cd");
-        instance.add("男士撒是200我");
-        instance.add("和平认识");
-        instance.add("男士31撒");
-        instance.add("男士撒");
+        instance.add("男1");
+        instance.add("男士撒sa");
+        instance.add("男士撒s");
+        instance.add("男士撒sbd");
+        instance.add("男士撒sac");
+        instance.add("男士撒saf");
+        instance.add("男士撒sadm");
         instance.add("男士撒sad");
-        instance.add("男士撒sda");
-        instance.add("男士撒asa");
-        instance.add("男士撒12");
-        instance.add("男士撒ggg");
-        instance.add("男士撒ddd");
 
         Collection<String> men = instance.find("男");
         System.out.println(men);
-        Map<String, Object> map = new HashMap<>();
-        map.put("a6", new TestBean("a6", 3));
-        map.put("aa6", new TestBean("aa6", 31));
-        map.put("ac6", new TestBean("ac6", 311));
-        map.put("aff6", new TestBean("aff6", 3111));
-        map.put("ff", new TestBean("ff", 23));
-        map.put("赛2撒及2", new TestBean("赛2撒及2", 223));
-        map.put("男2撒及22", new TestBean("男2撒及22", 2223));
-        map.put("dasa", new TestBean("dasa", 443));
-        map.put("aadasd6", new TestBean("aadasd6", 43));
-        map.put("aaaaaa6", new TestBean("aaaaaa6", 4443));
-        map.put("aaaa6", new TestBean("aaaa6", 53));
-        map.put("aa素", new TestBean("aa素", 553));
-        map.put("po", new TestBean("po", 5553));
-        instance.init(new HashMap<>());
-        instance.init(map);
-
-        Collection<String> men2 = instance.find("男");
-        System.out.println(men2);
-
-        Collection<String> men3 = instance.find("c");
-        System.out.println(men3);
-
-        Collection<String> men4 = instance.find("a");
-        System.out.println(men4);
+        int w = instance.remove("男士撒s");
+        System.out.println("r" + w);
+        Collection<String> men99 = instance.find("男");
+        System.out.println(men99);
+        instance.add("男士撒s");
+        Collection<String> men98 = instance.find("男");
+        System.out.println(men98);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("a6", new TestBean("a6", 3));
+//        map.put("aa6", new TestBean("aa6", 31));
+//        map.put("ac6", new TestBean("ac6", 311));
+//        map.put("aff6", new TestBean("aff6", 3111));
+//        map.put("ff", new TestBean("ff", 23));
+//        map.put("赛2撒及2", new TestBean("赛2撒及2", 223));
+//        map.put("男2撒及22", new TestBean("男2撒及22", 2223));
+//        map.put("dasa", new TestBean("dasa", 443));
+//        map.put("aadasd6", new TestBean("aadasd6", 43));
+//        map.put("aaaaaa6", new TestBean("aaaaaa6", 4443));
+//        map.put("aaaa6", new TestBean("aaaa6", 53));
+//        map.put("aa素", new TestBean("aa素", 553));
+//        map.put("po", new TestBean("po", 5553));
+//        instance.init(new HashMap<>());
+//        instance.init(map);
+//
+//        Collection<String> men2 = instance.find("男");
+//        System.out.println(men2);
+//
+//        Collection<String> men3 = instance.find("c");
+//        System.out.println(men3);
+//
+//        Collection<String> men4 = instance.find("a");
+//        System.out.println(men4);
     }
 
 }

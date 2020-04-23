@@ -5,10 +5,7 @@ import com.duoku.common.core.TreeConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author caikun
@@ -28,6 +25,11 @@ public class SimpleInstancer implements Instancer {
         this.dictTree = new DictTree(treeConfigure);
     }
 
+    public SimpleInstancer(TreeConfigure treeConfigure) {
+        this.treeConfigure = treeConfigure;
+        this.dictTree = new DictTree(treeConfigure);
+    }
+
     public void init(Map<String, Object> data) {
         this.dictTree.clear();
         Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
@@ -40,11 +42,11 @@ public class SimpleInstancer implements Instancer {
     }
 
     public <CARRIER> Collection<CARRIER> find(String keywords) {
-        return this.dictTree.fetchSimilar(keywords);
+        return this.dictTree.fetchSimilar(beQueue(keywords));
     }
 
     public int add(String keywords, Object carrier) {
-        return this.dictTree.insert(keywords, carrier);
+        return this.dictTree.insert(beQueue(keywords), carrier);
     }
 
     /**
@@ -54,13 +56,20 @@ public class SimpleInstancer implements Instancer {
      * @return
      */
     public int add(String keywords) {
-        return this.dictTree.insert(keywords, keywords);
+        return this.dictTree.insert(beQueue(keywords), keywords);
     }
 
     @Override
     public int remove(String keywords) {
-        throw new RuntimeException("not supported yet.");
+        return this.dictTree.removeToLastTail(beQueue(keywords), this.dictTree.getRoot());
     }
 
-
+    public final static Queue beQueue(String keywords) {
+        char[] chars = keywords.toCharArray();
+        Queue<Character> cq = new LinkedList<>();
+        for (int i = 0; i < chars.length; i++) {
+            cq.offer(chars[i]);
+        }
+        return cq;
+    }
 }

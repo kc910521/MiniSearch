@@ -8,10 +8,10 @@ package com.duoku.common.core;
 public class TreeConfigure {
 
     // 遍历条目时最大返回结果数
-    private int maxFetchNum = 5;
+    private int maxFetchNum = 10;
 
-    // 仅返回全部匹配的入参结果，否则根据入参从尾向头截取进行匹配
-    private boolean fullMatch = true;
+    // 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配
+    private boolean strict = true;
 
     // 持久化方式
     private int persistence = Persistence.NO.getCode();
@@ -25,12 +25,12 @@ public class TreeConfigure {
         this.maxFetchNum = maxFetchNum;
     }
 
-    public boolean isFullMatch() {
-        return fullMatch;
+    public boolean isStrict() {
+        return strict;
     }
 
-    public void setFullMatch(boolean fullMatch) {
-        this.fullMatch = fullMatch;
+    public void setStrict(boolean strict) {
+        this.strict = strict;
     }
 
     public int getPersistence() {

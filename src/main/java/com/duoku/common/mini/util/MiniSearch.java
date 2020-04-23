@@ -1,5 +1,6 @@
 package com.duoku.common.mini.util;
 
+import com.duoku.common.mini.core.MiniSearchConfigure;
 import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.factory.SimpleInstancer;
 
@@ -25,9 +26,21 @@ public class MiniSearch {
         }
     }
 
+    public static synchronized Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+        if (instancerMap.containsKey(instancerName)) {
+            return instancerMap.get(instancerName);
+        } else {
+            Instancer instancer = instancer(miniSearchConfigure);
+            instancerMap.put(instancerName, instancer);
+            return instancer;
+        }
+    }
+
     protected static synchronized Instancer instancer() {
         return new SimpleInstancer();
     }
 
-
+    protected static synchronized Instancer instancer(MiniSearchConfigure miniSearchConfigure) {
+        return new SimpleInstancer(miniSearchConfigure);
+    }
 }

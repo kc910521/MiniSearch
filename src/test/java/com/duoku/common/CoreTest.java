@@ -1,5 +1,6 @@
 package com.duoku.common;
 
+import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.factory.SimpleInstancer;
 import com.duoku.common.mini.util.MiniSearch;
 
@@ -13,12 +14,26 @@ import java.util.*;
 public class CoreTest {
 
 
-    public void atest() {
-
+    public static void fast() {
+        // create
+        Instancer instance = MiniSearch.findInstance("hello_world");
+        // add all into index
+        instance.add("为什么放弃治疗");
+        instance.add("为什么月经迟迟不来");
+        instance.add("为什么晚上不能照镜子");
+        instance.add("为什么会痛经");
+        instance.add("为什么要放弃治疗");
+        instance.add("为蛇要放弃治疗");
+        //try searching
+        Collection<Object> result = instance.find("为什么");
+        System.out.println(result);
     }
 
     public static void main(String[] args) {
-//        DictTree dictTree = new DictTree();
+        fast();
+    }
+
+    //        DictTree dictTree = new DictTree();
 //        dictTree.insert("abc");
 //        dictTree.insert("abcd");
 //        dictTree.insert("cd");
@@ -34,7 +49,7 @@ public class CoreTest {
 //        dictTree.insert("男士撒ddd");
 //        dictTree.printAll(dictTree.getRoot());
 
-        //====================1=
+    //====================1=
 //        DictTree.Node node = dictTree.fixPositionNode(DictTree.beQueue("男士"), dictTree.getRoot());
 //        System.out.println(node.getKey());
 //
@@ -42,10 +57,10 @@ public class CoreTest {
 //        Set aset = new LinkedHashSet();
 //        Collection collection = dictTree.fetchSimilar("男");
 //        System.out.println(collection);
-        //=====================
+    //=====================
 
-        String name = "search";
-        SimpleInstancer instance = (SimpleInstancer) MiniSearch.findInstance(name);
+//    String name = "search";
+//    Instancer instance = MiniSearch.findInstance(name);
 //        instance.add("abc");
 //        instance.add("abcd");
 //        instance.add("cd");
@@ -56,17 +71,17 @@ public class CoreTest {
 //        instance.add("男士撒sac");
 //        instance.add("男士撒saf");
 //        instance.add("男士撒sadm");
-        instance.add(",.!，，D_NAME。！；‘’”“**dfs  #$%^&()-+1431221\"\"中           国123漢字かどうかのjavaを決定");
+//        instance.add(",.!，，D_NAME。！；‘’”“**dfs  #$%^&()-+1431221\"\"中           国123漢字かどうかのjavaを決定");
 
-//        Collection<String> men = instance.find("男");
+    //        Collection<String> men = instance.find("男");
 //        System.out.println(men);
 //        int w = instance.remove("男士撒s");
 //        System.out.println("r" + w);
 //        Collection<String> men99 = instance.find("男");
 //        System.out.println(men99);
 //        instance.add("男士撒s");
-        Collection<String> men98 = instance.find("");
-        System.out.println(men98);
+//    Collection<String> men98 = instance.find("");
+//        System.out.println(men98);
 //        Map<String, Object> map = new HashMap<>();
 //        map.put("a6", new TestBean("a6", 3));
 //        map.put("aa6", new TestBean("aa6", 31));
@@ -92,6 +107,5 @@ public class CoreTest {
 //
 //        Collection<String> men4 = instance.find("a");
 //        System.out.println(men4);
-    }
 
 }

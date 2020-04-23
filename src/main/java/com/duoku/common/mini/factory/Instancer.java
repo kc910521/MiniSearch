@@ -16,6 +16,8 @@ public interface Instancer {
 
     int add(String keywords, Object carrier);
 
+    int add(String keywords);
+
     int remove(String keywords);
 
     void printAll();

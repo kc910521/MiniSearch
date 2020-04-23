@@ -1,7 +1,7 @@
 package com.duoku.common.factory;
 
 import com.duoku.common.core.DictTree;
-import com.duoku.common.core.TreeConfigure;
+import com.duoku.common.core.MiniSearchConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,16 +18,16 @@ public class SimpleInstancer implements Instancer {
 
     private DictTree dictTree = null;
 
-    private TreeConfigure treeConfigure = null;
+    private MiniSearchConfigure miniSearchConfigure = null;
 
     public SimpleInstancer() {
-        this.treeConfigure = new TreeConfigure();
-        this.dictTree = new DictTree(treeConfigure);
+        this.miniSearchConfigure = new MiniSearchConfigure();
+        this.dictTree = new DictTree(miniSearchConfigure);
     }
 
-    public SimpleInstancer(TreeConfigure treeConfigure) {
-        this.treeConfigure = treeConfigure;
-        this.dictTree = new DictTree(treeConfigure);
+    public SimpleInstancer(MiniSearchConfigure miniSearchConfigure) {
+        this.miniSearchConfigure = miniSearchConfigure;
+        this.dictTree = new DictTree(miniSearchConfigure);
     }
 
     public void init(Map<String, Object> data) {

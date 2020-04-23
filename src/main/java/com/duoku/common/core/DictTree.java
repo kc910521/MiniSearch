@@ -12,14 +12,14 @@ import java.util.*;
  **/
 public class DictTree <CARRIER> {
 
-    private TreeConfigure treeConfigure = null;
+    private MiniSearchConfigure miniSearchConfigure = null;
 
     public DictTree() {
-        this.treeConfigure = new TreeConfigure();
+        this.miniSearchConfigure = new MiniSearchConfigure();
     }
 
-    public DictTree(TreeConfigure treeConfigure) {
-        this.treeConfigure = treeConfigure;
+    public DictTree(MiniSearchConfigure miniSearchConfigure) {
+        this.miniSearchConfigure = miniSearchConfigure;
     }
 
     private Node root = new Node();
@@ -200,7 +200,7 @@ public class DictTree <CARRIER> {
         if (root.key == null) {
             return;
         }
-        if (results.size() >= treeConfigure.getMaxFetchNum()) {
+        if (results.size() >= miniSearchConfigure.getMaxFetchNum()) {
             return;
         }
         if (root.tail) {
@@ -225,7 +225,7 @@ public class DictTree <CARRIER> {
             return results;
         }
         // 4 root
-        Node node = fixPositionNode(cq, root, treeConfigure.isStrict());
+        Node node = fixPositionNode(cq, root, miniSearchConfigure.isStrict());
         if (node != null) {
             ergodicAndSetBy(node, results);
         }

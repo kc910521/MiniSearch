@@ -165,13 +165,13 @@ public class DictTree <CARRIER> {
      * print all info for debug
      * @param father
      */
-    public void printAll(Node father) {
+    public void printChild(Node father) {
         System.out.println("key:" + father.key + "|isTail: " + father.tail + "|carrier: " + father.carrier);
         if (father.domains != null) {
             Iterator<Map.Entry<Character, Node>> iterator = father.domains.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Character, Node> next = iterator.next();
-                printAll(next.getValue());
+                printChild(next.getValue());
             }
         }
     }

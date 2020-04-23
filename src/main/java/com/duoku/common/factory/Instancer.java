@@ -20,4 +20,6 @@ public interface Instancer {
 
     int remove(String keywords);
 
+    void printAll();
+
 }

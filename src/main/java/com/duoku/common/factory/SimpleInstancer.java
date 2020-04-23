@@ -38,7 +38,6 @@ public class SimpleInstancer implements Instancer {
             add(next.getKey(), next.getValue());
         }
         logger.info("init success");
-        this.dictTree.printAll(this.dictTree.getRoot());
     }
 
     public <CARRIER> Collection<CARRIER> find(String keywords) {
@@ -62,6 +61,11 @@ public class SimpleInstancer implements Instancer {
     @Override
     public int remove(String keywords) {
         return this.dictTree.removeToLastTail(beQueue(keywords), this.dictTree.getRoot());
+    }
+
+    @Override
+    public void printAll() {
+        this.dictTree.printChild(this.dictTree.getRoot());
     }
 
     public final static Queue beQueue(String keywords) {

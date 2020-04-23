@@ -41,10 +41,19 @@ public class SimpleInstancer implements Instancer {
     }
 
     public <CARRIER> Collection<CARRIER> find(String keywords) {
+        if (miniSearchConfigure.isIgnoreSymbol()) {
+            keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
+        }
         return this.dictTree.fetchSimilar(beQueue(keywords));
     }
 
     public int add(String keywords, Object carrier) {
+        if (miniSearchConfigure.isIgnoreSymbol()) {
+            keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
+        }
+        if (keywords == null || "".equals(keywords.trim())) {
+            return -1;
+        }
         return this.dictTree.insert(beQueue(keywords), carrier);
     }
 
@@ -55,7 +64,7 @@ public class SimpleInstancer implements Instancer {
      * @return
      */
     public int add(String keywords) {
-        return this.dictTree.insert(beQueue(keywords), keywords);
+        return this.add(keywords, keywords);
     }
 
     @Override

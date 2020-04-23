@@ -8,13 +8,18 @@ package com.duoku.common.core;
 public class MiniSearchConfigure {
 
     // 遍历条目时最大返回结果数
-    private int maxFetchNum = 10;
+    private int maxFetchNum = Integer.MAX_VALUE;
 
     // 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配
     private boolean strict = true;
 
     // 推荐关闭，开启则使用KMP去匹配
     private boolean freeMatch = false;
+
+    // 构建和搜索时忽略所有特殊字符
+    private boolean ignoreSymbol = true;
+
+    private String symbolPattern = "[\\pP\\pS\\pZ]";
 
     // 持久化方式
     private int persistence = Persistence.NO.getCode();
@@ -42,6 +47,30 @@ public class MiniSearchConfigure {
 
     public void setPersistence(int persistence) {
         this.persistence = persistence;
+    }
+
+    public boolean isFreeMatch() {
+        return freeMatch;
+    }
+
+    public void setFreeMatch(boolean freeMatch) {
+        this.freeMatch = freeMatch;
+    }
+
+    public boolean isIgnoreSymbol() {
+        return ignoreSymbol;
+    }
+
+    public void setIgnoreSymbol(boolean ignoreSymbol) {
+        this.ignoreSymbol = ignoreSymbol;
+    }
+
+    public String getSymbolPattern() {
+        return symbolPattern;
+    }
+
+    public void setSymbolPattern(String symbolPattern) {
+        this.symbolPattern = symbolPattern;
     }
 
     enum Persistence {

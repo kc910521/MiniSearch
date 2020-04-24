@@ -38,6 +38,16 @@ public class CoreTest {
         //try searching
         Collection<Object> result = instance.find("为什么");
         System.out.println(result);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
+        params.put("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
+        instance.init(params);
+
+        int wc = instance.remove("为什么月经迟迟不来");
+        int a22 = instance.remove("为什么月经迟迟不来");
+        int a33 = instance.remove("为什么晚上不能照镜子");
+        System.out.println(wc + "," + a22 + "," + a33);
     }
 
     public static void main(String[] args) {

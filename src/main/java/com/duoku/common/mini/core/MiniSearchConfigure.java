@@ -2,7 +2,8 @@ package com.duoku.common.mini.core;
 
 /**
  * @Author caikun
- * @Description configure
+ * @Description
+ * 全局总配置
  * @Date 下午2:31 20-4-21
  **/
 public class MiniSearchConfigure {
@@ -21,6 +22,10 @@ public class MiniSearchConfigure {
 
     // 设置忽略的正则表达式，同 @ignoreSymbol 合用
     private String symbolPattern = "[\\pP\\pS\\pZ]";
+
+    // 集群化通知标识前缀
+    // %s 为索引名
+    private String notifyPatternChars = "search:notify:core:index:%s";
 
     // 持久化方式
     private int persistence = Persistence.NO.getCode();
@@ -72,6 +77,14 @@ public class MiniSearchConfigure {
 
     public void setSymbolPattern(String symbolPattern) {
         this.symbolPattern = symbolPattern;
+    }
+
+    public String getNotifyPatternChars() {
+        return notifyPatternChars;
+    }
+
+    public void setNotifyPatternChars(String notifyPatternChars) {
+        this.notifyPatternChars = notifyPatternChars;
     }
 
     enum Persistence {

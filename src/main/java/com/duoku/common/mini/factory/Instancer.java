@@ -1,12 +1,18 @@
 package com.duoku.common.mini.factory;
 
+import com.duoku.common.mini.core.MiniSearchConfigure;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * @Author caikun
- * @Description //TODO $END
+ * @Description
+ *
+ * 每个索引一个实例，
+ * 以多例模式出现
+ *
  * @Date 下午3:14 20-4-21
  **/
 public interface Instancer {
@@ -23,4 +29,7 @@ public interface Instancer {
 
     void printAll();
 
+    MiniSearchConfigure getMiniSearchConfigure();
+
+    String getInstancerName();
 }

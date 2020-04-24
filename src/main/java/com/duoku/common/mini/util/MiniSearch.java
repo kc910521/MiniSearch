@@ -20,7 +20,7 @@ public class MiniSearch {
         if (instancerMap.containsKey(instancerName)) {
             return instancerMap.get(instancerName);
         } else {
-            Instancer instancer = instancer();
+            Instancer instancer = instancer(instancerName);
             instancerMap.put(instancerName, instancer);
             return instancer;
         }
@@ -30,17 +30,17 @@ public class MiniSearch {
         if (instancerMap.containsKey(instancerName)) {
             return instancerMap.get(instancerName);
         } else {
-            Instancer instancer = instancer(miniSearchConfigure);
+            Instancer instancer = instancer(instancerName, miniSearchConfigure);
             instancerMap.put(instancerName, instancer);
             return instancer;
         }
     }
 
-    protected static synchronized Instancer instancer() {
-        return new SimpleInstancer();
+    protected static synchronized Instancer instancer(String instancerName) {
+        return new SimpleInstancer(instancerName);
     }
 
-    protected static synchronized Instancer instancer(MiniSearchConfigure miniSearchConfigure) {
-        return new SimpleInstancer(miniSearchConfigure);
+    protected static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+        return new SimpleInstancer(instancerName, miniSearchConfigure);
     }
 }

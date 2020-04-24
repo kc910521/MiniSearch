@@ -69,12 +69,13 @@ public class DictTree<CARRIER extends Serializable> {
      * @param cq
      * @param father
      * @return
+     * 1 success ;2 do nothing
      */
     protected int insert(Queue<Character> cq, Node father, CARRIER carrier) {
         if (cq.size() == 0) {
             father.tail = true;
             father.carrier = carrier;
-            return 1;
+            return 2;
         }
         char nchar = cq.poll();
         if (father.domains == null) {
@@ -95,7 +96,7 @@ public class DictTree<CARRIER extends Serializable> {
                 return insert(cq, node, carrier);
             }
         }
-        return -1;
+        return 1;
     }
 
 

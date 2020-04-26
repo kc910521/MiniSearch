@@ -15,8 +15,6 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);
 
-    private String indexPatterName;
-
     private String indexName;
 
     public RedisIndexCoordinateSender(RedisTemplate redisTemplate) {
@@ -27,6 +25,7 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     }
 
     public RedisIndexCoordinateSender() {
+        logger.error("WARN: redisTemplate may not involved, all operations will be standalone");
     }
 
     private RedisTemplate redisTemplate;
@@ -36,9 +35,6 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
 
     @Override
     public void publish(EventType eventType, String key, Object carrier) throws Exception {
-        if (indexPatterName == null || "".equals(indexPatterName.trim())) {
-            throw new RuntimeException("indexPatterName is null");
-        }
         Intent intent = new Intent();
         intent.setCarrier(carrier);
         intent.setAction(eventType.name());

@@ -2,7 +2,9 @@ package com.duoku.common.mini.constant;
 
 /**
  * @Author caikun
- * @Description //TODO $END
+ * @Description
+ * 定义集群通信类型
+ *
  * @Date 下午2:00 20-4-24
  **/
 public enum EventType {

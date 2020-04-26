@@ -1,6 +1,7 @@
 package com.duoku.common;
 
 import com.duoku.common.mini.factory.Instancer;
+import com.duoku.common.mini.util.ClusterMiniSearch;
 import com.duoku.common.mini.util.MiniSearch;
 
 import java.io.Serializable;
@@ -48,8 +49,32 @@ public class CoreTest {
         System.out.println(wc + "," + a22 + "," + a33);
     }
 
+    public static void dup() {
+        // create
+        Instancer instance = ClusterMiniSearch.findInstance("hello_world");
+        // add all into index
+        instance.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
+        instance.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
+        instance.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
+        instance.add("为蛇要放弃治疗", new Info("weisheyaofangqizhiliao4"));
+        //try searching
+        Collection<Object> result = instance.find("为什么");
+        System.out.println(result);
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
+//        params.put("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
+//        instance.init(params);
+//
+//        int wc = instance.remove("为什么月经迟迟不来");
+//        int a22 = instance.remove("为什么月经迟迟不来");
+//        int a33 = instance.remove("为什么晚上不能照镜子");
+//        System.out.println(wc + "," + a22 + "," + a33);
+    }
+
     public static void main(String[] args) {
-        fast();
+//        fast();
+        dup();
     }
 
     //        DictTree dictTree = new DictTree();

@@ -14,7 +14,7 @@ import java.util.Map;
  **/
 public class MiniSearch {
 
-    private static final Map<String, Instancer> instancerMap = new HashMap<String, Instancer>();
+    protected static final Map<String, Instancer> instancerMap = new HashMap<String, Instancer>();
 
     public static synchronized Instancer findInstance(String instancerName) {
         if (instancerMap.containsKey(instancerName)) {
@@ -36,11 +36,11 @@ public class MiniSearch {
         }
     }
 
-    protected static synchronized Instancer instancer(String instancerName) {
+    private static synchronized Instancer instancer(String instancerName) {
         return new SimpleInstancer(instancerName);
     }
 
-    protected static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+    private static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         return new SimpleInstancer(instancerName, miniSearchConfigure);
     }
 }

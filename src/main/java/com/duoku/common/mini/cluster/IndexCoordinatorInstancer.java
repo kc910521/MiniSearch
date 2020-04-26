@@ -34,7 +34,7 @@ public class IndexCoordinatorInstancer implements Instancer {
         try {
             indexEventSender.publish(EventType.INIT, "init", data);
         } catch (Exception e) {
-            logger.error("due to {}, standalone update only.", e.getMessage());
+            logger.error("due to {}, standalone update only.", e.toString(), e);
             this.instancer.init(data);
         }
     }
@@ -51,7 +51,7 @@ public class IndexCoordinatorInstancer implements Instancer {
             indexEventSender.publish(EventType.ADD, keywords, carrier);
             return 1;
         } catch (Exception e) {
-            logger.error("due to {}, standalone adding only.", e.getMessage());
+            logger.error("due to {}, standalone adding only.", e.toString(), e);
             this.instancer.add(keywords, carrier);// 1 ok
         }
         return 0;
@@ -63,7 +63,7 @@ public class IndexCoordinatorInstancer implements Instancer {
             indexEventSender.publish(EventType.ADD, keywords, keywords);
             return 1;
         } catch (Exception e) {
-            logger.error("due to {}, standalone adding only.", e.getMessage());
+            logger.error("due to {}, standalone adding only.", e.toString(), e);
             this.instancer.add(keywords);// 1 ok
         }
         return 0;
@@ -75,7 +75,7 @@ public class IndexCoordinatorInstancer implements Instancer {
             indexEventSender.publish(EventType.REMOVE, keywords, keywords);
             return 1;
         } catch (Exception e) {
-            logger.error("due to {}, standalone removing only.", e.getMessage());
+            logger.error("due to {}, standalone removing only.", e.toString(), e);
             this.instancer.remove(keywords);
         }
         return 0;

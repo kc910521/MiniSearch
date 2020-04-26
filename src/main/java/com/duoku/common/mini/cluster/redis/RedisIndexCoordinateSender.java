@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
  * @Description redis的集群协作发送者
  * @Date 下午1:38 20-4-24
  **/
-@Component
 public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);

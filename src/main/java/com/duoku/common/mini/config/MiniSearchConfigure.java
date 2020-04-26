@@ -24,7 +24,7 @@ public class MiniSearchConfigure {
     private String symbolPattern = "[\\pP\\pS\\pZ]";
 
     // 集群化通知标识前缀,后接 实例（index）名
-    private String notifyPatternChars = "search:notify:core:index:";
+    private String notifyPatternChars = "search:notify:core:instancer:";
 
     // 持久化方式
     private int persistence = Persistence.NO.getCode();

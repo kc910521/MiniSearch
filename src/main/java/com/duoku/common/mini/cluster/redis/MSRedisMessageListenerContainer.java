@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
  * @Description 监听容器配置
  * @Date 上午11:07 20-4-26
  **/
-@Component
 @Scope("singleton")
 public class MSRedisMessageListenerContainer extends RedisMessageListenerContainer {
 

@@ -9,12 +9,15 @@ import java.util.Map;
 
 /**
  * @Author caikun
- * @Description 推荐的mini搜初始化方式，直接使用简单初始化配置
+ * @Description
+ * 推荐的单点miniSearch初始化方式
+ * 直接使用简单初始化配置
+ *
  * @Date 下午2:57 20-4-21
  **/
 public class MiniSearch {
 
-    protected static final Map<String, Instancer> instancerMap = new HashMap<String, Instancer>();
+    static final Map<String, Instancer> instancerMap = new HashMap<String, Instancer>();
 
     public static synchronized Instancer findInstance(String instancerName) {
         if (instancerMap.containsKey(instancerName)) {

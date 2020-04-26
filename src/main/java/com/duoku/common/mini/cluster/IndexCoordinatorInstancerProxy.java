@@ -15,6 +15,7 @@ import java.util.Map;
  * @Author caikun
  * @Description
  * 索引协调器，处理集群环境索引同步
+ * 代理基础instancer
  *
  * @Date 上午11:29 20-4-24
  **/

@@ -1,0 +1,79 @@
+package com.duoku.common.mini.cluster.redis;
+
+import com.duoku.common.mini.constant.EventType;
+import com.duoku.common.mini.cluster.IndexEventExecutor;
+import com.duoku.common.mini.factory.Instancer;
+import com.duoku.common.mini.util.MiniSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
+
+import java.util.Map;
+
+/**
+ * @Author caikun
+ * @Description 集群广播信息监听
+ * @Date 下午3:06 20-4-24
+ **/
+public class MSRedisMessageListener implements MessageListener {
+
+    private RedisTemplate redisTemplate;
+
+    private IndexEventExecutor indexEventExecutor;
+
+
+    private static final Logger logger = LoggerFactory.getLogger(MSRedisMessageListener.class);
+
+    @Override
+    public void onMessage(Message message, byte[] bytes) {
+        logger.info("redis message received");
+        if (redisTemplate == null || indexEventExecutor == null) {
+            logger.error("error: redisTemplate/indexEventExecutor is null");
+            return;
+        }
+        try {
+            byte[] body = message.getBody();
+            Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);
+            String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
+            logger.debug("deserializeChannel:{}", deserializeChannel);
+            Instancer instance = MiniSearch.findInstance(deserializeBody.getIndexName());
+            if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
+                instance.remove(deserializeBody.getKey());
+            } else if (EventType.UPDATE.name().equals(deserializeBody.getAction())) {
+                instance.remove(deserializeBody.getKey());
+                instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
+            } else if (EventType.ADD.name().equals(deserializeBody.getAction())) {
+                instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
+            } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
+                // fixme : try it
+                instance.init((Map<String, Object>) deserializeBody.getCarrier());
+            } else {
+                logger.error("action {} ,not support", deserializeBody.getAction());
+            }
+        } catch (Exception e) {
+            logger.error("error: ", e);
+        } finally {
+            logger.debug("consume finished");
+        }
+
+    }
+
+    public RedisTemplate getRedisTemplate() {
+        return redisTemplate;
+    }
+
+    public IndexEventExecutor getIndexEventExecutor() {
+        return indexEventExecutor;
+    }
+
+    public void setRedisTemplate(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
+    public void setIndexEventExecutor(IndexEventExecutor indexEventExecutor) {
+        this.indexEventExecutor = indexEventExecutor;
+    }
+
+}

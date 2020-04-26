@@ -1,6 +1,6 @@
 package com.duoku.common.mini.util;
 
-import com.duoku.common.mini.core.MiniSearchConfigure;
+import com.duoku.common.mini.config.MiniSearchConfigure;
 import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.factory.SimpleInstancer;
 

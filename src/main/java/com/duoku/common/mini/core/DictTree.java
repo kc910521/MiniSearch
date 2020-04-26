@@ -1,5 +1,7 @@
 package com.duoku.common.mini.core;
 
+import com.duoku.common.mini.config.MiniSearchConfigure;
+
 import java.io.Serializable;
 import java.util.*;
 

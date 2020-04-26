@@ -1,8 +1,7 @@
 package com.duoku.common.mini.factory;
 
-import com.duoku.common.mini.core.MiniSearchConfigure;
+import com.duoku.common.mini.config.MiniSearchConfigure;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.duoku.common.mini.core;
+package com.duoku.common.mini.config;
 
 /**
  * @Author caikun
@@ -24,7 +24,7 @@ public class MiniSearchConfigure {
     private String symbolPattern = "[\\pP\\pS\\pZ]";
 
     // 集群化通知标识前缀
-    // %s 为索引名
+    // %s 为索引名,请永远保证永远只有一个 %s 且以 %s 结尾
     private String notifyPatternChars = "search:notify:core:index:%s";
 
     // 持久化方式

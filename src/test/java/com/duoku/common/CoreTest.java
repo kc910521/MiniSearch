@@ -1,8 +1,6 @@
 package com.duoku.common;
 
-import com.duoku.common.mini.core.MiniSearchConfigure;
 import com.duoku.common.mini.factory.Instancer;
-import com.duoku.common.mini.factory.SimpleInstancer;
 import com.duoku.common.mini.util.MiniSearch;
 
 import java.io.Serializable;

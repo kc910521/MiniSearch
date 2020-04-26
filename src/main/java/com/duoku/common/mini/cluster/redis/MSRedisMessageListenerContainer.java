@@ -46,18 +46,10 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
             logger.error("msRedisMessageListener:{}", e);
             return;
         }
-
-//        ThreadPoolTaskScheduler threadPoolTaskScheduler;// = MiniSearchSpringUtil.getBean(ThreadPoolTaskScheduler.class);
-//        if (threadPoolTaskScheduler == null) {
-
-//            throw new RuntimeException("ThreadPoolTaskScheduler not found");
-//        }
-//        threadPoolTaskScheduler.setPoolSize(10);
-
+        // thread pool
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(10);
+        threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());
         threadPoolTaskScheduler.initialize();
-
 
         if (miniSearchConfigure == null) {
             miniSearchConfigure = new MiniSearchConfigure();

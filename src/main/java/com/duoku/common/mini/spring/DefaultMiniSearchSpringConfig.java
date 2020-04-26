@@ -54,9 +54,10 @@ public class DefaultMiniSearchSpringConfig {
     }
 
     @Bean
-    public RedisIndexCoordinateSender redisIndexCoordinateSender(RedisTemplate redisTemplate) {
+    public RedisIndexCoordinateSender redisIndexCoordinateSender(RedisTemplate redisTemplate, MiniSearchConfigure miniSearchConfigure) {
         RedisIndexCoordinateSender redisIndexCoordinateSender = new RedisIndexCoordinateSender();
         redisIndexCoordinateSender.setRedisTemplate(redisTemplate);
+        redisIndexCoordinateSender.setMiniSearchConfigure(miniSearchConfigure);
         return redisIndexCoordinateSender;
     }
 }

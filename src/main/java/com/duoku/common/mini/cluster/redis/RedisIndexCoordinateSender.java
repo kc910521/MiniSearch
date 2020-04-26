@@ -50,4 +50,8 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     public void setRedisTemplate(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
+
+    public void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure) {
+        this.miniSearchConfigure = miniSearchConfigure;
+    }
 }

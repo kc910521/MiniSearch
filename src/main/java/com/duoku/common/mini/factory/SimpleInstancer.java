@@ -15,7 +15,7 @@ import java.util.*;
  *
  * @Date 下午2:45 20-4-21
  **/
-public class SimpleInstancer implements Instancer {
+public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleInstancer.class);
 

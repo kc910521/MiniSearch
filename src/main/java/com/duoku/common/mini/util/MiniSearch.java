@@ -36,11 +36,11 @@ public class MiniSearch {
         }
     }
 
-    private static synchronized Instancer instancer(String instancerName) {
+    protected static synchronized Instancer instancer(String instancerName) {
         return new SimpleInstancer(instancerName);
     }
 
-    private static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+    protected static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         return new SimpleInstancer(instancerName, miniSearchConfigure);
     }
 }

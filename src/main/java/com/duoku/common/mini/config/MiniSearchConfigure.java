@@ -23,13 +23,22 @@ public class MiniSearchConfigure {
     // 设置忽略的正则表达式，同 @ignoreSymbol 合用
     private String symbolPattern = "[\\pP\\pS\\pZ]";
 
-    // 集群化通知标识前缀
-    // %s 为索引名,请永远保证永远只有一个 %s 且以 %s 结尾
-    private String notifyPatternChars = "search:notify:core:index:%s";
+    // 集群化通知标识前缀,后接 实例（index）名
+    private String notifyPatternChars = "search:notify:core:index:";
 
     // 持久化方式
     private int persistence = Persistence.NO.getCode();
 
+    // 集群容器线程池
+    private int clusterContainerPoolSize = 10;
+
+    public int getClusterContainerPoolSize() {
+        return clusterContainerPoolSize;
+    }
+
+    public void setClusterContainerPoolSize(int clusterContainerPoolSize) {
+        this.clusterContainerPoolSize = clusterContainerPoolSize;
+    }
 
     public int getMaxFetchNum() {
         return maxFetchNum;

@@ -1,5 +1,6 @@
 package com.duoku.common.mini.cluster.redis;
 
+import com.duoku.common.mini.cluster.Intent;
 import com.duoku.common.mini.constant.EventType;
 import com.duoku.common.mini.cluster.IndexEventExecutor;
 import com.duoku.common.mini.factory.Instancer;

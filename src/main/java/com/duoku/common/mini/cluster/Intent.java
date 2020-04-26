@@ -1,4 +1,4 @@
-package com.duoku.common.mini.cluster.redis;
+package com.duoku.common.mini.cluster;
 
 import java.io.Serializable;
 

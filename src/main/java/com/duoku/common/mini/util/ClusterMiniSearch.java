@@ -1,8 +1,7 @@
 package com.duoku.common.mini.util;
 
-import com.duoku.common.mini.cluster.redis.RedisIndexCoordinateSender;
 import com.duoku.common.mini.config.MiniSearchConfigure;
-import com.duoku.common.mini.cluster.IndexCoordinatorInstancer;
+import com.duoku.common.mini.cluster.IndexCoordinatorInstancerProxy;
 import com.duoku.common.mini.cluster.IndexEventSender;
 import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.factory.SimpleInstancer;
@@ -15,41 +14,19 @@ import com.duoku.common.mini.factory.SimpleInstancer;
 public class ClusterMiniSearch extends MiniSearch {
 
 
-    private static IndexEventSender indexEventSender = new RedisIndexCoordinateSender();
-
-    private static synchronized Instancer instancer(String instancerName) {
-        return new IndexCoordinatorInstancer(new SimpleInstancer(instancerName), indexEventSender);
-    }
-
-    private static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        return new IndexCoordinatorInstancer(new SimpleInstancer(instancerName, miniSearchConfigure), indexEventSender);
-    }
-
-    public static synchronized Instancer findInstance(String instancerName) {
-        if (instancerMap.containsKey(instancerName)) {
-            return instancerMap.get(instancerName);
-        } else {
+    public static Instancer findInstance(String instancerName) {
+        if (!instancerMap.containsKey(instancerName)) {
             Instancer instancer = instancer(instancerName);
             instancerMap.put(instancerName, instancer);
-            return instancer;
         }
+        return new IndexCoordinatorInstancerProxy(instancerMap.get(instancerName));
     }
 
-    public static synchronized Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        if (instancerMap.containsKey(instancerName)) {
-            return instancerMap.get(instancerName);
-        } else {
+    public static Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+        if (!instancerMap.containsKey(instancerName)) {
             Instancer instancer = instancer(instancerName, miniSearchConfigure);
             instancerMap.put(instancerName, instancer);
-            return instancer;
         }
-    }
-
-    public static void setIndexEventSender(IndexEventSender indexEventSender) {
-        ClusterMiniSearch.indexEventSender = indexEventSender;
-    }
-
-    public IndexEventSender getIndexEventSender() {
-        return indexEventSender;
+        return new IndexCoordinatorInstancerProxy(instancerMap.get(instancerName));
     }
 }

@@ -31,4 +31,11 @@ public interface Instancer {
     MiniSearchConfigure getMiniSearchConfigure();
 
     String getInstancerName();
+
+    /**
+     * 不参与集群标识
+     */
+    interface BasicInstancer {
+
+    }
 }

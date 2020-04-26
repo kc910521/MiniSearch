@@ -9,10 +9,6 @@ import com.duoku.common.mini.constant.EventType;
  **/
 public interface IndexEventSender {
 
-    void publish(EventType eventType, String key, Object carrier) throws Exception;
+    void publish(EventType eventType, String instancerName, String key, Object carrier) throws Exception;
 
-    void setCoreName(String coreName);
-
-    // indexName == instancerName
-    void setIndexName(String indexName);
 }

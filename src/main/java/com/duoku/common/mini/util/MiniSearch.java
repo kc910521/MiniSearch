@@ -1,8 +1,8 @@
 package com.duoku.common.mini.util;
 
 import com.duoku.common.mini.config.MiniSearchConfigure;
-import com.duoku.common.mini.factory.Instancer;
-import com.duoku.common.mini.factory.SimpleInstancer;
+import com.duoku.common.mini.index.Instancer;
+import com.duoku.common.mini.index.SimpleInstancer;
 
 import java.util.HashMap;
 import java.util.Map;

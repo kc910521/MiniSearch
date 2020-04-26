@@ -1,6 +1,6 @@
 package com.duoku.common;
 
-import com.duoku.common.mini.factory.Instancer;
+import com.duoku.common.mini.index.Instancer;
 import com.duoku.common.mini.util.ClusterMiniSearch;
 import com.duoku.common.mini.util.MiniSearch;
 

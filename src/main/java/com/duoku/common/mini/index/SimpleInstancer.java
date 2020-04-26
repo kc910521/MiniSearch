@@ -1,4 +1,4 @@
-package com.duoku.common.mini.factory;
+package com.duoku.common.mini.index;
 
 import com.duoku.common.mini.core.DictTree;
 import com.duoku.common.mini.config.MiniSearchConfigure;

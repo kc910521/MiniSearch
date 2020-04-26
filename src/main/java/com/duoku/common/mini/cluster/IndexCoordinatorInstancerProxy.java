@@ -3,7 +3,7 @@ package com.duoku.common.mini.cluster;
 import com.duoku.common.mini.cluster.redis.RedisIndexCoordinateSender;
 import com.duoku.common.mini.constant.EventType;
 import com.duoku.common.mini.config.MiniSearchConfigure;
-import com.duoku.common.mini.factory.Instancer;
+import com.duoku.common.mini.index.Instancer;
 import com.duoku.common.mini.spring.MiniSearchSpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

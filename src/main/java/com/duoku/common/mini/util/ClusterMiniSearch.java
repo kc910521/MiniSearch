@@ -2,9 +2,7 @@ package com.duoku.common.mini.util;
 
 import com.duoku.common.mini.config.MiniSearchConfigure;
 import com.duoku.common.mini.cluster.IndexCoordinatorInstancerProxy;
-import com.duoku.common.mini.cluster.IndexEventSender;
-import com.duoku.common.mini.factory.Instancer;
-import com.duoku.common.mini.factory.SimpleInstancer;
+import com.duoku.common.mini.index.Instancer;
 
 /**
  * @Author caikun

@@ -1,6 +1,7 @@
 package com.duoku.common.mini.cluster.redis;
 
 import com.duoku.common.mini.config.MiniSearchConfigure;
+import com.duoku.common.mini.spring.MiniSearchSpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @Author caikun
@@ -30,11 +34,32 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
     @Autowired(required = false)
     private MiniSearchConfigure miniSearchConfigure;
 
-    @Autowired
     private MSRedisMessageListener msRedisMessageListener;
 
     @PostConstruct
     public void init() {
+        try {
+            msRedisMessageListener = MiniSearchSpringUtil.getBean(MSRedisMessageListener.class);
+            if (msRedisMessageListener == null) {
+                throw new RuntimeException("MSRedisMessageListener not found");
+            }
+        } catch (Exception e) {
+            logger.error("msRedisMessageListener:{}", e);
+            return;
+        }
+
+//        ThreadPoolTaskScheduler threadPoolTaskScheduler;// = MiniSearchSpringUtil.getBean(ThreadPoolTaskScheduler.class);
+//        if (threadPoolTaskScheduler == null) {
+
+//            throw new RuntimeException("ThreadPoolTaskScheduler not found");
+//        }
+//        threadPoolTaskScheduler.setPoolSize(10);
+
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(10);
+        threadPoolTaskScheduler.initialize();
+
+
         if (miniSearchConfigure == null) {
             miniSearchConfigure = new MiniSearchConfigure();
             logger.warn("no MiniSearchConfigure found, use default.");
@@ -46,11 +71,10 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
         List<Topic> list = new ArrayList<Topic>();
         list.add(patternTopic);
         Map<MSRedisMessageListener, Collection<? extends Topic>> rs = new HashMap<>();
-        rs.put(msRedisMessageListener, list);
+        rs.put(this.msRedisMessageListener, list);
         this.setMessageListeners(rs);
         // 2
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());
+//        threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());
         this.setTaskExecutor(threadPoolTaskScheduler);
     }
 
@@ -61,4 +85,5 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
     public void setMsRedisMessageListener(MSRedisMessageListener msRedisMessageListener) {
         this.msRedisMessageListener = msRedisMessageListener;
     }
+
 }

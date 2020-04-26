@@ -43,8 +43,8 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
         intent.setAction(eventType.name());
         intent.setIndexName(instancerName);
         intent.setKey(key);
-        redisTemplate.convertAndSend(instancerName + eventType.name(), intent);
-        logger.debug("do " + miniSearchConfigure.getNotifyPatternChars() + instancerName);
+        logger.debug("send to " + miniSearchConfigure.getNotifyPatternChars() + instancerName);
+        redisTemplate.convertAndSend(miniSearchConfigure.getNotifyPatternChars() + instancerName, intent);
     }
 
 

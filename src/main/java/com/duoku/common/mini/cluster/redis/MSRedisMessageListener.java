@@ -6,9 +6,11 @@ import com.duoku.common.mini.factory.Instancer;
 import com.duoku.common.mini.util.MiniSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -17,10 +19,13 @@ import java.util.Map;
  * @Description 集群广播信息监听
  * @Date 下午3:06 20-4-24
  **/
+@Component
 public class MSRedisMessageListener implements MessageListener {
 
+    @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired(required = false)
     private IndexEventExecutor indexEventExecutor;
 
 
@@ -29,10 +34,6 @@ public class MSRedisMessageListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] bytes) {
         logger.info("redis message received");
-        if (redisTemplate == null || indexEventExecutor == null) {
-            logger.error("error: redisTemplate/indexEventExecutor is null");
-            return;
-        }
         try {
             byte[] body = message.getBody();
             Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);
@@ -40,13 +41,17 @@ public class MSRedisMessageListener implements MessageListener {
             logger.debug("deserializeChannel:{}", deserializeChannel);
             Instancer instance = MiniSearch.findInstance(deserializeBody.getIndexName());
             if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
+                logger.debug(deserializeBody.getAction());
                 instance.remove(deserializeBody.getKey());
             } else if (EventType.UPDATE.name().equals(deserializeBody.getAction())) {
+                logger.debug(deserializeBody.getAction());
                 instance.remove(deserializeBody.getKey());
                 instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
             } else if (EventType.ADD.name().equals(deserializeBody.getAction())) {
+                logger.debug(deserializeBody.getAction());
                 instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
             } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
+                logger.debug(deserializeBody.getAction());
                 // fixme : try it
                 instance.init((Map<String, Object>) deserializeBody.getCarrier());
             } else {

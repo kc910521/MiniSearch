@@ -7,6 +7,7 @@ import com.duoku.common.mini.cluster.IndexEventSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +44,9 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
         intent.setIndexName(instancerName);
         intent.setKey(key);
         logger.debug("send to " + miniSearchConfigure.getNotifyPatternChars() + instancerName);
+        if (redisTemplate == null) {
+            throw new RedisConnectionFailureException("redisTemplate is null");
+        }
         redisTemplate.convertAndSend(miniSearchConfigure.getNotifyPatternChars() + instancerName, intent);
     }
 

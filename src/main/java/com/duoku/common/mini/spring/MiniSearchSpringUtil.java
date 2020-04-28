@@ -1,18 +1,22 @@
 package com.duoku.common.mini.spring;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
  * @Author caikun
- * @Description 获取bean
+ * @Description
+ * 获取bean
+ *
  * @Date 下午5:05 20-4-26
  **/
 @Component
 public class MiniSearchSpringUtil implements ApplicationContextAware {
 
+    @Autowired
     private static ApplicationContext applicationContext;
 
     @Override
@@ -36,4 +40,5 @@ public class MiniSearchSpringUtil implements ApplicationContextAware {
     public static <T> T getBean(Class<T> clazz) {
         return getApplicationContext().getBean(clazz);
     }
+
 }

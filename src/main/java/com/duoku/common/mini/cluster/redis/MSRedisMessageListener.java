@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import java.util.Map;
  * @Description 集群广播信息监听
  * @Date 下午3:06 20-4-24
  **/
+@Component("msRedisMessageListener")
 public class MSRedisMessageListener implements MessageListener {
 
     @Autowired

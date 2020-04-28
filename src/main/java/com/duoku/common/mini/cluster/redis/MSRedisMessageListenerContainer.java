@@ -33,6 +33,7 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
     @Autowired(required = false)
     private MiniSearchConfigure miniSearchConfigure;
 
+    @Autowired
     private MSRedisMessageListener msRedisMessageListener;
 
     @PostConstruct

@@ -26,11 +26,10 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired(required = false)
+    @Autowired
     private MiniSearchConfigure miniSearchConfigure;
 
-    @PostConstruct
-    public void init() {
+    public RedisIndexCoordinateSender() {
         if (this.redisTemplate == null) {
             logger.error("WARN: redisTemplate may not involved, all operations will be standalone");
         }

@@ -13,6 +13,7 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 
 /**
@@ -31,6 +32,11 @@ public class MSRedisMessageListener implements MessageListener {
 
 
     private static final Logger logger = LoggerFactory.getLogger(MSRedisMessageListener.class);
+
+    @PostConstruct
+    public void init() {
+        System.out.println("1");
+    }
 
     @Override
     public void onMessage(Message message, byte[] bytes) {

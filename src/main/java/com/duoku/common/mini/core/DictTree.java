@@ -8,8 +8,8 @@ import java.util.*;
 /**
  * @Author caikun
  * @Description dictionary trees
- * mention the concurrent issues
- * or try to override the class
+ * Recommended in alphabet
+ *
  *
  * @Date 下午2:43 20-4-20
  **/

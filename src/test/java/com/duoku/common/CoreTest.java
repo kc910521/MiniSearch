@@ -3,7 +3,6 @@ package com.duoku.common;
 import com.duoku.common.mini.index.Instancer;
 import com.duoku.common.mini.util.ClusterMiniSearch;
 import com.duoku.common.mini.util.MiniSearch;
-import com.duoku.common.mini.util.PinYinUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -73,15 +72,10 @@ public class CoreTest {
 //        System.out.println(wc + "," + a22 + "," + a33);
     }
 
-    public static void pinyin() {
-        String aa = PinYinUtil.getPingYin("我草1你怎么aaa");
-        System.out.println(aa);
-    }
-
     public static void main(String[] args) {
 //        fast();
 //        dup();
-        pinyin();
+//        pinyin();
     }
 
     //        DictTree dictTree = new DictTree();

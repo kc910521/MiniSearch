@@ -13,6 +13,14 @@ public class SpellingComponent<CARRIER extends Serializable> implements Serializ
 
     private CARRIER carrier;
 
+    public SpellingComponent(String originKey, CARRIER carrier) {
+        this.originKey = originKey;
+        this.carrier = carrier;
+    }
+
+    public SpellingComponent() {
+    }
+
     public CARRIER getCarrier() {
         return carrier;
     }

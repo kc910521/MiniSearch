@@ -7,9 +7,9 @@ import java.util.*;
 
 /**
  * @Author caikun
- * @Description dictionary trees
- * mention the concurrent issues
- * or try to override the class
+ * @Description dictionary trees with multi-fields
+ * Recommended in chinese
+ *
  * @Date 下午2:43 20-4-20
  **/
 public class SpellingDictTree<CARRIER extends Serializable> {
@@ -76,10 +76,13 @@ public class SpellingDictTree<CARRIER extends Serializable> {
      * @param father
      * @return 1 success ;2 do nothing
      */
-    protected int insert(Queue<Character> cq, Node father, SpellingComponent<CARRIER> carrier) {
+    protected int insert(Queue<Character> cq, Node father, SpellingComponent<CARRIER> spellingComponent) {
         if (cq.size() == 0) {
             father.tail = true;
-            father.carrierMap.put(carrier.getOriginKey(), carrier.getCarrier());
+            if (father.carrierMap == null) {
+                father.carrierMap = new HashMap<>();
+            }
+            father.carrierMap.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier());
             return 2;
         }
         char nchar = cq.poll();
@@ -88,17 +91,17 @@ public class SpellingDictTree<CARRIER extends Serializable> {
             Node cnode = new Node();
             cnode.key = nchar;
             father.domains.put(cnode.key, cnode);
-            insert(cq, cnode, carrier);
+            insert(cq, cnode, spellingComponent);
         } else {
             if (father.domains.containsKey(nchar)) {
                 Node cnode = father.domains.get(nchar);
-                return insert(cq, cnode, carrier);
+                return insert(cq, cnode, spellingComponent);
             } else {
                 // 不存在
                 Node node = new Node();
                 node.key = nchar;
                 father.domains.put(node.key, node);
-                return insert(cq, node, carrier);
+                return insert(cq, node, spellingComponent);
             }
         }
         return 1;
@@ -136,7 +139,10 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         if (cq.size() == 0) {
             // 已经便利到尾部
             // 将当前节点设置为非尾部
-            father.tail = false;
+            // 需要判断小子节点是否吻合
+            if (father.carrierMap == null || father.carrierMap.isEmpty() || father.carrierMap.containsKey(originKey)) {
+                father.tail = false;
+            }
             if (father.domains != null && !father.domains.isEmpty()) {
                 // 非叶子，啥也不干
                 return 0;
@@ -157,7 +163,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
             // 删除下面的
             if (targetChild.carrierMap != null) {
                 targetChild.carrierMap.remove(originKey);
-                if (targetChild.carrierMap == null || targetChild.carrierMap.isEmpty()) {
+                if (targetChild.carrierMap.isEmpty()) {
                     targetChild.carrierMap = null;//help GC
                 }
             }
@@ -210,6 +216,12 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         return fixPositionNode(cq, father.domains.get(nowChar), strict);
     }
 
+    /**
+     * 遍历并加入节点到results
+     *
+     * @param root
+     * @param results
+     */
     protected void ergodicAndSetBy(Node root, Collection<CARRIER> results) {
         if (root.key == null) {
             return;
@@ -219,9 +231,14 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         }
         if (root.tail) {
             if (root.carrierMap != null) {
-                root.carrierMap.forEach((k, v) -> {
-                    results.add(v);
-                });
+                Set<Map.Entry<String, CARRIER>> entries = root.carrierMap.entrySet();
+                for (Map.Entry<String, CARRIER> entry : entries) {
+                    if (results.size() < miniSearchConfigure.getMaxFetchNum()) {
+                        results.add(entry.getValue());
+                    } else {
+                        return;
+                    }
+                }
             }
         }
         if (root.domains != null) {

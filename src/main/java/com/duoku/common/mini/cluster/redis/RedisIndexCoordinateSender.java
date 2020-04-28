@@ -11,6 +11,8 @@ import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @Author caikun
  * @Description redis的集群协作发送者
@@ -21,13 +23,14 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);
 
-    @Autowired(required = false)
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired(required = false)
     private MiniSearchConfigure miniSearchConfigure;
 
-    public RedisIndexCoordinateSender() {
+    @PostConstruct
+    public void init() {
         if (this.redisTemplate == null) {
             logger.error("WARN: redisTemplate may not involved, all operations will be standalone");
         }

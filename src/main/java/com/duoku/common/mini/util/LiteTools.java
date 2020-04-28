@@ -7,13 +7,39 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * @Author caikun
- * @Description 拼音处理
- * @Date 下午4:01 20-4-27
+ * @Description
+ * 工具合集
+ *
+ * @Date 下午2:18 20-4-28
  **/
-public class PinYinUtil {
+public final class LiteTools {
 
+    /**
+     * 字符串入Q
+     *
+     * @param keywords
+     * @return
+     */
+    public final static Queue beQueue(String keywords) {
+        char[] chars = keywords.toCharArray();
+        Queue<Character> cq = new LinkedList<>();
+        for (int i = 0; i < chars.length; i++) {
+            cq.offer(chars[i]);
+        }
+        return cq;
+    }
+
+    /**
+     * 拼音处理
+     *
+     * @param inputString
+     * @return
+     */
     public static String getPingYin(String inputString) {
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
         format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
@@ -43,4 +69,5 @@ public class PinYinUtil {
     }
 
 
+    private LiteTools() {}
 }

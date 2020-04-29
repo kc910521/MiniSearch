@@ -80,7 +80,6 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
         // 2
 //        threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());
         this.setTaskExecutor(threadPoolTaskScheduler);
-//        this.start();
         this.setErrorHandler(new ErrorHandler() {
             @Override
             public void handleError(Throwable throwable) {

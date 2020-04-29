@@ -3,13 +3,13 @@ package com.duoku.common.mini.index;
 import com.duoku.common.mini.config.MiniSearchConfigure;
 import com.duoku.common.mini.core.SpellingComponent;
 import com.duoku.common.mini.core.SpellingDictTree;
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static com.duoku.common.mini.util.LiteTools.beQueue;
 import static com.duoku.common.mini.util.LiteTools.getPingYin;
@@ -31,6 +31,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     public PinYinInstancer(String instancerName) {
         this.instancerName = instancerName;
+        this.miniSearchConfigure = new MiniSearchConfigure();
         this.spellingDictTree = new SpellingDictTree(miniSearchConfigure);
     }
 
@@ -53,10 +54,41 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords) {
+        if (keywords == null || keywords.trim().length() == 0) {
+            return Collections.emptySet();
+        }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
-        return this.spellingDictTree.fetchSimilar(beQueue(keywords));
+        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchPattern(keywords));
+    }
+
+    private static final String PT_PREFIX = "^";
+    private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
+    private static final String PT_AMPLE_ANY = "(.*)"; // null accept
+
+    protected String catchPattern(String keywords) {
+        char[] chars = keywords.toCharArray();
+        List<String> stringList = new LinkedList<>();
+        stringList.add("^");
+        for (char c : chars) {
+            // 中文直接追加
+            // 英文判断上个节点是否为 PT_AMPLE_ONE_AT_LEAST 是continue 否则加入
+            if ((c >= 0x4e00) && (c <= 0x9fa5)) {
+                // chinese
+                stringList.add(String.valueOf(c));
+            } else {
+                String last = ((LinkedList<String>) stringList).getLast();
+                if (last.equals(PT_AMPLE_ONE_AT_LEAST)) {
+
+                } else {
+                    stringList.add(PT_AMPLE_ONE_AT_LEAST);
+                }
+            }
+        }
+        stringList.add(PT_AMPLE_ANY);
+
+        return Joiner.on("").join(stringList);
     }
 
     //

@@ -9,6 +9,7 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.regex.Pattern;
 
 /**
  * @Author caikun
@@ -18,6 +19,11 @@ import java.util.Queue;
  * @Date 下午2:18 20-4-28
  **/
 public final class LiteTools {
+
+
+    public final static boolean match(String pattern, String originStr) {
+        return Pattern.matches(pattern, originStr);
+    }
 
     /**
      * 字符串入Q
@@ -45,7 +51,7 @@ public final class LiteTools {
         format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
         format.setVCharType(HanyuPinyinVCharType.WITH_V);
-        String output = "";
+        StringBuilder output = new StringBuilder("");
         if (inputString != null && inputString.length() > 0
                 && !"null".equals(inputString)) {
             char[] input = inputString.trim().toCharArray();
@@ -55,9 +61,9 @@ public final class LiteTools {
                             "[\\u4E00-\\u9FA5]+")) {
                         String[] temp = PinyinHelper.toHanyuPinyinStringArray(
                                 input[i], format);
-                        output += temp[0];
+                        output.append(temp[0]);
                     } else
-                        output += java.lang.Character.toString(input[i]);
+                        output.append(java.lang.Character.toString(input[i]));
                 }
             } catch (BadHanyuPinyinOutputFormatCombination e) {
                 e.printStackTrace();
@@ -65,7 +71,7 @@ public final class LiteTools {
         } else {
             return "*";
         }
-        return output;
+        return output.toString();
     }
 
 

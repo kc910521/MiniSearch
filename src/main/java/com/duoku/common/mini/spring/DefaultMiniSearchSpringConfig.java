@@ -43,6 +43,9 @@ public class DefaultMiniSearchSpringConfig implements BeanPostProcessor {
     @Autowired
     private MiniSearchSpringUtil miniSearchSpringUtil;
 
+    @Autowired(required = false)
+    private MiniSearchConfigure miniSearchConfigure;
+
 //    @Bean(name = "miniSearchSpringUtil")
 ////    @DependsOn("msRedisMessageListener")
 //    public MiniSearchSpringUtil miniSearchSpringUtil(ApplicationContext applicationContext) {
@@ -61,7 +64,10 @@ public class DefaultMiniSearchSpringConfig implements BeanPostProcessor {
 
     @Bean("miniSearchConfigure")
     public MiniSearchConfigure miniSearchConfigure() {
-        return new MiniSearchConfigure();
+        if (miniSearchConfigure == null) {
+            return new MiniSearchConfigure();
+        }
+        return miniSearchConfigure;
     }
 
 //    @Bean(name = "msRedisMessageListenerContainer")

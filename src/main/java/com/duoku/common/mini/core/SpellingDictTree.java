@@ -1,6 +1,7 @@
 package com.duoku.common.mini.core;
 
 import com.duoku.common.mini.config.MiniSearchConfigure;
+import com.duoku.common.mini.util.LiteTools;
 
 import java.io.Serializable;
 import java.util.*;
@@ -216,13 +217,26 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         return fixPositionNode(cq, father.domains.get(nowChar), strict);
     }
 
+    // todo: 此处有额外计算，可以考虑后续缓存; private now
+
+    /**
+     * 匹配原始串和当前节点所有key
+     *
+     * @param originKeyPattern 原始串处理结果 eg:(.+)什(.*)
+     * @param resultItemKey    前节点key
+     * @return
+     */
+    private static final boolean canMatch(String originKeyPattern, String resultItemKey) {
+        return LiteTools.match(originKeyPattern, resultItemKey);
+    }
+
     /**
      * 遍历并加入节点到results
      *
      * @param root
      * @param results
      */
-    protected void ergodicAndSetBy(Node root, Collection<CARRIER> results) {
+    protected void ergodicAndSetBy(Node root, Collection<CARRIER> results, String originKeyPattern) {
         if (root.key == null) {
             return;
         }
@@ -234,7 +248,10 @@ public class SpellingDictTree<CARRIER extends Serializable> {
                 Set<Map.Entry<String, CARRIER>> entries = root.carrierMap.entrySet();
                 for (Map.Entry<String, CARRIER> entry : entries) {
                     if (results.size() < miniSearchConfigure.getMaxFetchNum()) {
-                        results.add(entry.getValue());
+                        // 此处处理字符匹配
+                        if (canMatch(originKeyPattern, entry.getKey())) {
+                            results.add(entry.getValue());
+                        }
                     } else {
                         return;
                     }
@@ -245,7 +262,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
             Iterator<Map.Entry<Character, Node>> iterator = root.domains.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Character, Node> next = iterator.next();
-                ergodicAndSetBy(next.getValue(), results);
+                ergodicAndSetBy(next.getValue(), results, originKeyPattern);
             }
         }
     }
@@ -256,7 +273,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
      * @param cq
      * @return
      */
-    public Collection<CARRIER> fetchSimilar(Queue<Character> cq) {
+    public Collection<CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern) {
         Set<CARRIER> results = new LinkedHashSet<>();
         if (root == null || root.domains == null || root.domains.isEmpty()) {
             return results;
@@ -264,7 +281,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         // 4 root
         Node node = fixPositionNode(cq, root, miniSearchConfigure.isStrict());
         if (node != null) {
-            ergodicAndSetBy(node, results);
+            ergodicAndSetBy(node, results, originKeyPattern);
         }
         return results;
     }

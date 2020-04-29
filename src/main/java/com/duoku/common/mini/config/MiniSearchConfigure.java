@@ -32,6 +32,9 @@ public class MiniSearchConfigure {
     // 集群容器线程池
     private int clusterContainerPoolSize = 10;
 
+    // 核心类型偏好，中文0; 英文/数字1
+    private int coreType = CoreType.PINYIN.getCode();
+
     public int getClusterContainerPoolSize() {
         return clusterContainerPoolSize;
     }
@@ -96,7 +99,15 @@ public class MiniSearchConfigure {
         this.notifyPatternChars = notifyPatternChars;
     }
 
-    enum Persistence {
+    public int getCoreType() {
+        return coreType;
+    }
+
+    public void setCoreType(int coreType) {
+        this.coreType = coreType;
+    }
+
+    public enum Persistence {
 
         NO(0),
 
@@ -110,12 +121,34 @@ public class MiniSearchConfigure {
 
         private int code;
 
-        private Persistence(int code) {
+        Persistence(int code) {
             this.code = code;
         }
 
         public int getCode() {
             return code;
         }
+    }
+
+    public enum CoreType {
+
+        // ignore uppercase
+        PINYIN(0),
+
+        // not ignore uppercase
+        alphabet(1),
+
+        ;
+
+        private int code;
+
+        CoreType(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
     }
 }

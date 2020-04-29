@@ -2,6 +2,7 @@ package com.duoku.common.mini.util;
 
 import com.duoku.common.mini.config.MiniSearchConfigure;
 import com.duoku.common.mini.index.Instancer;
+import com.duoku.common.mini.index.PinYinInstancer;
 import com.duoku.common.mini.index.SimpleInstancer;
 
 import java.util.HashMap;
@@ -40,10 +41,15 @@ public class MiniSearch {
     }
 
     protected static synchronized Instancer instancer(String instancerName) {
-        return new SimpleInstancer(instancerName);
+        return new PinYinInstancer(instancerName);
     }
 
     protected static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        return new SimpleInstancer(instancerName, miniSearchConfigure);
+        if (miniSearchConfigure.getCoreType() == MiniSearchConfigure.CoreType.PINYIN.getCode()) {
+            return new PinYinInstancer(instancerName, miniSearchConfigure);
+        } else {
+            return new SimpleInstancer(instancerName, miniSearchConfigure);
+        }
+
     }
 }

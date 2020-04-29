@@ -50,6 +50,9 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     public <CARRIER> Collection<CARRIER> find(String keywords) {
+        if (keywords == null || keywords.trim().length() == 0) {
+            return Collections.emptySet();
+        }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }

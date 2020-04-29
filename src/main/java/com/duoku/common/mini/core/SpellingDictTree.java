@@ -166,6 +166,10 @@ public class SpellingDictTree<CARRIER extends Serializable> {
                 targetChild.carrierMap.remove(originKey);
                 if (targetChild.carrierMap.isEmpty()) {
                     targetChild.carrierMap = null;//help GC
+                } else {
+                    // 多match，所以直接结束,撤销
+                    targetChild.tail = true;
+                    return 0;
                 }
             }
             if (!father.tail) {

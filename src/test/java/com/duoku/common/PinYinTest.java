@@ -14,9 +14,9 @@ import java.util.regex.Pattern;
  **/
 public class PinYinTest {
 
+    static Instancer instance = MiniSearch.findInstance("hello_world");
 
     public static void main(String[] args) {
-        Instancer instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("为什么放弃治疗");
         instance.add("为什么月经迟迟不来");
@@ -25,12 +25,18 @@ public class PinYinTest {
         instance.add("胃");
         instance.add("胃什么");
         instance.add("为什么");
-        instance.add("为蛇要放弃治疗");
+        instance.add("胃什么放弃治疗");
+        instance.add("胃什么放弃治疗a");
         //try searching
-        Collection<Object> result = instance.find("wei什么");
-        System.out.println(result);
+        System.out.println(findBy("wei什么fang"));
+        instance.remove("胃什么放弃治疗");
+        instance.remove("为什么放弃治疗");
+        System.out.println(findBy("wei什么fang"));
+        instance.add("为什么放弃治疗");
+        System.out.println(findBy("wei什么fang"));
+    }
 
-        boolean ws = LiteTools.match("^(.+)什(.*)", "wei什");
-        System.out.println(ws);
+    public static Collection<Object> findBy(String kw) {
+        return instance.find(kw);
     }
 }

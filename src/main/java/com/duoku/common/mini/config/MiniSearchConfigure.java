@@ -135,8 +135,8 @@ public class MiniSearchConfigure {
         // ignore uppercase
         PINYIN(0),
 
-        // not ignore uppercase
-        alphabet(1),
+        // not ignore uppercase, for alphabet,code
+        CODE(1),
 
         ;
 

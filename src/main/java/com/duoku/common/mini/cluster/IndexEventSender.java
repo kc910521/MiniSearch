@@ -1,5 +1,6 @@
 package com.duoku.common.mini.cluster;
 
+import com.duoku.common.mini.config.MiniSearchConfigure;
 import com.duoku.common.mini.constant.EventType;
 
 /**
@@ -11,4 +12,5 @@ public interface IndexEventSender {
 
     void publish(EventType eventType, String instancerName, String key, Object carrier) throws Exception;
 
+    void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure);
 }

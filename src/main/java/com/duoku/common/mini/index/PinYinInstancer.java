@@ -6,7 +6,6 @@ import com.duoku.common.mini.core.SpellingDictTree;
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -27,7 +26,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     private String instancerName;
 
-    private MiniSearchConfigure miniSearchConfigure = null;
+    private MiniSearchConfigure miniSearchConfigure;
 
     public PinYinInstancer(String instancerName) {
         this.instancerName = instancerName;

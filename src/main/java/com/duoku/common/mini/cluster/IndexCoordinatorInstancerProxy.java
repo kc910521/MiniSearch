@@ -37,6 +37,7 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
         if (this.indexEventSender == null) {
             logger.warn("not indexEventSender found, by default");
             this.indexEventSender = new RedisIndexCoordinateSender();
+            this.indexEventSender.setMiniSearchConfigure(this.instancer.getMiniSearchConfigure());
         }
     }
 
@@ -70,14 +71,14 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
 
     @Override
     public int add(String keywords) {
-        try {
-            indexEventSender.publish(EventType.ADD, instancer.getInstancerName(), keywords, keywords);
-            return 1;
-        } catch (Exception e) {
-            logger.error("due to {}, standalone adding only.", e.toString(), e);
-            this.instancer.add(keywords);// 1 ok
-        }
-        return 0;
+//        try {
+//            indexEventSender.publish(EventType.ADD, instancer.getInstancerName(), keywords, keywords);
+//            return 1;
+//        } catch (Exception e) {
+//            logger.error("due to {}, standalone adding only.", e.toString(), e);
+//            this.instancer.add(keywords);// 1 ok
+//        }
+        return this.add(keywords, keywords);
     }
 
     @Override

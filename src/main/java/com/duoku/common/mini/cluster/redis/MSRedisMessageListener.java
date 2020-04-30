@@ -30,46 +30,48 @@ public class MSRedisMessageListener implements MessageListener {
     @Autowired(required = false)
     private IndexEventExecutor indexEventExecutor;
 
+    private final Byte[] lock = new Byte[0];
 
     private static final Logger logger = LoggerFactory.getLogger(MSRedisMessageListener.class);
 
     @PostConstruct
     public void init() {
-        System.out.println("1");
+        System.out.println("MSRedisMessageListener");
     }
 
     @Override
     public void onMessage(Message message, byte[] bytes) {
-        logger.info("redis message received");
-        try {
-            byte[] body = message.getBody();
-            Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);
-            String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
-            logger.debug("deserializeChannel:{}", deserializeChannel);
-            Instancer instance = MiniSearch.findInstance(deserializeBody.getIndexName());
-            if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                instance.remove(deserializeBody.getKey());
-            } else if (EventType.UPDATE.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                instance.remove(deserializeBody.getKey());
-                instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
-            } else if (EventType.ADD.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
-            } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                // fixme : try it
-                instance.init((Map<String, Object>) deserializeBody.getCarrier());
-            } else {
-                logger.error("action {} ,not support", deserializeBody.getAction());
+        synchronized (lock) {
+            logger.info("redis message received");
+            try {
+                byte[] body = message.getBody();
+                Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);
+                String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
+                logger.debug("deserializeChannel:{}", deserializeChannel);
+                Instancer instance = MiniSearch.findInstance(deserializeBody.getIndexName());
+                if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.remove(deserializeBody.getKey());
+                } else if (EventType.UPDATE.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.remove(deserializeBody.getKey());
+                    instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
+                } else if (EventType.ADD.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
+                } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    // fixme : try it
+                    instance.init((Map<String, Object>) deserializeBody.getCarrier());
+                } else {
+                    logger.error("action {} ,not support", deserializeBody.getAction());
+                }
+            } catch (Exception e) {
+                logger.error("error: ", e);
+            } finally {
+                logger.debug("consume finished");
             }
-        } catch (Exception e) {
-            logger.error("error: ", e);
-        } finally {
-            logger.debug("consume finished");
         }
-
     }
 
     public RedisTemplate getRedisTemplate() {

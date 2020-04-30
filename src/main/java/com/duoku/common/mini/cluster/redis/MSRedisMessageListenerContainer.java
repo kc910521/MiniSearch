@@ -59,14 +59,15 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
             return;
         }
         // thread pool
-
-        threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());
-        threadPoolTaskScheduler.initialize();
-
         if (miniSearchConfigure == null) {
             miniSearchConfigure = new MiniSearchConfigure();
             logger.warn("no MiniSearchConfigure found, use default.");
         }
+
+        threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());
+        threadPoolTaskScheduler.initialize();
+
+
 
         String s = miniSearchConfigure.getNotifyPatternChars() + "*";
         // 1

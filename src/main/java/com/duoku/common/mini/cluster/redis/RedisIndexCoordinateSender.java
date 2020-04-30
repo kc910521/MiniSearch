@@ -26,7 +26,7 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired
+    @Autowired(required = false)
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {

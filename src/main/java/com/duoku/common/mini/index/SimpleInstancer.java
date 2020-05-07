@@ -39,7 +39,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         this.dictTree = new DictTree(miniSearchConfigure);
     }
 
-    public void init(Map<String, Object> data) {
+    public synchronized void init(Map<String, Object> data) {
         this.dictTree.clear();
         Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -59,7 +59,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         return this.dictTree.fetchSimilar(beQueue(keywords));
     }
 
-    public int add(String keywords, Object carrier) {
+    public synchronized int add(String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {
             System.err.println("The carrier is not a instance of Serializable");
         }
@@ -78,12 +78,12 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
      * @param keywords
      * @return
      */
-    public int add(String keywords) {
+    public synchronized int add(String keywords) {
         return this.add(keywords, keywords);
     }
 
     @Override
-    public int remove(String keywords) {
+    public synchronized int remove(String keywords) {
         return this.dictTree.removeToLastTail(beQueue(keywords), this.dictTree.getRoot());
     }
 

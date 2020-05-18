@@ -45,6 +45,7 @@ public class MSRedisMessageListener implements MessageListener {
         try {
             byte[] body = message.getBody();
             Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);
+            logger.debug("deserializeBody:{}", deserializeBody);
             String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
             logger.debug("deserializeChannel:{}", deserializeChannel);
             Instancer instance = MiniSearch.findInstance(deserializeBody.getIndexName());

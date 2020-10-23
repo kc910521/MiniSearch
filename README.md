@@ -35,7 +35,7 @@ LUCENE+HADOOP 实现分布式索引/ ES
 1.引入gav：
 
 <dependency>
-    <groupId>com.duoku.common</groupId>
+    <groupId>com.ck.common</groupId>
     <artifactId>mini-search</artifactId>
     <version>1.0-SNAPSHOT</version>
 </dependency>
@@ -117,7 +117,7 @@ instance.add("为蛇要放弃治疗", new Info("为蛇要放弃治疗：没太�
 Collection<Object> result = instance.find("weisheyao");
 这时我们Collection返回的就是这个对象了
 
-[com.duoku.common.minisearchdemo.MiniSearchDemoApplicationTests$Info@1bc53649]
+[com.ck.common.minisearchdemo.MiniSearchDemoApplicationTests$Info@1bc53649]
 有兴趣请自行字符化。
 
 
@@ -224,7 +224,7 @@ public RedisTemplate<Object, Object> redisTemplate(
 之后你可以直接加入包扫描：
 
 @Configuration
-@ComponentScan("com.duoku.common.mini")
+@ComponentScan("com.ck.common.mini")
 public class MiniConfig {
 尽量一定使用 ApplicationListener<ContextRefreshedEvent>  进行数据初始化：
 

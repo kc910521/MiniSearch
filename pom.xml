@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.duoku.common</groupId>
+    <groupId>com.ck.common</groupId>
     <artifactId>mini-search</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -12,18 +12,6 @@
         <logback.version>1.1.3</logback.version>
         <slf4j.version>1.7.7</slf4j.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>nexus-release</id>
-            <url>http://nexus.iduoku.cn/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <url>http://nexus.iduoku.cn/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 
     <dependencies>
         <!--redis-->

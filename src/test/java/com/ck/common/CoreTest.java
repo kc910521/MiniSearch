@@ -24,6 +24,11 @@ public class CoreTest {
         public String getI() {
             return i;
         }
+
+        @Override
+        public String toString() {
+            return "Info[" + i + "]";
+        }
     }
 
     public static void fast() {

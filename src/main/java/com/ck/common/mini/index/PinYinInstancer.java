@@ -3,6 +3,7 @@ package com.ck.common.mini.index;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.core.SpellingComponent;
 import com.ck.common.mini.core.SpellingDictTree;
+import com.ck.common.mini.util.LiteTools;
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,11 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
     protected String catchPattern(String keywords) {
         char[] chars = keywords.toCharArray();
         List<String> stringList = new LinkedList<>();
-        stringList.add("^");
+        if (miniSearchConfigure.isFreeMatch()) {
+            stringList.add(PT_AMPLE_ANY);
+        } else {
+            stringList.add(PT_PREFIX);
+        }
         for (char c : chars) {
             // 中文直接追加
             // 英文判断上个节点是否为 PT_AMPLE_ONE_AT_LEAST 是continue 否则加入
@@ -90,7 +95,6 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         return Joiner.on("").join(stringList);
     }
 
-    //
     @Override
     public synchronized int add(String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {
@@ -102,7 +106,15 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         if (keywords == null || "".equals(keywords.trim())) {
             return -1;
         }
-        return this.spellingDictTree.insert(beQueue(getPingYin(keywords)), new SpellingComponent(keywords, (Serializable) carrier));
+        SpellingComponent spellingComponent = new SpellingComponent(keywords, (Serializable) carrier);
+        int rs = this.spellingDictTree.insert(beQueue(getPingYin(keywords)), spellingComponent);
+        if (miniSearchConfigure.isFreeMatch()) {
+            List<String> subKeywords = LiteTools.splitKeyword(keywords);
+            for (String kw : subKeywords) {
+                rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
+            }
+        }
+        return rs;
     }
 
     @Override

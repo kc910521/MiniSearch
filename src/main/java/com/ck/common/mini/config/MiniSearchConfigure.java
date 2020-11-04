@@ -8,32 +8,63 @@ package com.ck.common.mini.config;
  **/
 public class MiniSearchConfigure {
 
-    // 遍历条目时最大返回结果数
+    /**
+     * 遍历条目时最大返回结果数
+     */
     private int maxFetchNum = Integer.MAX_VALUE;
 
-    // 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配
+    /**
+     * 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配
+     */
     private boolean strict = true;
 
-    // 推荐关闭，开启则使用KMP去匹配树头
-    private boolean freeMatch = false;
+    /**
+     * 全匹配(freeMatch)模式：匹配字符串两端;关闭则转为最左前缀匹配
+     */
+    private boolean freeMatch = true;
 
-    // 构建和搜索时忽略所有特殊字符
+    /**
+     * 构建和搜索时忽略所有特殊字符
+     */
     private boolean ignoreSymbol = true;
 
-    // 设置忽略的正则表达式，同 @ignoreSymbol 合用
+    /**
+     * 设置忽略的正则表达式，同 @ignoreSymbol 合用
+     */
     private String symbolPattern = "[\\pP\\pS\\pZ]";
 
-    // 集群化通知标识前缀,后接 实例（index）名
+    /**
+     * 集群化通知标识前缀,后接 实例（index）名
+     */
     private String notifyPatternChars = "search:notify:core:instancer:";
 
-    // 持久化方式
+    /**
+     * 持久化方式
+     */
     private int persistence = Persistence.NO.getCode();
 
-    // 集群容器线程池
+    /**
+     * 集群容器线程池
+     */
     private int clusterContainerPoolSize = 10;
 
-    // 核心类型偏好，中文0; 英文/数字1
+    /**
+     * 核心类型偏好，中文0; 英文/数字1
+     */
     private int coreType = CoreType.PINYIN.getCode();
+
+    /**
+     * 全匹配(freeMatch)模式下，单语句最大处理的字符短语总数（超过则不继续匹配）
+     */
+    private static int phraseCharNum = 5;
+
+    public static int getPhraseCharNum() {
+        return phraseCharNum;
+    }
+
+    public static void setPhraseCharNum(int phraseCharNum) {
+        MiniSearchConfigure.phraseCharNum = phraseCharNum;
+    }
 
     public int getClusterContainerPoolSize() {
         return clusterContainerPoolSize;
@@ -107,6 +138,9 @@ public class MiniSearchConfigure {
         this.coreType = coreType;
     }
 
+    /**
+     * 持久化形式/未实现
+     */
     public enum Persistence {
 
         NO(0),

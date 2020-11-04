@@ -2,6 +2,7 @@ package com.ck.common.mini.index;
 
 import com.ck.common.mini.core.DictTree;
 import com.ck.common.mini.config.MiniSearchConfigure;
+import com.ck.common.mini.util.LiteTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         this.dictTree = new DictTree(miniSearchConfigure);
     }
 
+    @Override
     public synchronized void init(Map<String, Object> data) {
         this.dictTree.clear();
         Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
@@ -49,6 +51,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         logger.info("init success");
     }
 
+    @Override
     public <CARRIER> Collection<CARRIER> find(String keywords) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
@@ -59,6 +62,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         return this.dictTree.fetchSimilar(beQueue(keywords));
     }
 
+    @Override
     public synchronized int add(String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {
             System.err.println("The carrier is not a instance of Serializable");
@@ -69,7 +73,15 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         if (keywords == null || "".equals(keywords.trim())) {
             return -1;
         }
-        return this.dictTree.insert(beQueue(keywords), (Serializable) carrier);
+        Serializable ser = (Serializable) carrier;
+        int rs = this.dictTree.insert(beQueue(keywords), ser);
+        if (miniSearchConfigure.isFreeMatch()) {
+            List<String> subKeywords = LiteTools.splitKeyword(keywords);
+            for (String kw : subKeywords) {
+                rs += this.dictTree.insert(beQueue(kw), ser);
+            }
+        }
+        return rs;
     }
 
     /**
@@ -78,6 +90,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
      * @param keywords
      * @return
      */
+    @Override
     public synchronized int add(String keywords) {
         return this.add(keywords, keywords);
     }
@@ -92,6 +105,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         this.dictTree.printChild(this.dictTree.getRoot());
     }
 
+    @Override
     public MiniSearchConfigure getMiniSearchConfigure() {
         return miniSearchConfigure;
     }

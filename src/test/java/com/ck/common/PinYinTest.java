@@ -36,11 +36,23 @@ public class PinYinTest {
 //        System.out.println(findBy("w"));
 
         //
-        Map<String, Object> data = new HashMap<>();
-        data.put("woca卧槽666", "sa");
-        instance.init(data);
-        instance.add("为什么放弃治疗");
-        System.out.println(findBy("为"));
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("woca卧槽666", "sa");
+//        instance.init(data);
+        instance.add("我是");
+        instance.add("为什么月经迟迟不来");
+        instance.add("为什么晚上不能照镜子");
+        instance.add("weishenme");
+        instance.add("胃");
+        instance.add("胃什么");
+        instance.add("为什么");
+        instance.add("胃什--我woshi么放弃治疗");
+        instance.add("胃什么放弃治疗啊你");
+        System.out.println(findBy("woshi"));
+    }
+
+    private static void findCase() {
+
     }
 
     public static Collection<Object> findBy(String kw) {

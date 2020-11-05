@@ -20,7 +20,7 @@ search it
 ```
 
 2. 创建一颗空索引
-```JAVA
+```JAVA 
 // create
 Instancer instance = MiniSearch.findInstance("hello_world");
 ```
@@ -314,11 +314,11 @@ public static class Info implements Serializable {
 
 3. 有什么不适合的搜索场景吗？
 
-    有，首先左测匹配是搞不了的，需要的话请自行了解ES;
-
-    再有就是字符过长的场景，请不要尝试压测自己的主机，
-
+    字符过长的场景
+    
     适合的场景主要是短语、名字、企业名、游戏名等较短的条目，不推荐单语句超过500字的内容插入索引树。
+    
+    若开启freeMatch不推荐超过200字。
 
     更不要录入整本的《三国演义》、《红楼梦》等！
 

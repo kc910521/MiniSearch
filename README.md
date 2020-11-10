@@ -84,7 +84,7 @@ Collection<Object> result2 = instance.find("shubiao");
 
 
 
-1. 搜索并返回承载对象
+### 1. 搜索并返回承载对象
 
 当我们匹配到字符串时，常常会希望返回匹配到的字符串代表的含义、权重或一个特殊的对象，
 
@@ -124,7 +124,7 @@ Collection<Object> result = instance.find("为什么晚上不能照镜子");
 - [Info[因为没交电费]]
 
 
-2. 满足你古怪的癖好和其他配置
+#### 2. 满足你古怪的癖好和其他配置
 
 你可以自定义整个搜索的配置，包括搜索偏好，一些核心参数等。
 
@@ -231,7 +231,7 @@ Collection<Object> result2 = instance.find("IMX7");
 
 
 
-1. 配置redis和redisTemplate：
+### 1. 配置redis和redisTemplate：
 
 你要确保你可以使用redisTemplate，同时需要配置其序列化形式：
 
@@ -294,7 +294,7 @@ Collection<Object> why = instance.find("为什么");
 
 结构相对简单便于理解：
 
- etree5.png
+![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/etree5.png)
 
 本质为一颗字典树，每个字符被切分，成为了Node的key，而为了内存占用考虑，Node仅持有子节点不持有父节点。
 
@@ -308,7 +308,7 @@ domain可以理解为所有冲突单元，本质为一个map。
 
 ### 2.分词原理
 分词暂时处理的方式就是冗余，方法如图：
-spword
+![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/spword.png)
 分词已经实现但是需要评估，故暂时不支持使用，下个版本会尝试在配置中加入一个特别参数，开启后使用。
 
 

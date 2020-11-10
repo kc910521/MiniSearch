@@ -253,6 +253,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
                 for (Map.Entry<String, CARRIER> entry : entries) {
                     if (results.size() < miniSearchConfigure.getMaxFetchNum()) {
                         // 此处处理字符匹配
+                        // todo:freematch且允许空格,修改匹配规则
                         if (canMatch(originKeyPattern, entry.getKey())) {
                             results.add(entry.getValue());
                         }

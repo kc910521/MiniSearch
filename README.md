@@ -10,7 +10,7 @@ search it
     
 ## 一、快速开始
 
-1. 下载源码 or 用maven安装后引入gav：
+1. 下载源码，通过用maven install后引入gav到你项目的pom文件中：
 ```XML
 <dependency>
     <groupId>com.ck.common</groupId>
@@ -30,15 +30,17 @@ Instancer instance = MiniSearch.findInstance("hello_world");
 
 3. 将你需要的数据灌入 Mini-Search 
 ```JAVA
-instance.add("为什么放弃治疗");
-instance.add("为什么月经迟迟不来");
 instance.add("为什么晚上不能照镜子");
-instance.add("为蛇要放弃治疗");
+instance.add("光电鼠标没有球");
+instance.add("白色鼠标");
+instance.add("术镖，起立！");
+instance.add("为什么shubiao没球了");
+instance.add("鼠标[shubiao]的英文：mouse");
 ```
 
 4.进行搜索！
 
-先尝试一个普通的场景：
+### (1) 先尝试一个普通的搜索：
 ```java
 //try searching
 Collection<Object> result = instance.find("为什么");
@@ -47,14 +49,27 @@ Collection<Object> result = instance.find("为什么");
 
 我们得到结果：
 
-- [为什么放弃治疗, 为什么晚上不能照镜子, 为什么月经迟迟不来]
-好吧，那拼音搜索混合中文呢？相同的办法：
+- [为什么shubiao没球了, 为什么晚上不能照镜子]
+
+### (2) 关键字搜索
+设置 MiniSearchConfigure 类中变量 freeMatch = true;
+然后进行搜索调用：
 ```JAVA
-Collection<Object> result2 = instance.find("为sheyao");
+Collection<Object> result2 = instance.find("鼠标");
 ```
 我们得到结果：
 
-- [为蛇要放弃治疗]
+- [白色鼠标, 光电鼠标没有球, 鼠标[shubiao]的英文：mouse]
+
+### (3) 拼音搜索
+
+```JAVA
+Collection<Object> result2 = instance.find("shubiao");
+```
+我们得到结果：
+
+- [白色鼠标, 光电鼠标没有球, 为什么shubiao没球了, 术镖，起立！, 鼠标[shubiao]的英文：mouse]  
+
 大功告成！
 
 到现在你几乎已经完全掌握如何在单个服务器环境建立和搜索内容了！
@@ -86,6 +101,10 @@ public static class Info implements Serializable {
     public String getI() {
         return i;
     }
+    @Override
+    public String toString() {
+        return "Info[" + i + "]";
+    }
 }
 
 ```
@@ -93,20 +112,16 @@ public static class Info implements Serializable {
 之后我们将这个类的对象放入索引：
 ```java
 // add all with object into index
-instance.add("为什么放弃治疗", new Info("为什么放弃治疗:因为我没钱了"));
-instance.add("为什么月经迟迟不来", new Info("为什么月经迟迟不来：因为我爱你"));
-instance.add("为什么晚上不能照镜子", new Info("为什么晚上不能照镜子：因为没交电费"));
-instance.add("为蛇要放弃治疗", new Info("为蛇要放弃治疗：没太听明白"));
+instance.add("为什么放弃治疗", new Info("因为我没钱了"));
+instance.add("为什么迟迟不来", new Info("因为我爱你"));
+instance.add("为什么晚上不能照镜子", new Info("因为没交电费"));
 ```
 使用相同步骤搜索并打印我们的结果：
 ```java
-Collection<Object> result = instance.find("weisheyao");
+Collection<Object> result = instance.find("为什么晚上不能照镜子");
 ```
-这时我们Collection返回的就是这个对象了
-
-- [com.ck.common.minisearchdemo.MiniSearchDemoApplicationTests$Info@1bc53649]
-有兴趣请自行字符化。
-
+这时我们Collection返回的就是：
+- [Info[因为没交电费]]
 
 
 2. 满足你古怪的癖好和其他配置
@@ -273,11 +288,13 @@ Collection<Object> why = instance.find("为什么");
 
 ## 四、基本原理
 
+### 1.存储结构
+
 先上一张CODE核心的索引结构图(前例中匹配订单号、英文串的核心类型)，
 
 结构相对简单便于理解：
 
-技术部文档 > [工具]右侧模糊匹配搜索封装工具类(Mini-Search) > etree5.png
+ etree5.png
 
 本质为一颗字典树，每个字符被切分，成为了Node的key，而为了内存占用考虑，Node仅持有子节点不持有父节点。
 
@@ -289,6 +306,10 @@ domain可以理解为所有冲突单元，本质为一个map。
 
 于是设置其为map（carrierMap），第二次去保存冲突项。匹配时需要找到对应carrierMap的key，再挨个进行匹配。
 
+### 2.分词原理
+分词暂时处理的方式就是冗余，方法如图：
+spword
+分词已经实现但是需要评估，故暂时不支持使用，下个版本会尝试在配置中加入一个特别参数，开启后使用。
 
 
 ## 五、答疑环节
@@ -298,10 +319,10 @@ domain可以理解为所有冲突单元，本质为一个map。
 1. 是否支持数据/索引持久化？
 
       暂时不支持;但是通过一些手段，数据持久化是可以的。比如在你存储节点中，设置对象某个属性为SQL语句;
-```java
-public static class Info implements Serializable {
-    private String sql;
-```
+    ```java
+    public static class Info implements Serializable {
+        private String sql;
+    ```
      也就是每个被匹配到的对象可以去数据库再拿一次，同理，可做推广为 Redis 的某个 key 等...
 
 

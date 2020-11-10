@@ -39,20 +39,31 @@ public class PinYinTest {
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("woca卧槽666", "sa");
 //        instance.init(data);
-        instance.add("我是");
-        instance.add("为什么月经迟迟不来");
+
         instance.add("为什么晚上不能照镜子");
-        instance.add("weishenme");
-        instance.add("胃");
-        instance.add("胃什么");
-        instance.add("为什么");
-        instance.add("胃什--我woshi么放弃治疗");
-        instance.add("胃什么放弃治疗啊你");
-        System.out.println(findBy("woshi"));
+        instance.add("光电鼠标没有球");
+        instance.add("白色鼠标");
+        instance.add("术镖，起立！");
+        instance.add("鼠标[shubiao]的英文：mouse");
+        instance.add("为什么shubiao没球了");
+        findCase0();
+        findCase1();
+        findCase2();
     }
 
-    private static void findCase() {
+    private static void findCase0() {
+        Collection<Object> results = findBy("为什么");
+        System.out.println(results);
+    }
 
+    private static void findCase1() {
+        Collection<Object> results = findBy("鼠标");
+        System.out.println(results);
+    }
+
+    private static void findCase2() {
+        Collection<Object> results = findBy("shubiao");
+        System.out.println(results);
     }
 
     public static Collection<Object> findBy(String kw) {

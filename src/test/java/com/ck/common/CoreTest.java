@@ -58,12 +58,11 @@ public class CoreTest {
         // create
         Instancer instance = ClusterMiniSearch.findInstance("hello_world");
         // add all into index
-        instance.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
-        instance.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
-        instance.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
-        instance.add("为蛇要放弃治疗", new Info("weisheyaofangqizhiliao4"));
+        instance.add("为什么放弃治疗", new Info("因为我没钱了"));
+        instance.add("为什么月经迟迟不来", new Info("因为我爱你"));
+        instance.add("为什么晚上不能照镜子", new Info("因为没交电费"));
         //try searching
-        Collection<Object> result = instance.find("为什么");
+        Collection<Object> result = instance.find("为什么晚上不能照镜子");
         System.out.println(result);
 //
 //        Map<String, Object> params = new HashMap<>();
@@ -78,8 +77,8 @@ public class CoreTest {
     }
 
     public static void main(String[] args) {
-        fast();
-//        dup();
+//        fast();
+        dup();
 //        pinyin();
     }
 

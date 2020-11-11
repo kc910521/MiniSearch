@@ -329,7 +329,16 @@ domain可以理解为所有冲突单元，本质为一个map。
 
 ### 2.分词原理
 分词暂时处理的方式就是冗余，方法如图：
-![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/spword.png)
+![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/spword.png)  
+
+如字符串 abcd，不同的策略会有不同的处理结果：
+- SubsequentWorker：
+[abcd, bcd, cd, d]
+
+- CombinationWorker:
+[abcd, ab, abc ...]
+
+
 分词已经实现但是需要评估，故暂时不支持使用，下个版本会尝试在配置中加入一个特别参数，开启后使用。
 
 

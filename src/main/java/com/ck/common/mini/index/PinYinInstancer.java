@@ -1,9 +1,10 @@
 package com.ck.common.mini.index;
 
+import com.ck.common.mini.workshop.nlp.NLPAdmin;
+import com.ck.common.mini.workshop.nlp.NLPWorker;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.core.SpellingComponent;
 import com.ck.common.mini.core.SpellingDictTree;
-import com.ck.common.mini.util.LiteTools;
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +30,20 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     private MiniSearchConfigure miniSearchConfigure;
 
+    private NLPWorker nlpWorker;
+
     public PinYinInstancer(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
         this.spellingDictTree = new SpellingDictTree(miniSearchConfigure);
+        this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
     public PinYinInstancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
         this.spellingDictTree = new SpellingDictTree(miniSearchConfigure);
+        this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
     @Override
@@ -65,7 +70,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     private static final String PT_PREFIX = "^";
     private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
-    private static final String PT_AMPLE_ANY = "(.*)"; // null accept
+    private static final String PT_AMPLE_ANY = "(.*)";
 
     protected String catchPattern(String keywords) {
         char[] chars = keywords.toCharArray();
@@ -107,12 +112,10 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
             return -1;
         }
         SpellingComponent spellingComponent = new SpellingComponent(keywords, (Serializable) carrier);
-        int rs = this.spellingDictTree.insert(beQueue(getPingYin(keywords)), spellingComponent);
-        if (miniSearchConfigure.isFreeMatch()) {
-            List<String> subKeywords = LiteTools.splitKeyword(keywords);
-            for (String kw : subKeywords) {
-                rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
-            }
+        int rs = 0;
+        List<String> subKeywords = nlpWorker.work(keywords);
+        for (String kw : subKeywords) {
+            rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
         }
         return rs;
     }
@@ -124,7 +127,12 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public synchronized int remove(String keywords) {
-        return this.spellingDictTree.removeToLastTail(beQueue(getPingYin(keywords)), this.spellingDictTree.getRoot(), keywords);
+        List<String> subKeywords = nlpWorker.work(keywords);
+        int i = 0;
+        for (String kw : subKeywords) {
+            i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), keywords);
+        }
+        return i;
     }
 
     @Override

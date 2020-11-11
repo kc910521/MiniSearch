@@ -32,10 +32,11 @@ Instancer instance = MiniSearch.findInstance("hello_world");
 ```JAVA
 instance.add("为什么晚上不能照镜子");
 instance.add("光电鼠标没有球");
+instance.add("白色鼠标有球");
 instance.add("白色鼠标");
 instance.add("术镖，起立！");
+instance.add("鼠标(shubiao)的英文：mouse");
 instance.add("为什么shubiao没球了");
-instance.add("鼠标[shubiao]的英文：mouse");
 ```
 
 4.进行搜索！
@@ -46,20 +47,18 @@ instance.add("鼠标[shubiao]的英文：mouse");
 Collection<Object> result = instance.find("为什么");
 
 ```
-
 我们得到结果：
 
 - [为什么shubiao没球了, 为什么晚上不能照镜子]
 
 ### (2) 关键字搜索
-设置 MiniSearchConfigure 类中变量 freeMatch = true;
-然后进行搜索调用：
+进行搜索调用：
 ```JAVA
 Collection<Object> result2 = instance.find("鼠标");
 ```
 我们得到结果：
 
-- [白色鼠标, 光电鼠标没有球, 鼠标[shubiao]的英文：mouse]
+- [白色鼠标, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 光电鼠标没有球]
 
 ### (3) 拼音搜索
 
@@ -68,7 +67,29 @@ Collection<Object> result2 = instance.find("shubiao");
 ```
 我们得到结果：
 
-- [白色鼠标, 光电鼠标没有球, 为什么shubiao没球了, 术镖，起立！, 鼠标[shubiao]的英文：mouse]  
+- [白色鼠标, 术镖，起立！, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 为什么shubiao没球了, 光电鼠标没有球]
+
+可以看到 ‘术镖’ 也被搜索进来了。
+
+### (4) 订单号搜索
+针对订单号等场景，可能你只想从字符的最左端进行匹配，就像 mysql 的 ‘LIKE "eg%"’一样。
+当你想搜索 ‘bc’,而不搜索到 ‘abc12345’。你需要作出如下调整：
+1. 改变默认配置
+```java
+MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
+miniSearchConfigure.setFreeMatch(false);
+miniSearchConfigure.setCoreType(MiniSearchConfigure.CoreType.CODE.getCode());
+```
+2. 将配置赋给新的索引树，之后插入测试数据：
+```java
+Instancer instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
+instance.add("abc12345");
+instance.add("mbc12345");
+instance.add("bck12345");
+Collection<Object> bc = instance.find("bc");
+```
+最后结果仅匹配到：
+- [bck12345]
 
 大功告成！
 

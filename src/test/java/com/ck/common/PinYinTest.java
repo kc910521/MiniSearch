@@ -42,13 +42,23 @@ public class PinYinTest {
 
         instance.add("为什么晚上不能照镜子");
         instance.add("光电鼠标没有球");
+        instance.add("白色鼠标有球");
         instance.add("白色鼠标");
         instance.add("术镖，起立！");
-        instance.add("鼠标[shubiao]的英文：mouse");
+        instance.add("鼠标(shubiao)的英文：mouse");
         instance.add("为什么shubiao没球了");
         findCase0();
         findCase1();
         findCase2();
+        removeCase0();
+    }
+
+    private static void removeCase0() {
+        System.out.println("==========removing========");
+        instance.remove("白色");
+        findAndPrint("色鼠标");
+//        instance.printAll();
+//        System.out.println(results);
     }
 
     private static void findCase0() {
@@ -63,6 +73,11 @@ public class PinYinTest {
 
     private static void findCase2() {
         Collection<Object> results = findBy("shubiao");
+        System.out.println(results);
+    }
+
+    private static void findAndPrint(String keywords) {
+        Collection<Object> results = findBy(keywords);
         System.out.println(results);
     }
 

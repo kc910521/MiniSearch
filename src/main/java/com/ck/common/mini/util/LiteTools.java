@@ -176,8 +176,8 @@ public final class LiteTools {
      * @param originKeyword
      * @return 除原始串以外的组合case
      */
-    public static List<String> splitKeyword(String originKeyword) {
-        final List<String> result = new ArrayList<>();
+    public static ArrayList<String> combinationKeywordsChar(String originKeyword) {
+        final ArrayList<String> result = new ArrayList<>();
         final ArrayList<String> cookedOutputs = new ArrayList<>();
         ArrayList<String> cks = splitOriginWords(originKeyword);
         combination(cks, cookedOutputs, new IFunWorker() {
@@ -241,7 +241,7 @@ public final class LiteTools {
 
     public static void main(String[] args) {
 
-        List<String> aa = splitKeyword("BCD212--121啊");
+        List<String> aa = combinationKeywordsChar("BCD212--121啊");
 
         System.out.println(aa);
         System.out.println(aa.size());

@@ -1,5 +1,6 @@
 package com.ck.common;
 
+import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.index.Instancer;
 import com.ck.common.mini.util.ClusterMiniSearch;
 import com.ck.common.mini.util.MiniSearch;
@@ -78,8 +79,21 @@ public class CoreTest {
 
     public static void main(String[] args) {
 //        fast();
-        dup();
+//        dup();
 //        pinyin();
+        orderSearchTest();
+    }
+
+    public static void orderSearchTest() {
+        MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
+        miniSearchConfigure.setFreeMatch(false);
+        miniSearchConfigure.setCoreType(MiniSearchConfigure.CoreType.CODE.getCode());
+        Instancer instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
+        instance.add("abc12345");
+        instance.add("mbc12345");
+        instance.add("bck12345");
+        Collection<Object> bc = instance.find("bc");
+        System.out.println(bc);
     }
 
     //        DictTree dictTree = new DictTree();

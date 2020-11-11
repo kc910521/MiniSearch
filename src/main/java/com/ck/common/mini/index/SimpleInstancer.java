@@ -1,8 +1,9 @@
 package com.ck.common.mini.index;
 
+import com.ck.common.mini.workshop.nlp.NLPAdmin;
+import com.ck.common.mini.workshop.nlp.NLPWorker;
 import com.ck.common.mini.core.DictTree;
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.util.LiteTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,16 +29,20 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
     private MiniSearchConfigure miniSearchConfigure = null;
 
+    private NLPWorker nlpWorker;
+
     public SimpleInstancer(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
         this.dictTree = new DictTree(miniSearchConfigure);
+        this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
     public SimpleInstancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
         this.dictTree = new DictTree(miniSearchConfigure);
+        this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
     @Override
@@ -74,12 +79,10 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
             return -1;
         }
         Serializable ser = (Serializable) carrier;
-        int rs = this.dictTree.insert(beQueue(keywords), ser);
-        if (miniSearchConfigure.isFreeMatch()) {
-            List<String> subKeywords = LiteTools.splitKeyword(keywords);
-            for (String kw : subKeywords) {
-                rs += this.dictTree.insert(beQueue(kw), ser);
-            }
+        int rs = 0;
+        List<String> subKeywords = nlpWorker.work(keywords);
+        for (String kw : subKeywords) {
+            rs += this.dictTree.insert(beQueue(kw), ser);
         }
         return rs;
     }
@@ -97,7 +100,12 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public synchronized int remove(String keywords) {
-        return this.dictTree.removeToLastTail(beQueue(keywords), this.dictTree.getRoot());
+        List<String> subKeywords = nlpWorker.work(keywords);
+        int rs = 0;
+        for (String kw : subKeywords) {
+            rs += this.dictTree.removeToLastTail(beQueue(kw), this.dictTree.getRoot());
+        }
+        return rs;
     }
 
     @Override

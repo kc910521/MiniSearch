@@ -335,7 +335,7 @@ domain可以理解为所有冲突单元，本质为一个map。
 - SubsequentWorker：
 [abcd, bcd, cd, d]
 
-- CombinationWorker:
+- CombinationWorker（废弃）:
 [abcd, ab, abc ...]
 
 

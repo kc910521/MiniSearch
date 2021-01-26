@@ -47,8 +47,10 @@ public class MiniSearch {
     protected static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         if (miniSearchConfigure.getCoreType() == MiniSearchConfigure.CoreType.PINYIN.getCode()) {
             return new PinYinInstancer(instancerName, miniSearchConfigure);
-        } else {
+        } else if (miniSearchConfigure.getCoreType() == MiniSearchConfigure.CoreType.CODE.getCode()) {
             return new SimpleInstancer(instancerName, miniSearchConfigure);
+        } else {
+            throw new RuntimeException("where are you ?");
         }
 
     }

@@ -2,6 +2,7 @@ package com.ck.common.mini.index;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.core.DictTree;
+import com.ck.common.mini.core.SpellingComponent;
 import com.ck.common.mini.workshop.nlp.NLPAdmin;
 import com.ck.common.mini.workshop.nlp.NLPWorker;
 import org.slf4j.Logger;
@@ -81,8 +82,9 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         Serializable ser = (Serializable) carrier;
         int rs = 0;
         List<String> subKeywords = nlpWorker.work(keywords);
+        SpellingComponent spellingComponent = new SpellingComponent(keywords, ser);
         for (String kw : subKeywords) {
-            rs += this.dictTree.insert(beQueue(kw), ser);
+            rs += this.dictTree.insert(beQueue(kw), spellingComponent);
         }
         return rs;
     }

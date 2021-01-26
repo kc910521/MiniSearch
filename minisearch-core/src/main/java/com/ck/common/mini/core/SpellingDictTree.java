@@ -31,6 +31,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
 
         private HashMap<Character, SpellingDictTree.SpNode> domains;
         // {originChars, entity}
+        // replace carrier
         private Map<String, CARRIER> carrierMap = new HashMap<>();
 
         public Map<String, CARRIER> getCarrierMap() {

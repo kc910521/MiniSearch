@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * @Author caikun
- * @Description 拼音树赋值用
+ * @Description 拼写组建，保存承载内容和原始key
  * @Date 下午5:23 20-4-27
  **/
 public class SpellingComponent<CARRIER extends Serializable> implements Serializable {

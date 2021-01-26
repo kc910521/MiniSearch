@@ -13,7 +13,7 @@ import java.util.*;
  *
  * @Date 下午2:43 20-4-20
  **/
-public class SpellingDictTree<CARRIER extends Serializable> {
+public class SpellingDictTree<CARRIER extends Map> extends DictTree {
 
     private MiniSearchConfigure miniSearchConfigure = null;
 
@@ -25,92 +25,19 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         this.miniSearchConfigure = miniSearchConfigure;
     }
 
-    private SpNode root = new SpNode();
 
-    static class SpNode<CARRIER> extends DictTree.Node {
-
-        private HashMap<Character, SpellingDictTree.SpNode> domains;
-        // {originChars, entity}
-        // replace carrier
-        private Map<String, CARRIER> carrierMap = new HashMap<>();
-
-        public Map<String, CARRIER> getCarrierMap() {
-            return carrierMap;
+    @Override
+    protected int putActionFrom(Node cnode, SpellingComponent spellingComponent) {
+        cnode.setTail(true);
+        CARRIER cnodeCarrier = (CARRIER) cnode.getCarrier();
+        if (cnodeCarrier == null) {
+            HashMap<Object, Object> objectObjectHashMap = new HashMap<>(8);
+            objectObjectHashMap.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier());
+            cnode.setCarrier(objectObjectHashMap);
+            return 1;
         }
+        return cnodeCarrier.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier()) == null ? 0 : 1;
     }
-
-    public synchronized void clear(SpNode father) {
-        if (father.domains != null) {
-            Iterator<Map.Entry<Character, SpNode>> iterator = father.domains.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Character, SpNode> next = iterator.next();
-                clear(next.getValue());
-                iterator.remove();
-            }
-        } else {
-            if (father.carrierMap != null) {
-                father.carrierMap.clear();
-                father.carrierMap = null;// help gc
-            }
-        }
-    }
-
-    public void clear() {
-        clear(root);
-    }
-
-
-    /**
-     * 传入上1级别节点 father
-     * 判断如果key不存在于 father的 domains，则插入
-     *
-     * @param cq
-     * @param father
-     * @return 1 success ;2 do nothing
-     */
-    protected int insert(Queue<Character> cq, SpNode father, SpellingComponent<CARRIER> spellingComponent) {
-        if (cq.size() == 0) {
-            father.setTail(true);
-            if (father.carrierMap == null) {
-                father.carrierMap = new HashMap<>();
-            }
-            father.carrierMap.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier());
-            return 2;
-        }
-        char nchar = cq.poll();
-        if (father.domains == null) {
-            father.domains = new HashMap<>();
-            SpNode cnode = new SpNode();
-            cnode.setKey(nchar);
-            father.domains.put(cnode.getKey(), cnode);
-            insert(cq, cnode, spellingComponent);
-        } else {
-            if (father.domains.containsKey(nchar)) {
-                SpNode cnode = (SpNode) father.domains.get(nchar);
-                return insert(cq, cnode, spellingComponent);
-            } else {
-                // 不存在
-                SpNode SpNode = new SpNode();
-                SpNode.setKey(nchar);
-                father.domains.put(SpNode.getKey(), SpNode);
-                return insert(cq, SpNode, spellingComponent);
-            }
-        }
-        return 1;
-    }
-
-
-    /**
-     * insert keywords with carrier
-     *
-     * @param cq
-     * @param carrierMap
-     * @return
-     */
-    public int insert(Queue<Character> cq, SpellingComponent<CARRIER> carrierMap) {
-        return insert(cq, root, carrierMap);
-    }
-
 
     /**
      * remove by keys from Q
@@ -124,7 +51,7 @@ public class SpellingDictTree<CARRIER extends Serializable> {
      * @param father
      * @return
      */
-    public int removeToLastTail(Queue<Character> cq, final SpNode father, String originKey) {
+    public int removeToLastTail(Queue<Character> cq, final Node<CARRIER> father, String originKey) {
         if (father == null) {
             return -1;
         }
@@ -132,10 +59,10 @@ public class SpellingDictTree<CARRIER extends Serializable> {
             // 已经便利到尾部
             // 将当前节点设置为非尾部
             // 需要判断小子节点是否吻合
-            if (father.carrierMap == null || father.carrierMap.isEmpty() || father.carrierMap.containsKey(originKey)) {
+            if (father.getCarrier() == null || father.getCarrier().isEmpty() || father.getCarrier().containsKey(originKey)) {
                 father.setTail(false);
             }
-            if (father.domains != null && !father.domains.isEmpty()) {
+            if (father.getDomains() != null && !father.getDomains().isEmpty()) {
                 // 非叶子，啥也不干
                 return 0;
             }
@@ -143,20 +70,20 @@ public class SpellingDictTree<CARRIER extends Serializable> {
             return 1;
         }
         Character nowChar = cq.poll();
-        if (father.domains == null || !father.domains.containsKey(nowChar)) {
+        if (father.getDomains() == null || !father.getDomains().containsKey(nowChar)) {
             return -1;
         }
-        SpNode targetChild = (SpNode) father.domains.get(nowChar);
+        Node<CARRIER> targetChild = (Node) father.getDomains().get(nowChar);
         int i = removeToLastTail(cq, targetChild, originKey);
 
         if (i == 1) {
             // 第一次进入已经是倒数第二层
             // targetChild为最后一层
             // 删除下面的
-            if (targetChild.carrierMap != null) {
-                targetChild.carrierMap.remove(originKey);
-                if (targetChild.carrierMap.isEmpty()) {
-                    targetChild.carrierMap = null;//help GC
+            if (targetChild.getCarrier() != null) {
+                targetChild.getCarrier().remove(originKey);
+                if (targetChild.getCarrier().isEmpty()) {
+                    targetChild.setCarrier(null);//help GC
                 } else {
                     // 多match，所以直接结束,撤销
                     targetChild.setTail(true);
@@ -175,55 +102,9 @@ public class SpellingDictTree<CARRIER extends Serializable> {
         }
     }
 
-    /**
-     * print all info for debug
-     *
-     * @param father
-     */
-    public void printChild(SpNode father) {
-//        System.out.println("key:" + father.key + "|isTail: " + father.tail + "|carrierMap: " + father.carrierMap);
-        if (father.domains != null) {
-            Iterator<Map.Entry<Character, SpNode>> iterator = father.domains.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Character, SpNode> next = iterator.next();
-                printChild(next.getValue());
-            }
-        }
-    }
-
-    public SpNode getRoot() {
-        return root;
-    }
-
-    /**
-     * fix the position last matched char
-     *
-     * @param cq
-     * @param father
-     */
-    protected SpNode fixPositionNode(Queue<Character> cq, SpNode father, boolean strict) {
-        if (father == null || cq.size() == 0) {
-            return father;
-        }
-        Character nowChar = cq.poll();
-        if (father.domains == null || !father.domains.containsKey(nowChar)) {
-            return strict ? null : father;
-        }
-        return fixPositionNode(cq, (SpNode) father.domains.get(nowChar), strict);
-    }
-
     // todo: 此处有额外计算，可以考虑后续缓存; private now
 
-    /**
-     * 匹配原始串和当前节点所有key
-     *
-     * @param originKeyPattern 原始串处理结果 eg:(.+)什(.*)
-     * @param resultItemKey    前节点key
-     * @return
-     */
-    private static final boolean canMatch(String originKeyPattern, String resultItemKey) {
-        return LiteTools.match(originKeyPattern, resultItemKey);
-    }
+
 
     /**
      * 遍历并加入节点到results
@@ -231,34 +112,94 @@ public class SpellingDictTree<CARRIER extends Serializable> {
      * @param root
      * @param results
      */
-    protected void ergodicAndSetBy(SpNode root, Collection<CARRIER> results, String originKeyPattern) {
-        if (root.getKey() == null) {
+//    protected void ergodicAndSetBy(SpNode root, Collection<CARRIER> results, String originKeyPattern) {
+//        if (root.getKey() == null) {
+//            return;
+//        }
+//        if (results.size() >= miniSearchConfigure.getMaxFetchNum()) {
+//            return;
+//        }
+//        if (root.isTail()) {
+//            if (root.carrierMap != null) {
+//                Set<Map.Entry<String, CARRIER>> entries = root.carrierMap.entrySet();
+//                for (Map.Entry<String, CARRIER> entry : entries) {
+//                    if (results.size() < miniSearchConfigure.getMaxFetchNum()) {
+//                        // 此处处理字符匹配
+//                        // todo:freematch且允许空格,修改匹配规则
+//                        if (canMatch(originKeyPattern, entry.getKey())) {
+//                            results.add(entry.getValue());
+//                        }
+//                    } else {
+//                        return;
+//                    }
+//                }
+//            }
+//        }
+//        if (root.domains != null) {
+//            Iterator<Map.Entry<Character, SpNode>> iterator = root.domains.entrySet().iterator();
+//            while (iterator.hasNext()) {
+//                Map.Entry<Character, SpNode> next = iterator.next();
+//                ergodicAndSetBy(next.getValue(), results, originKeyPattern);
+//            }
+//        }
+//    }
+
+    /**
+     * 获取该跟 father 下的所有可以搜索到的节点，然后塞到results
+     *
+     * @param father
+     * @param results 不能为空
+     */
+    protected void ergodicAndSetBy(Node father, Collection<CARRIER> results, String originKeyPattern) {
+        assert results != null;
+        if (father == null) {
             return;
         }
-        if (results.size() >= miniSearchConfigure.getMaxFetchNum()) {
+        if (father.getKey() == null) {
             return;
         }
-        if (root.isTail()) {
-            if (root.carrierMap != null) {
-                Set<Map.Entry<String, CARRIER>> entries = root.carrierMap.entrySet();
-                for (Map.Entry<String, CARRIER> entry : entries) {
-                    if (results.size() < miniSearchConfigure.getMaxFetchNum()) {
-                        // 此处处理字符匹配
-                        // todo:freematch且允许空格,修改匹配规则
-                        if (canMatch(originKeyPattern, entry.getKey())) {
-                            results.add(entry.getValue());
+        int maxRs = miniSearchConfigure.getMaxFetchNum();
+        ergodicTailsInBreadth(father, maxRs, results, originKeyPattern);
+    }
+
+    /**
+     * 对father下的所有tail==true的节点信息都加入results，最多加入maxReturn个
+     *
+     * @param father
+     * @param maxReturn
+     * @param results
+     */
+    protected void ergodicTailsInBreadth(Node father, int maxReturn, Collection<CARRIER> results, String originKeyPattern) {
+        assert results != null;
+        Stack<Node> stack = new Stack<>();
+        if (father != null) {
+            stack.push(father);
+            while (stack.size() > 0) {
+                Node popNode = stack.pop();
+                if (popNode.isTail()) {
+                    Object carrierObject = popNode.getCarrier();
+                    if (carrierObject != null) {
+                        CARRIER carrier = (CARRIER) carrierObject;
+                        Set<Map.Entry<String, CARRIER>> entries = carrier.entrySet();
+                        for (Map.Entry<String, CARRIER> entry : entries) {
+                            // todo:freematch且允许空格,修改匹配规则
+                            if (canMatch(originKeyPattern, entry.getKey())) {
+                                results.add(entry.getValue());
+                            }
+                            if (results.size() >= maxReturn) {
+                                // 判断长度
+                                return;
+                            }
                         }
-                    } else {
-                        return;
                     }
                 }
-            }
-        }
-        if (root.domains != null) {
-            Iterator<Map.Entry<Character, SpNode>> iterator = root.domains.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Character, SpNode> next = iterator.next();
-                ergodicAndSetBy(next.getValue(), results, originKeyPattern);
+                if (popNode.getDomains() != null) {
+                    Iterator<Map.Entry<Character, Node>> iterator = popNode.getDomains().entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<Character, Node> next = iterator.next();
+                        stack.push(next.getValue());
+                    }
+                }
             }
         }
     }
@@ -271,15 +212,27 @@ public class SpellingDictTree<CARRIER extends Serializable> {
      */
     public Collection<CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern) {
         Set<CARRIER> results = new LinkedHashSet<>();
-        if (root == null || root.domains == null || root.domains.isEmpty()) {
+        Node root = getRoot();
+        if (root == null || root.getDomains() == null || root.getDomains().isEmpty()) {
             return results;
         }
         // 4 root
-        SpNode SpNode = fixPositionNode(cq, root, miniSearchConfigure.isStrict());
-        if (SpNode != null) {
-            ergodicAndSetBy(SpNode, results, originKeyPattern);
+        Node node = fixPositionNode(cq, root, miniSearchConfigure.isStrict());
+        if (node != null) {
+            ergodicAndSetBy(node, results, originKeyPattern);
         }
         return results;
+    }
+
+    /**
+     * 匹配原始串和当前节点所有key
+     *
+     * @param originKeyPattern 原始串处理结果 eg:(.+)什(.*)
+     * @param resultItemKey    前节点key
+     * @return
+     */
+    private static final boolean canMatch(String originKeyPattern, String resultItemKey) {
+        return LiteTools.match(originKeyPattern, resultItemKey);
     }
 
 

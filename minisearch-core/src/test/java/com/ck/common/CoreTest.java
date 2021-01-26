@@ -78,9 +78,25 @@ public class CoreTest {
 //        System.out.println(wc + "," + a22 + "," + a33);
     }
 
+    public static void dup2() {
+        // create
+        Instancer instance = MiniSearch.findInstance("hello_world");
+        // add all into index
+        instance.add("我爱", new Info("因为我没钱了"));
+        instance.add("我爱一个人", new Info("因为我没钱了2"));
+        instance.add("我是", new Info("因为我没钱了3"));
+//        instance.add("为什么月经迟迟不来", new Info("因为我爱你"));
+//        instance.add("为什么晚上不能照镜子", new Info("因为没交电费"));
+        //try searching
+        Collection<Object> result = instance.find("我爱一个人");
+        System.out.println(result);
+    }
+
     public static void main(String[] args) {
         fast();
         dup();
+//        dup2();
+
 //        pinyin();
 //        orderSearchTest();
     }

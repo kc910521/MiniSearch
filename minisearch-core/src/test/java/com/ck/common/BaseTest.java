@@ -14,7 +14,7 @@ public class BaseTest {
 
     static SimpleInstancer simpleInstancer = new SimpleInstancer("hussar");
 
-    public static void main(String[] args) {
+    public static void tt1() {
         int abcdefghi = simpleInstancer.add("abcdefghi");
         abcdefghi += simpleInstancer.add("abmnop");
         abcdefghi += simpleInstancer.add("bmw");
@@ -37,6 +37,18 @@ public class BaseTest {
         System.out.println(results);
         results = simpleInstancer.find("b");
         System.out.println(results);
+    }
+
+
+    public static void tt2() {
+        int abcdefghi = simpleInstancer.add("abc");
+        abcdefghi += simpleInstancer.add("bc");
+
+    }
+
+    public static void main(String[] args) {
+        tt1();
+        tt2();
     }
 
 }

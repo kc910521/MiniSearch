@@ -84,12 +84,9 @@ public class DictTree<CARRIER extends Serializable> {
 //    }
 
     public void clear() {
-        synchronized (root) {
-            root = null;
-            root = new Node();
-            System.gc();
-        }
-
+        root = null;
+        root = new Node();
+        System.gc();
 
     }
 

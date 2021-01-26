@@ -91,7 +91,7 @@ public class CoreTest {
         Collection<Object> result = instance.find("我");
         System.out.println(result);
         instance.remove("我是你");
-        Collection<Object> result2 = instance.find("我");
+        Collection<Object> result2 = instance.find("是");
 
         System.out.println(result2);
     }

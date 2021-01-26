@@ -42,12 +42,17 @@ public class BaseTest {
 
     public static void tt2() {
         int abcdefghi = 0;
+
         abcdefghi = simpleInstancer.add("abc");
         abcdefghi += simpleInstancer.add("a");
         abcdefghi += simpleInstancer.add("ab");
+        abcdefghi = simpleInstancer.add("abcd");
 
         Collection<Object> a = simpleInstancer.find("a");
         System.out.println(a);
+
+        int abc = simpleInstancer.remove("ab");
+        System.out.println(simpleInstancer.find("ab"));
 
     }
 

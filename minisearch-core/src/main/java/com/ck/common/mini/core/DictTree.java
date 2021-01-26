@@ -122,6 +122,7 @@ public class DictTree<CARRIER extends Serializable> {
                 // has the node for nchar
                 Node nextNode = (Node) father.domains.get(nchar);
                 father = nextNode;
+                cnode = nextNode;
             }
         }
         // 当前nchar应该为最后一个字符

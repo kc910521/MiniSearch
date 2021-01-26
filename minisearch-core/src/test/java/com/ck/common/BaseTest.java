@@ -41,13 +41,18 @@ public class BaseTest {
 
 
     public static void tt2() {
-        int abcdefghi = simpleInstancer.add("abc");
-        abcdefghi += simpleInstancer.add("bc");
+        int abcdefghi = 0;
+        abcdefghi = simpleInstancer.add("abc");
+        abcdefghi += simpleInstancer.add("a");
+        abcdefghi += simpleInstancer.add("ab");
+
+        Collection<Object> a = simpleInstancer.find("a");
+        System.out.println(a);
 
     }
 
     public static void main(String[] args) {
-        tt1();
+//        tt1();
         tt2();
     }
 

@@ -39,6 +39,26 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
         return cnodeCarrier.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier()) == null ? 0 : 1;
     }
 
+
+    @Override
+    protected int removeActionFrom(final Node node, String originKey) {
+        CARRIER carrier = (CARRIER) node.getCarrier();
+        if (carrier == null || !carrier.containsKey(originKey)) {
+            return 0;
+        } else {
+            carrier.remove(originKey);
+            if (carrier.isEmpty()) {
+                node.setTail(false);
+                // 子节点为空则可以准备向上删除
+                if (node.getDomains() == null || node.getDomains().size() == 0) {
+                    // 节点无叶子节点,准备向上删除
+                    return 2;
+                }
+            }
+        }
+        return 1;
+    }
+
     /**
      * remove by keys from Q
      * from bottom to up
@@ -49,9 +69,11 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
      *
      * @param cq
      * @param father
+     * @param originKey 实际的key值
      * @return
      */
-    public int removeToLastTail(Queue<Character> cq, final Node<CARRIER> father, String originKey) {
+    @Deprecated
+    private int removeToLastTailRecursion(Queue<Character> cq, final Node<CARRIER> father, String originKey) {
         if (father == null) {
             return -1;
         }
@@ -74,7 +96,7 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
             return -1;
         }
         Node<CARRIER> targetChild = (Node) father.getDomains().get(nowChar);
-        int i = removeToLastTail(cq, targetChild, originKey);
+        int i = removeToLastTailRecursion(cq, targetChild, originKey);
 
         if (i == 1) {
             // 第一次进入已经是倒数第二层
@@ -104,45 +126,6 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
 
     // todo: 此处有额外计算，可以考虑后续缓存; private now
 
-
-
-    /**
-     * 遍历并加入节点到results
-     *
-     * @param root
-     * @param results
-     */
-//    protected void ergodicAndSetBy(SpNode root, Collection<CARRIER> results, String originKeyPattern) {
-//        if (root.getKey() == null) {
-//            return;
-//        }
-//        if (results.size() >= miniSearchConfigure.getMaxFetchNum()) {
-//            return;
-//        }
-//        if (root.isTail()) {
-//            if (root.carrierMap != null) {
-//                Set<Map.Entry<String, CARRIER>> entries = root.carrierMap.entrySet();
-//                for (Map.Entry<String, CARRIER> entry : entries) {
-//                    if (results.size() < miniSearchConfigure.getMaxFetchNum()) {
-//                        // 此处处理字符匹配
-//                        // todo:freematch且允许空格,修改匹配规则
-//                        if (canMatch(originKeyPattern, entry.getKey())) {
-//                            results.add(entry.getValue());
-//                        }
-//                    } else {
-//                        return;
-//                    }
-//                }
-//            }
-//        }
-//        if (root.domains != null) {
-//            Iterator<Map.Entry<Character, SpNode>> iterator = root.domains.entrySet().iterator();
-//            while (iterator.hasNext()) {
-//                Map.Entry<Character, SpNode> next = iterator.next();
-//                ergodicAndSetBy(next.getValue(), results, originKeyPattern);
-//            }
-//        }
-//    }
 
     /**
      * 获取该跟 father 下的所有可以搜索到的节点，然后塞到results
@@ -217,7 +200,7 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
             return results;
         }
         // 4 root
-        Node node = fixPositionNode(cq, root, miniSearchConfigure.isStrict());
+        Node node = findPositionNode(cq, root, miniSearchConfigure.isStrict());
         if (node != null) {
             ergodicAndSetBy(node, results, originKeyPattern);
         }

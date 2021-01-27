@@ -49,10 +49,12 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
     @Override
     public synchronized void init(Map<String, Object> data) {
         this.dictTree.clear();
-        Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> next = iterator.next();
-            add(next.getKey(), next.getValue());
+        if (data != null) {
+            Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Object> next = iterator.next();
+                add(next.getKey(), next.getValue());
+            }
         }
         logger.info("init success");
     }
@@ -105,7 +107,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         List<String> subKeywords = nlpWorker.work(keywords);
         int rs = 0;
         for (String kw : subKeywords) {
-            rs += this.dictTree.removeToLastTail(beQueue(kw), this.dictTree.getRoot());
+            rs += this.dictTree.removeToLastTail(beQueue(kw), this.dictTree.getRoot(), keywords);
         }
         return rs;
     }

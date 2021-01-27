@@ -41,7 +41,7 @@ public class MSRedisMessageListener implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] bytes) {
-        logger.info("redis message received");
+        logger.debug("redis message received");
         try {
             byte[] body = message.getBody();
             Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);

@@ -17,7 +17,7 @@ import java.util.Map;
  * @Date 下午4:55 21-1-27
  **/
 @RestController
-@RequestMapping("mini/search")
+@RequestMapping("service")
 public class MiniSearchRestController {
 
     @Autowired

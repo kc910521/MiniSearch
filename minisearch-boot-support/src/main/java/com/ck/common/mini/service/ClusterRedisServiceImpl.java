@@ -4,6 +4,7 @@ import com.ck.common.mini.bean.ResponseWrapper;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.index.Instancer;
 import com.ck.common.mini.index.PinYinInstancer;
+import com.ck.common.mini.util.ClusterMiniSearch;
 import com.ck.common.mini.util.MiniSearch;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,13 @@ public class ClusterRedisServiceImpl {
 
 
     public ResponseWrapper find(String name, String chars) {
-        Instancer instance = MiniSearch.findInstance(name);
+        Instancer instance = ClusterMiniSearch.findInstance(name);
         Collection<Object> objects = instance.find(chars);
         return new ResponseWrapper(objects);
     }
 
     public ResponseWrapper save(String name, String key, String value) {
-        Instancer instance = MiniSearch.findInstance(name);
+        Instancer instance = ClusterMiniSearch.findInstance(name);
         if (Strings.isBlank(value) || key.equals(value)) {
             instance.add(key);
         } else {
@@ -38,13 +39,13 @@ public class ClusterRedisServiceImpl {
     }
 
     public ResponseWrapper remove(String name, String key) {
-        Instancer instance = MiniSearch.findInstance(name);
+        Instancer instance = ClusterMiniSearch.findInstance(name);
         int remove = instance.remove(key);
         return new ResponseWrapper();
     }
 
     public ResponseWrapper init(String name, Map<String, Object> initMap) {
-        Instancer instance = MiniSearch.findInstance(name);
+        Instancer instance = ClusterMiniSearch.findInstance(name);
         if (initMap == null || initMap.isEmpty()) {
             initMap = null;
         }
@@ -53,7 +54,7 @@ public class ClusterRedisServiceImpl {
     }
 
     public ResponseWrapper config(String name, MiniSearchConfigure miniSearchConfigure) {
-        Instancer instance = MiniSearch.findInstance(name, miniSearchConfigure);
+        Instancer instance = ClusterMiniSearch.findInstance(name, miniSearchConfigure);
         instance.init(null);
         return new ResponseWrapper();
     }

@@ -2,7 +2,7 @@
 search it
 
 ## MiniSearch的特点
-- MiniSearch自身不需要任何额外的服务，仅仅是一个jar包
+- MiniSearch自身可以不需要任何额外的服务，仅仅是一个jar包
 - 广义的搜索，写入什么就搜索什么，可支持两端匹配。eg：输入‘爱’，可以匹配到‘我爱你’.就像MySql的LIKE '%chars%'.
 - 左向基准搜索.eg:你输入'XAT0',就可能搜索出订单号‘XAT0012412120’,‘XAT0121231212’,而不会搜索出‘XXXXAT0’.就像MySql的LIKE 'chars%'.
 - 拼音的搜索,eg:你输入‘huihe’，可能搜索出‘回合’和‘大部队的汇合’.

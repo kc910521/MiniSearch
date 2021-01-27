@@ -11,6 +11,7 @@
     <modules>
         <module>minisearch-core</module>
         <module>minisearch-cluster-redis</module>
+        <module>minisearch-boot-support</module>
     </modules>
 
     <properties>

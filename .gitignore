@@ -31,5 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/test/java/com/leshan/AdvertisementTest.java
-/src/test/java/com/leshan/Demo.java

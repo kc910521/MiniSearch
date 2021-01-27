@@ -7,8 +7,6 @@ import com.ck.common.mini.index.PinYinInstancer;
 import com.ck.common.mini.util.ClusterMiniSearch;
 import com.ck.common.mini.util.MiniSearch;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,16 +16,17 @@ import java.util.Map;
  * @Description //TODO $END
  * @Date 下午4:56 21-1-27
  **/
-@Component
-public class ClusterRedisServiceImpl {
+public class ClusterRedisServiceImpl implements IClusterService {
 
 
+    @Override
     public ResponseWrapper find(String name, String chars) {
         Instancer instance = ClusterMiniSearch.findInstance(name);
         Collection<Object> objects = instance.find(chars);
         return new ResponseWrapper(objects);
     }
 
+    @Override
     public ResponseWrapper save(String name, String key, String value) {
         Instancer instance = ClusterMiniSearch.findInstance(name);
         if (Strings.isBlank(value) || key.equals(value)) {
@@ -38,12 +37,14 @@ public class ClusterRedisServiceImpl {
         return new ResponseWrapper();
     }
 
+    @Override
     public ResponseWrapper remove(String name, String key) {
         Instancer instance = ClusterMiniSearch.findInstance(name);
         int remove = instance.remove(key);
         return new ResponseWrapper();
     }
 
+    @Override
     public ResponseWrapper init(String name, Map<String, Object> initMap) {
         Instancer instance = ClusterMiniSearch.findInstance(name);
         if (initMap == null || initMap.isEmpty()) {
@@ -53,6 +54,7 @@ public class ClusterRedisServiceImpl {
         return new ResponseWrapper();
     }
 
+    @Override
     public ResponseWrapper config(String name, MiniSearchConfigure miniSearchConfigure) {
         Instancer instance = ClusterMiniSearch.findInstance(name, miniSearchConfigure);
         instance.init(null);

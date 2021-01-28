@@ -13,6 +13,8 @@ import java.util.Map;
 public interface IClusterService {
     ResponseWrapper find(String name, String chars);
 
+    ResponseWrapper find(String name, String chars, int page, int pageSize);
+
     ResponseWrapper save(String name, String key, String value);
 
     ResponseWrapper remove(String name, String key);

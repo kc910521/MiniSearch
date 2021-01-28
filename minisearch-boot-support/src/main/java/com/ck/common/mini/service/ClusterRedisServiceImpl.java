@@ -27,6 +27,13 @@ public class ClusterRedisServiceImpl implements IClusterService {
     }
 
     @Override
+    public ResponseWrapper find(String name, String chars, int page, int pageSize) {
+        Instancer instance = ClusterMiniSearch.findInstance(name);
+        Collection<Object> objects = instance.find(chars, page, pageSize);
+        return new ResponseWrapper(objects);
+    }
+
+    @Override
     public ResponseWrapper save(String name, String key, String value) {
         Instancer instance = ClusterMiniSearch.findInstance(name);
         if (Strings.isBlank(value) || key.equals(value)) {

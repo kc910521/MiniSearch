@@ -53,7 +53,12 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
 
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords) {
-        Collection<CARRIER> objects = this.instancer.find(keywords);
+        return this.find(keywords, 0, getMiniSearchConfigure().getMaxFetchNum());
+    }
+
+    @Override
+    public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
+        Collection<CARRIER> objects = this.instancer.find(keywords, page, pageSize);
         return objects;
     }
 

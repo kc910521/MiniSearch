@@ -168,7 +168,7 @@ public class CoreTest {
 
         System.out.println(instance.find("我"));
 
-        System.out.println(instance.find("我", 0, 5));
+        System.out.println(instance.find("我", -2, -5));
         System.out.println(instance.find("我", 1, 5));
         System.out.println(instance.find("我", 2, 5));
         System.out.println(instance.find("我", 3, 5));

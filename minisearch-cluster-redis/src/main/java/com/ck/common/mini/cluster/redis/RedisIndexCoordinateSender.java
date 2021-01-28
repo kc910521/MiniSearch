@@ -27,6 +27,7 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
+        logger.debug("RedisIndexCoordinateSender loaded.");
         if (this.miniSearchConfigure == null) {
             logger.error("WARN: miniSearchConfigure null, default");
             miniSearchConfigure = new MiniSearchConfigure();

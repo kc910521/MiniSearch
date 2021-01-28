@@ -7,7 +7,6 @@ import com.ck.common.mini.constant.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -28,9 +27,6 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
-        if (this.redisTemplate == null) {
-            logger.error("WARN: redisTemplate may not involved, all operations will be standalone");
-        }
         if (this.miniSearchConfigure == null) {
             logger.error("WARN: miniSearchConfigure null, default");
             miniSearchConfigure = new MiniSearchConfigure();
@@ -46,7 +42,7 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
         intent.setKey(key);
         logger.debug("send to " + miniSearchConfigure.getNotifyPatternChars() + instancerName);
         if (redisTemplate == null) {
-            throw new RedisConnectionFailureException("redisTemplate is null");
+            throw new RuntimeException("redisTemplate may not involved, all operations will be standalone");
         }
         redisTemplate.convertAndSend(miniSearchConfigure.getNotifyPatternChars() + instancerName, intent);
     }

@@ -35,14 +35,14 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
     public SimpleInstancer(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
-        this.dictTree = new DictTree(miniSearchConfigure);
+        this.dictTree = new DictTree();
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
     public SimpleInstancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
-        this.dictTree = new DictTree(miniSearchConfigure);
+        this.dictTree = new DictTree();
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
@@ -61,13 +61,21 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords) {
+        return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
+    }
+
+    @Override
+    public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
+        }
+        if (pageSize > miniSearchConfigure.getMaxFetchNum()) {
+            throw new RuntimeException("out of max fetch number in Config");
         }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
-        return this.dictTree.fetchSimilar(beQueue(keywords));
+        return this.dictTree.fetchSimilar(beQueue(keywords), miniSearchConfigure.isStrict(), page, pageSize);
     }
 
     @Override

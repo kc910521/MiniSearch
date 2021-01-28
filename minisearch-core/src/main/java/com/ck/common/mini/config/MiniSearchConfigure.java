@@ -11,7 +11,7 @@ public class MiniSearchConfigure {
     /**
      * 遍历条目时最大返回结果数
      */
-    private int maxFetchNum = Integer.MAX_VALUE;
+    private int maxFetchNum = 50;
 
     /**
      * 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配

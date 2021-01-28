@@ -35,14 +35,14 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
     public PinYinInstancer(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
-        this.spellingDictTree = new SpellingDictTree(miniSearchConfigure);
+        this.spellingDictTree = new SpellingDictTree();
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
     public PinYinInstancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
-        this.spellingDictTree = new SpellingDictTree(miniSearchConfigure);
+        this.spellingDictTree = new SpellingDictTree();
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
@@ -59,13 +59,18 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords) {
+        return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
+    }
+
+    @Override
+    public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
         }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
-        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchPattern(keywords));
+        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchPattern(keywords), miniSearchConfigure.isStrict(), page, pageSize);
     }
 
     private static final String PT_PREFIX = "^";

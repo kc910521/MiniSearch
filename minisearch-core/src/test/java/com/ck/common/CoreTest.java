@@ -148,11 +148,40 @@ public class CoreTest {
         System.out.println(result2);
     }
 
+    public static void pageTest() {
+        System.out.println("========= pageTest============");
+        Instancer instance = MiniSearch.findInstance("hello_world_page");
+        instance.add("我爱123112");
+        instance.add("我爱我爱123112");
+        instance.add("我");
+        instance.add("我爱12来112");
+        instance.add("我爱学习");
+        instance.add("我爱大狗");
+        instance.add("我爱狗");
+        instance.add("爱我21个哦");
+        instance.add("我爱吃米饭");
+        instance.add("吃米饭");
+        instance.add("米饭好吃所以我爱吃");
+        instance.add("我的朋友");
+        instance.add("记住我的名字");
+        instance.add("可算找到你了");
+
+        System.out.println(instance.find("我"));
+
+        System.out.println(instance.find("我", 0, 5));
+        System.out.println(instance.find("我", 1, 5));
+        System.out.println(instance.find("我", 2, 5));
+        System.out.println(instance.find("我", 3, 5));
+    }
+
+
+
     public static void main(String[] args) {
 //        fast();
 //        dup();
 //        dup2();
         dup3();
+        pageTest();
 //        pinyin();
 //        orderSearchTest();
     }

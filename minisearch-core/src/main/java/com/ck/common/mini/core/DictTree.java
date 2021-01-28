@@ -1,7 +1,5 @@
 package com.ck.common.mini.core;
 
-import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.util.LiteTools;
 
 import java.io.Serializable;
 import java.util.*;
@@ -14,14 +12,8 @@ import java.util.*;
  **/
 public class DictTree<CARRIER extends Serializable> {
 
-    private MiniSearchConfigure miniSearchConfigure = null;
 
     public DictTree() {
-        this.miniSearchConfigure = new MiniSearchConfigure();
-    }
-
-    public DictTree(MiniSearchConfigure miniSearchConfigure) {
-        this.miniSearchConfigure = miniSearchConfigure;
     }
 
     private Node root = new Node(512);
@@ -349,7 +341,7 @@ public class DictTree<CARRIER extends Serializable> {
      * @param father
      * @param results 不能为空
      */
-    protected void ergodicAndSetBy(Node father, Collection<CARRIER> results) {
+    protected void ergodicAndSetBy(Node father, Collection<CARRIER> results, int page, int pageSize) {
         assert results != null;
         if (father == null) {
             return;
@@ -357,29 +349,40 @@ public class DictTree<CARRIER extends Serializable> {
         if (father.getKey() == null) {
             return;
         }
-        int maxRs = miniSearchConfigure.getMaxFetchNum();
-        ergodicTailsInBreadth(father, maxRs, results);
+        int hitAndDrop = page * pageSize;
+        ergodicTailsInBreadth(father, hitAndDrop, pageSize, results);
     }
 
     /**
      * 对father下的所有tail==true的节点信息都加入results，最多加入maxReturn个
      *
      * @param father
-     * @param maxReturn
+     * @param hitAndDrop 需要丢弃的结果数
+     * @param needSize 需要保留的结果数
      * @param results
      */
-    protected void ergodicTailsInBreadth(Node father, int maxReturn, Collection<CARRIER> results) {
+    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<CARRIER> results) {
         assert results != null;
         Stack<Node> stack = new Stack<>();
+        int hit = 0;
         if (father != null) {
             stack.push(father);
             while (stack.size() > 0) {
-                Node popNode = stack.pop();
+                // 判断长度
+                if (results.size() >= needSize) {
+                    break;
+                }
+                Node<CARRIER> popNode = stack.pop();
                 if (popNode.isTail()) {
-                    results.add((CARRIER) popNode.getCarrier());
-                    // 判断长度
-                    if (results.size() >= maxReturn) {
-                        break;
+                    CARRIER carrier = popNode.getCarrier();
+                    if (results.add(carrier)) {
+                        hit++;
+                        // 未能高于hitAndDrop，移除刚刚插入的
+                        if (hit <= hitAndDrop) {
+                            results.remove(carrier);
+                        } else {
+                            // 高于HitDrop，则插入结果集（无操作）
+                        }
                     }
                 }
                 if (popNode.getDomains() != null) {
@@ -400,18 +403,18 @@ public class DictTree<CARRIER extends Serializable> {
      * @param cq
      * @return
      */
-    public Collection<CARRIER> fetchSimilar(Queue<Character> cq) {
+
+    public Collection<CARRIER> fetchSimilar(Queue<Character> cq, boolean strict, int page, int pageSize) {
         Set<CARRIER> results = new LinkedHashSet<>();
         if (root == null || root.domains == null || root.domains.isEmpty()) {
             return results;
         }
         // 4 root
-        Node node = findPositionNode(cq, root, miniSearchConfigure.isStrict());
+        Node node = findPositionNode(cq, root, strict);
         if (node != null) {
-            ergodicAndSetBy(node, results);
+            ergodicAndSetBy(node, results, page, pageSize);
         }
         return results;
     }
-
 
 }

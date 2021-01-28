@@ -97,6 +97,10 @@ Collection<Object> bc = instance.find("bc");
 
 到现在你几乎已经完全掌握如何在单个服务器环境建立和搜索内容了！
 
+### 是时候讲解一下 Mini Search 的架构了！
+    https://github.com/kc910521/minisearch-boot-server
+
+
 
 
 ## 二、进阶用法

@@ -1,9 +1,7 @@
 package com.ck.common.mini.core;
 
-import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.util.LiteTools;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -14,17 +12,6 @@ import java.util.*;
  * @Date 下午2:43 20-4-20
  **/
 public class SpellingDictTree<CARRIER extends Map> extends DictTree {
-
-    private MiniSearchConfigure miniSearchConfigure = null;
-
-    public SpellingDictTree() {
-        this.miniSearchConfigure = new MiniSearchConfigure();
-    }
-
-    public SpellingDictTree(MiniSearchConfigure miniSearchConfigure) {
-        this.miniSearchConfigure = miniSearchConfigure;
-    }
-
 
     @Override
     protected int putActionFrom(Node cnode, SpellingComponent spellingComponent) {
@@ -133,7 +120,7 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
      * @param father
      * @param results 不能为空
      */
-    protected void ergodicAndSetBy(Node father, Collection<CARRIER> results, String originKeyPattern) {
+    protected void ergodicAndSetBy(Node father, Collection<CARRIER> results, String originKeyPattern, int page, int pageSize) {
         assert results != null;
         if (father == null) {
             return;
@@ -141,38 +128,42 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
         if (father.getKey() == null) {
             return;
         }
-        int maxRs = miniSearchConfigure.getMaxFetchNum();
-        ergodicTailsInBreadth(father, maxRs, results, originKeyPattern);
+        int hitAndDrop = page * pageSize;
+        ergodicTailsInBreadth(father, hitAndDrop, pageSize, results, originKeyPattern);
     }
 
     /**
      * 对father下的所有tail==true的节点信息都加入results，最多加入maxReturn个
      *
      * @param father
-     * @param maxReturn
+     * @param hitAndDrop
      * @param results
      */
-    protected void ergodicTailsInBreadth(Node father, int maxReturn, Collection<CARRIER> results, String originKeyPattern) {
+    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<CARRIER> results, String originKeyPattern) {
         assert results != null;
         Stack<Node> stack = new Stack<>();
         if (father != null) {
             stack.push(father);
+            int hit = 0;
             while (stack.size() > 0) {
-                Node popNode = stack.pop();
+                if (results.size() >= needSize) {
+                    // 判断长度
+                    return;
+                }
+                Node<CARRIER> popNode = stack.pop();
                 if (popNode.isTail()) {
-                    Object carrierObject = popNode.getCarrier();
-                    if (carrierObject != null) {
-                        CARRIER carrier = (CARRIER) carrierObject;
-                        Set<Map.Entry<String, CARRIER>> entries = carrier.entrySet();
+                    CARRIER carrierMap = popNode.getCarrier();
+                    if (carrierMap != null) {
+                        Set<Map.Entry<String, CARRIER>> entries = carrierMap.entrySet();
                         for (Map.Entry<String, CARRIER> entry : entries) {
                             // todo:freematch且允许空格,修改匹配规则
-                            if (canMatch(originKeyPattern, entry.getKey())) {
-                                results.add(entry.getValue());
+                            if (canMatch(originKeyPattern, entry.getKey()) && results.add(entry.getValue())) {
+                                hit++;
+                                if (hit <= hitAndDrop) {
+                                    results.remove(entry.getValue());
+                                }
                             }
-                            if (results.size() >= maxReturn) {
-                                // 判断长度
-                                return;
-                            }
+
                         }
                     }
                 }
@@ -193,16 +184,16 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
      * @param cq
      * @return
      */
-    public Collection<CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern) {
+    public Collection<CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern, boolean strict, int page, int pageSize) {
         Set<CARRIER> results = new LinkedHashSet<>();
         Node root = getRoot();
         if (root == null || root.getDomains() == null || root.getDomains().isEmpty()) {
             return results;
         }
         // 4 root
-        Node node = findPositionNode(cq, root, miniSearchConfigure.isStrict());
+        Node node = findPositionNode(cq, root, strict);
         if (node != null) {
-            ergodicAndSetBy(node, results, originKeyPattern);
+            ergodicAndSetBy(node, results, originKeyPattern, page, pageSize);
         }
         return results;
     }

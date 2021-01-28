@@ -20,6 +20,8 @@ public interface Instancer {
 
     <CARRIER> Collection<CARRIER> find(String keywords);
 
+    <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize);
+
     int add(String keywords, Object carrier);
 
     int add(String keywords);

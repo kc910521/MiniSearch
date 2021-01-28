@@ -64,7 +64,7 @@ instance.add("为什么晚上不能照镜子");
 instance.add("光电鼠标没有球");
 instance.add("白色鼠标有球");
 instance.add("白色鼠标");
-instance.add("术镖，起立！");
+instance.add("术镖-起立！");
 instance.add("鼠标(shubiao)的英文：mouse");
 instance.add("为什么shubiao没球了");
 ```
@@ -97,7 +97,7 @@ Collection<Object> result2 = instance.find("shubiao");
 ```
 我们得到结果：
 
-- [白色鼠标, 术镖，起立！, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 为什么shubiao没球了, 光电鼠标没有球]
+- [白色鼠标, 术镖-起立！, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 为什么shubiao没球了, 光电鼠标没有球]
 
 可以看到 ‘术镖’ 也被搜索进来了。
 

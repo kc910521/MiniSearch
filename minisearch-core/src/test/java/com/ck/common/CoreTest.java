@@ -151,37 +151,67 @@ public class CoreTest {
     public static void pageTest() {
         System.out.println("========= pageTest============");
         Instancer instance = MiniSearch.findInstance("hello_world_page");
-        instance.add("我爱123112");
-        instance.add("我爱我爱123112");
-        instance.add("我");
-        instance.add("我爱12来112");
-        instance.add("我爱学习");
-        instance.add("我爱大狗");
-        instance.add("我爱狗");
-        instance.add("爱我21个哦");
-        instance.add("我爱吃米饭");
-        instance.add("吃米饭");
-        instance.add("米饭好吃所以我爱吃");
-        instance.add("我的朋友");
-        instance.add("记住我的名字");
-        instance.add("可算找到你了");
+        instance.add("争渡争渡惊起一滩鸥鹭");
+        instance.add("争渡争渡惊起二滩鸥鹭");
+        instance.add("争渡争渡惊起三滩鸥鹭");
+        instance.add("争渡争渡惊起四滩鸥鹭");
+        instance.add("争渡争渡惊起五滩鸥鹭");
+        instance.add("争渡争渡惊起六滩鸥鹭");
+        instance.add("争渡争渡惊起七滩鸥鹭");
+        instance.add("争渡争渡惊起八滩鸥鹭");
+        instance.add("争渡争渡惊起久滩鸥鹭");
+        instance.add("争渡争渡惊起十滩鸥鹭");
+        instance.add("争渡争渡惊起十一滩鸥鹭");
+        instance.add("争渡争渡惊起十二滩鸥鹭");
+        instance.add("争渡争渡惊起十三滩鸥鹭");
 
-        System.out.println(instance.find("我"));
+        System.out.println(instance.find("争渡"));
+//
+        System.out.println(instance.find("争渡", -2, -5));
+        System.out.println(instance.find("争渡", 0, 10));
+        System.out.println(instance.find("争渡", 1, 10));
+        System.out.println(instance.find("争渡", 2, 10));
+    }
 
-        System.out.println(instance.find("我", -2, -5));
-        System.out.println(instance.find("我", 1, 5));
-        System.out.println(instance.find("我", 2, 5));
-        System.out.println(instance.find("我", 3, 5));
+    static MiniSearchConfigure ufConfig = new MiniSearchConfigure();
+
+    static {
+        ufConfig.setFreeMatch(false);
     }
 
 
+    public static void idTest() {
+        System.out.println("========= idTest============");
+        Instancer instance = MiniSearch.findInstance("id_test");
+
+        instance.addWithId("0001", "极品狗粮", "极品狗粮1");
+        instance.addWithId("0002", "极品狗粮", "极品狗粮2");
+        instance.addWithId("0003", "杂粮煎饼", "极品狗粮3");
+
+        Collection<Object> jp = instance.find("极品狗粮");
+        System.out.println(jp);
+//
+//        System.out.println();
+//        System.out.println(instance.add("素卡素卡你"));
+//        System.out.println(instance.remove("素卡素卡你"));
+//        System.out.println(instance.remove("素卡素卡你"));
+//        System.out.println(instance.find("素"));
+//        System.out.println("----go---");
+//        System.out.println(instance.addWithId("32", "素卡1", "素卡素卡你32"));
+//        System.out.println(instance.addWithId("33", "素卡1", "素卡素卡你33"));
+//        System.out.println(instance.find("素"));
+//        instance.printAll();
+
+    }
+
 
     public static void main(String[] args) {
-//        fast();
-//        dup();
-//        dup2();
+        fast();
+        dup();
+        dup2();
         dup3();
         pageTest();
+        idTest();
 //        pinyin();
 //        orderSearchTest();
     }

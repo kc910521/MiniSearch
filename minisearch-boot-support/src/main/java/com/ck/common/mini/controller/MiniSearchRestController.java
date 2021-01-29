@@ -24,36 +24,46 @@ public class MiniSearchRestController {
     @Autowired
     private IClusterService clusterService;
 
-    @RequestMapping("save/{name}")
-    public ResponseWrapper save(@PathVariable String name, String key, @RequestParam(required = false) String value) {
-        return clusterService.save(name, key, value);
+    @RequestMapping("save/{indexName}")
+    public ResponseWrapper save(@PathVariable String indexName, String key, @RequestParam(required = false) String value) {
+        return clusterService.save(indexName, key, value);
     }
 
-    @RequestMapping("remove/{name}")
-    public ResponseWrapper remove(@PathVariable String name, String key) {
-        return clusterService.remove(name, key);
+    @RequestMapping("save/{indexName}/id/{id}")
+    public ResponseWrapper saveWithId(@PathVariable String indexName, @PathVariable String id, String key, @RequestParam(required = false) String value) {
+        return clusterService.saveWithId(id, indexName, key, value);
     }
 
-    @RequestMapping("find/{name}")
-    public ResponseWrapper find(@PathVariable String name, String key) {
-        return clusterService.find(name, key);
+    @RequestMapping("remove/{indexName}")
+    public ResponseWrapper remove(@PathVariable String indexName, String key) {
+        return clusterService.remove(indexName, key);
+    }
+
+    @RequestMapping("remove/{indexName}/id/{id}")
+    public ResponseWrapper remove(@PathVariable String indexName, @PathVariable String id, String key) {
+        return clusterService.removeWithId(id, indexName, key);
+    }
+
+    @RequestMapping("find/{indexName}")
+    public ResponseWrapper find(@PathVariable String indexName, String key) {
+        return clusterService.find(indexName, key);
     }
 
 
-    @RequestMapping("find/{name}/page/{page}/size/{pageSize}")
-    public ResponseWrapper find(@PathVariable String name, String key, @PathVariable int page, @PathVariable int pageSize) {
-        return clusterService.find(name, key, page, pageSize);
+    @RequestMapping("find/{indexName}/page/{page}/size/{pageSize}")
+    public ResponseWrapper find(@PathVariable String indexName, String key, @PathVariable int page, @PathVariable int pageSize) {
+        return clusterService.find(indexName, key, page, pageSize);
     }
 
-    @RequestMapping("init/{name}")
-    public ResponseWrapper init(@PathVariable String name, Map<String, Object> data) {
-        return clusterService.init(name, data);
+    @RequestMapping("init/{indexName}")
+    public ResponseWrapper init(@PathVariable String indexName, Map<String, Object> data) {
+        return clusterService.init(indexName, data);
     }
 
     // todo: config需要完善赋值
-    @RequestMapping("config/{name}")
-    public ResponseWrapper config(@PathVariable String name, MiniSearchConfigure config) {
-        return clusterService.config(name, config);
+    @RequestMapping("config/{indexName}")
+    public ResponseWrapper config(@PathVariable String indexName, MiniSearchConfigure config) {
+        return clusterService.config(indexName, config);
     }
 
 }

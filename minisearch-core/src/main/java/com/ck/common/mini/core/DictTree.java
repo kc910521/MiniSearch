@@ -16,7 +16,7 @@ public class DictTree<CARRIER extends Serializable> {
     public DictTree() {
     }
 
-    private Node root = new Node(512);
+    private Node root = new Node(64);
 
     static class Node<CARRIER> {
 
@@ -75,8 +75,8 @@ public class DictTree<CARRIER extends Serializable> {
      * ready for GC ?
      */
     public void clear() {
-        root = null;
-        root = new Node();
+        setRoot(null);
+        setRoot(new Node());
         System.gc();
 
     }
@@ -135,18 +135,18 @@ public class DictTree<CARRIER extends Serializable> {
      * @return
      */
     protected int putActionFrom(final Node cnode, final SpellingComponent<CARRIER> spellingComponent) {
-        cnode.carrier = spellingComponent.getCarrier();
+        cnode.carrier = spellingComponent.getOriginCarrier();
         cnode.tail = true;
         return 1;
     }
 
     /**
      * @param node
-     * @param originKey
+     * @param spellingComponent
      * @return 1:已经删除originKey且node不需要向上删除; 2:需要向上删除; 0:未找到合适内容，立即返回
      */
-    protected int removeActionFrom(final Node<CARRIER> node, String originKey) {
-        CARRIER carrier = (CARRIER) node.getCarrier();
+    protected int removeActionFrom(final Node<CARRIER> node, SpellingComponent<CARRIER> spellingComponent) {
+        CARRIER carrier = node.getCarrier();
         if (carrier == null) {
             return 0;
         } else {
@@ -174,16 +174,15 @@ public class DictTree<CARRIER extends Serializable> {
     }
 
 
-    public int removeToLastTail(Queue<Character> cq, final Node<CARRIER> root, String originKey) {
+    public int removeToLastTail(Queue<Character> cq, final Node<CARRIER> root, SpellingComponent<CARRIER> spellingComponent) {
         assert root != null;
         Deque<Node> deque = new LinkedList<Node>();
         Node positionNode = this.findPositionNode(cq, root, true, deque);
-
         if (positionNode != null && deque.size() != 0) {
             Node<CARRIER> pop = deque.pop();
             // 处理目标节点的删除
             // 循环处理向上删除
-            if (this.removeActionFrom(pop, originKey) == 2) {
+            if (this.removeActionFrom(pop, spellingComponent) == 2) {
                 while (deque.size() > 0) {
 
                     if ((pop.getDomains() == null || pop.getDomains().size() == 0) && !pop.isTail()) {
@@ -259,21 +258,63 @@ public class DictTree<CARRIER extends Serializable> {
     /**
      * print all info for debug
      *
-     * @param father
+     * @param root
      */
-    public void printChild(Node father) {
-        System.out.println("key:" + father.key + "|isTail: " + father.tail + "|carrier: " + father.carrier);
-        if (father.domains != null) {
-            Iterator<Map.Entry<Character, Node>> iterator = father.domains.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Character, Node> next = iterator.next();
-                printChild(next.getValue());
+    public void printChild(Node root) {
+        System.out.println("ready for print all node !");
+        printChildDepth(root);
+        System.out.println("### it is over to print all node ###");
+//        printChildBreadth(root);
+    }
+
+    protected void printChildDepth(Node<CARRIER> root) {
+        if (root == null) {
+            throw new RuntimeException("How could you ...");
+        }
+        Deque<Node> deque = new ArrayDeque<>();
+        deque.addLast(root);
+        while (deque.size() > 0) {
+            Node pop = deque.pop();
+            if (pop.carrier != null) {
+                System.out.println(pop.getKey() + "-> " + pop.carrier);
+            }
+            if (pop.getDomains() != null) {
+                Iterator<Map.Entry<Character, DictTree.Node>> iterator = pop.getDomains().entrySet().iterator();
+                while (iterator.hasNext()) {
+                    deque.addLast(iterator.next().getValue());
+                }
             }
         }
     }
 
+    protected void printChildBreadth(Node<CARRIER> root) {
+        if (root == null) {
+            throw new RuntimeException("How could you ...");
+        }
+        Deque<Node> deque = new ArrayDeque<>();
+        deque.addFirst(root);
+        while (deque.size() > 0) {
+            // removeFirst
+            Node pop = deque.pop();
+            if (pop.carrier != null) {
+                System.out.println(pop.getKey() + "-> " + pop.carrier);
+            }
+            if (pop.getDomains() != null) {
+                Iterator<Map.Entry<Character, DictTree.Node>> iterator = pop.getDomains().entrySet().iterator();
+                while (iterator.hasNext()) {
+                    deque.addFirst(iterator.next().getValue());
+                }
+            }
+        }
+    }
+
+
     public Node getRoot() {
         return root;
+    }
+
+    protected void setRoot(Node root) {
+        this.root = root;
     }
 
     /**

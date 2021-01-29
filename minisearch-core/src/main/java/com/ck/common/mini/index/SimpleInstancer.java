@@ -79,7 +79,8 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     @Override
-    public synchronized int add(String keywords, Object carrier) {
+    @Deprecated
+    public synchronized int addWithId(String id, String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {
             System.err.println("The carrier is not a instance of Serializable");
         }
@@ -93,10 +94,18 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
         int rs = 0;
         List<String> subKeywords = nlpWorker.work(keywords);
         SpellingComponent spellingComponent = new SpellingComponent(keywords, ser);
+        if (id != null) {
+            spellingComponent.setId(id);
+        }
         for (String kw : subKeywords) {
             rs += this.dictTree.insert(beQueue(kw), spellingComponent);
         }
         return rs;
+    }
+
+    @Override
+    public synchronized int add(String keywords, Object carrier) {
+        return addWithId(null, keywords, carrier);
     }
 
     /**
@@ -112,10 +121,20 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public synchronized int remove(String keywords) {
+        return removeWithId(null, keywords);
+    }
+
+    @Override
+    @Deprecated
+    public synchronized int removeWithId(String id, String keywords) {
         List<String> subKeywords = nlpWorker.work(keywords);
         int rs = 0;
+        SpellingComponent spellingComponent = new SpellingComponent(keywords);
+        if (id != null) {
+            spellingComponent.setId(id);
+        }
         for (String kw : subKeywords) {
-            rs += this.dictTree.removeToLastTail(beQueue(kw), this.dictTree.getRoot(), keywords);
+            rs += this.dictTree.removeToLastTail(beQueue(kw), this.dictTree.getRoot(), spellingComponent);
         }
         return rs;
     }

@@ -1,6 +1,6 @@
 # mini-search  
 
-一个针对小型应用服务搜索场景的工具包（也可部署为独立服务）
+一个针对小型应用服务搜索场景的工具包（同时可部署为独立服务）
 
 > 
 >
@@ -12,19 +12,21 @@
 >
 > 小陈（该公司唯一开发人员）：
 >
-> ​	不贵，直接买个ES实例一个月就300多吧。
+> ​	不贵，直接买个ES实例一个月就三百多吧。或者直接买个服务器咱自己搭一套，一年才一千多。
+>
+> ​	（自以为解决了老板预算少的问题，看来年终奖二百的某东卡到手了）
 >
 > 刘总：
 >
-> ​	三百多？？？咱开个云服务器自己搭吧。
+> ​	贵！咱商品价格都加一起还不到一千呢，你项目里引入个 lucene 好了，免费，我看行！
 >
 > 小陈：
 >
-> ​	这么节省的吗？那好吧，ES还是挺耗内存的，开个最低配置服务器就好，大概每年一千。
+> ​	咱这虽然量不大也是集群啊， lucene 没法直接支持，我先研究两天？
 >
 > 刘总：
 >
-> ​	贵！咱商品价格都加一起还不到一千呢，能不能来个简单可行便宜轻量接入快速最好不新开服务的选项？
+> ​	能不能来个简单可行支持集群便宜轻量接入快速不新开服务就地取材的选择？
 >
 > 小陈：
 >
@@ -33,11 +35,13 @@
 
 
 ## mini-search 特点
-- mini-search 自身可以不需要任何额外的服务，仅自己一个 jar 包就能实现搜索。
-- 双向匹配字符。比如输入‘爱’，可以匹配到‘我爱你’。就像 MYSQL LIKE '%chars%'。
-- 支持中文拼音。当你输入 ”huihe“，可能搜索出 ”回合“ 和 “部队汇合在湖北”以及 “我huihe”。
-- 可以仅开启左侧基准搜索。当你输入'ABC',就可能搜索出订单号 ‘ABCD’ ,而不会搜索出‘BC’.就像 MYSQL LIKE 'chars%'。
-- 搜索并返回承载对象！mini-search 可以返回你在插入数据时挂载在字符串匹配位置的对象。比如你可以插入一条字符串 ‘abc’ ，同时将 ‘abc' 的叶子节点放置为User对象,当你下次搜索到 ’abc‘ 时，mini-search 可以直接返回给你匹配的User对象列表。你可以将叶子节点的对象设置为一条 SQL 语句，这个技巧也可以让你把节点的数据存入数据库。
+- mini-search 自身**可以不需要任何额外的服务**，仅自己一个 jar 包就能实现搜索
+- **双向匹配字符**。比如输入‘爱’，可以匹配到‘我爱你’。就像 MYSQL LIKE '%chars%'。
+- 支持**中文拼音**。当你输入 ”huihe“，可能搜索出 ”回合“ 和 “部队汇合在湖北”以及 “我huihe”。
+- **可以仅开启左侧基准搜索**。当你输入'ABC',就可能搜索出订单号 ‘ABCD’ ,而不会搜索出‘BC’.就像 MYSQL LIKE 'chars%'。
+- **搜索并返回承载对象**！mini-search 可以返回你在插入数据时挂载在字符串匹配位置的对象。比如你可以插入一条字符串 ‘abc’ ，同时将 ‘abc' 的叶子节点放置为User对象,当你下次搜索到 ’abc‘ 时，mini-search 可以直接返回给你匹配的User对象列表。你可以将叶子节点的对象设置为一条 SQL 语句，这个技巧也可以让你把节点的数据存入数据库。
+- 可以处理**分页**请求。
+- 支持**携带业务ID的精准插入。**
 ## 一、快速开始
 
 1. 下载源码，通过用maven install后引入gav到你项目的pom文件中：
@@ -71,7 +75,7 @@ instance.add("为什么shubiao没球了");
 
 4.进行搜索！
 
-### (1) 先尝试一个普通的搜索：
+### 1. 先尝试一个普通的搜索：
 ```java
 //try searching
 Collection<Object> result = instance.find("为什么");
@@ -79,29 +83,29 @@ Collection<Object> result = instance.find("为什么");
 ```
 我们得到结果：
 
-- [为什么shubiao没球了, 为什么晚上不能照镜子]
+> [为什么shubiao没球了, 为什么晚上不能照镜子]
 
-### (2) 关键字搜索
+### 2. 关键字搜索
 进行搜索调用：
 ```JAVA
 Collection<Object> result2 = instance.find("鼠标");
 ```
 我们得到结果：
 
-- [白色鼠标, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 光电鼠标没有球]
+> [白色鼠标, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 光电鼠标没有球]
 
-### (3) 拼音搜索
+### 3. 拼音搜索
 
 ```JAVA
 Collection<Object> result2 = instance.find("shubiao");
 ```
 我们得到结果：
 
-- [白色鼠标, 术镖，起立！, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 为什么shubiao没球了, 光电鼠标没有球]
+> [白色鼠标, 术镖，起立！, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 为什么shubiao没球了, 光电鼠标没有球]
 
 可以看到 ‘术镖’ 也被搜索进来了。
 
-### (4) 订单号搜索
+### 4. 订单号搜索
 针对订单号等场景，可能你只想从字符的最左端进行匹配，就像 MYSQL 的 ‘LIKE "eg%"’一样。
 当你想搜索 ‘bc’, 而不搜索到  ‘abc12345’。你需要作出如下调整：
 
@@ -120,11 +124,13 @@ instance.add("bck12345");
 Collection<Object> bc = instance.find("bc");
 ```
 最后结果仅匹配到：
-- [bck12345]
+> [bck12345]
 
-大功告成！
+**大功告成！**
 
-到现在你几乎已经完全掌握如何在单个服务器环境建立和搜索内容了！
+到现在你几乎已经完全掌握如何在**单个服务器环境建立和搜索内容**了！
+
+
 
 ## 二、mini-search 的模块
 
@@ -132,7 +138,7 @@ Collection<Object> bc = instance.find("bc");
 
 - **minisearch-core**
 
-  提供对搜索的核心支持，同时它可以作为依赖包被独立进行引入，完成本地单点的搜索功能。
+  提供对搜索的核心支持，同时它可以作为依赖包被独立进行引入，完成本地单点的搜索功能。推荐直接使用 PinYinInstancer，它也是默认的搜索方式。
 
 - **minisearch-cluster-redis**
 
@@ -195,48 +201,69 @@ instance.add("为什么晚上不能照镜子", new Info("因为没交电费"));
 ```
 使用相同步骤搜索并打印我们的结果：
 ```java
-Collection<Object> result = instance.find("为什么晚上不能照镜子");
+instance.find("为什么晚上不能照镜子");
 ```
-这时我们Collection返回的就是：
-- [Info[因为没交电费]]
+这时我们返回的是：
+> [Info[因为没交电费]]
 
+### 2. 分页搜索
 
-#### 2. 满足你古怪的癖好和其他配置
+咱们先搞一点数据进去：
 
-你可以自定义整个搜索的配置，包括搜索偏好，一些核心参数等。
-
-实例化一个默认的配置：
 ```java
-// configuration
-MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
-// 关闭严格模式，会让你尽可能的匹配到搜索结果：
 
-// setStrict false
-miniSearchConfigure.setStrict(false);
-// 使用简单核心，更适用于匹配订单号、英文串等场景：
-
-// for alphabet,code
-miniSearchConfigure.setCoreType(MiniSearchConfigure.CoreType.CODE.getCode());
-// 配置完毕，我们将配置加入索引的生成器中：
-
-// create with configuration
-Instancer instance = MiniSearch.findInstance("hello_world", miniSearchConfigure);
-// 这时当你添加订单号并搜索：
-
-// add all into index
-instance.add("IMX12012912001931");
-instance.add("IMX12012912001932");
-instance.add("WMX120129120019313");
-instance.add("WMX12012912001934");
-//try searching in Strict false
-Collection<Object> result2 = instance.find("IMX7");
+        Instancer instance = MiniSearch.findInstance("hello_world_page");
+        instance.add("争渡争渡惊起一滩鸥鹭");
+        instance.add("争渡争渡惊起二滩鸥鹭");
+        instance.add("争渡争渡惊起三滩鸥鹭");
+        instance.add("争渡争渡惊起四滩鸥鹭");
+        instance.add("争渡争渡惊起五滩鸥鹭");
+        instance.add("争渡争渡惊起六滩鸥鹭");
+        instance.add("争渡争渡惊起七滩鸥鹭");
+        instance.add("争渡争渡惊起八滩鸥鹭");
+        instance.add("争渡争渡惊起久滩鸥鹭");
+        instance.add("争渡争渡惊起十滩鸥鹭");
+        instance.add("争渡争渡惊起十一滩鸥鹭");
+        instance.add("争渡争渡惊起十二滩鸥鹭");
+        instance.add("争渡争渡惊起十三滩鸥鹭");
 ```
-它匹配到了：
 
-[IMX12012912001931, IMX12012912001932]
-奇怪！输入 IMX7 本不应当匹配到任何内容。
+然后做一个搜索：
 
-但是非严格模式让你从右向左的尽可能获取到内容，但结果也不会太过奇怪，依然可以预测。
+```java
+	instance.find("争渡", 0, 10)
+    instance.find("争渡", 1, 10)
+    instance.find("争渡", 2, 10)
+```
+
+0,1,2分别是页码，10就是要返回的数据个数，得到结果：
+
+> [争渡争渡惊起六滩鸥鹭, 争渡争渡惊起久滩鸥鹭, 争渡争渡惊起一滩鸥鹭, 争渡争渡惊起五滩鸥鹭, 争渡争渡惊起二滩鸥鹭, 争渡争渡惊起四滩鸥鹭, 争渡争渡惊起十一滩鸥鹭, 争渡争渡惊起十二滩鸥鹭, 争渡争渡惊起十滩鸥鹭, 争渡争渡惊起十三滩鸥鹭]
+>
+> [争渡争渡惊起三滩鸥鹭, 争渡争渡惊起八滩鸥鹭, 争渡争渡惊起七滩鸥鹭, 争渡争渡惊起六滩鸥鹭, 争渡争渡惊起久滩鸥鹭, 争渡争渡惊起一滩鸥鹭, 争渡争渡惊起五滩鸥鹭, 争渡争渡惊起二滩鸥鹭, 争渡争渡惊起四滩鸥鹭, 争渡争渡惊起十一滩鸥鹭]
+>
+> [争渡争渡惊起十二滩鸥鹭, 争渡争渡惊起十滩鸥鹭, 争渡争渡惊起十三滩鸥鹭, 争渡争渡惊起三滩鸥鹭, 争渡争渡惊起八滩鸥鹭, 争渡争渡惊起七滩鸥鹭]
+
+### 3. 携带ID插入同名数据
+
+很多商品可能都是重名，那我们就传入一个商品ID，给索引值一个名字：
+
+```java
+        Instancer instance = MiniSearch.findInstance("id_test");
+        instance.addWithId("0001", "极品狗粮", "极品狗粮1");
+        instance.addWithId("0002", "极品狗粮", "极品狗粮2");
+        instance.addWithId("0003", "杂粮煎饼", "极品狗粮3");
+
+		instance.find("极品狗粮");
+```
+
+这样当我们再搜索时，就可以识别出他们是不同的产品，会搜索到：
+
+> [极品狗粮1, 极品狗粮2]
+
+
+
+### 4. 其他开放的配置
 
 特别的，其他配置暂不在本文讨论范围，仅做列出（某些配置暂不生效）：
 ```java
@@ -298,11 +325,19 @@ Collection<Object> result2 = instance.find("IMX7");
 
 ## 三、集群同步
 
-想必你已能发现， mini-search 的 minisearch-core 模块实质是工具类，并没有公共的服务需要部署，
+想必你已能发现， mini-search 的 **minisearch-core 模块实质是工具类**，并没有公共的服务需要部署，
 
 所以实现集群的实质就是冗余，并通过广播（发布订阅模型）进行同步操作。
 
-你可以自己想办法实现 cluster，但是 mini-search 也给出一种默认使用 redis 的方式。
+你可以参照 minisearch-cluster-redis 自己想办法实现 cluster，
+
+不过同时 mini-search 也给出一种默认使用 redis 进行集群间同步数据的方式。
+
+redis 几乎任何一个分布式的系统都会引入，使用 redis 体现了 mini-search 就地取材，节约成本的思想。
+
+不想手工搭建而且是 springboot 项目的话，你可以直接跳到  [升级我的springboot为mini-search节点](#jump3)
+
+
 
 若要快速集成这个默认方式，你需要：
 
@@ -400,7 +435,9 @@ Collection<Object> why = instance.find("为什么");
 
 结构相对简单便于理解：
 
-![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/etree5.png)
+![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/etree5.png)  
+
+
 
 本质为一颗字典树，每个字符被切分，成为了Node的key，而为了内存占用考虑，Node仅持有子节点不持有父节点。
 
@@ -411,8 +448,10 @@ domain可以理解为所有冲突单元，本质为一个map。
 默认的（简体/繁体）拼音核心 SpellingDictTree 虽然其逻辑虽然类似，但又对字典树进行了变体，我会将中文先进行拼音化，并对原始字符进行切割后多次存入字典数; carrier 被设置为map以便第二次去保存冲突项。匹配时需要找到对应 carrier 这个 map 的key，再挨个进行匹配。
 
 ### 2.分词原理
-分词暂时处理的方式就是冗余，方法如图：
-![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/spword.png)  
+分词暂时处理的方式就是逐个切词，方法如图：
+![avatar](https://github.com/kc910521/MiniSearch/blob/master/doc/image/spword.png)   
+
+
 
 如字符串 abcd，不同的策略会有不同的处理结果：
 - SubsequentWorker：
@@ -422,84 +461,134 @@ domain可以理解为所有冲突单元，本质为一个map。
 [abcd, ab, abc ...]
 
 
-分词已经实现但是需要评估，故暂时不支持使用，下个版本会尝试在配置中加入一个特别参数，开启后使用。
-
-
 ## 五、答疑环节
 
 
 
-1. 是否支持数据/索引持久化？
+### 1. 是否支持数据/索引持久化？
 
-      暂时不支持;但是通过一些手段，数据持久化是可以的。比如在你存储节点中，设置对象某个属性为SQL语句;
-    ```java
-    public static class Info implements Serializable {
-        private String sql;
-    ```
-     也就是每个被匹配到的对象可以去数据库再拿一次，同理，可做推广为 Redis 的某个 key 等...
-
-
-
-2. 支持搜索结果排序吗？
-
-    同样的手法，你可以直接让这个对象去实现 Comparable 接口，当然你也可以预先去设置权重去设置到对象中，不再赘述。
+暂时不支持;但是通过一些手段，数据持久化是可以的。比如在你存储节点中，设置对象某个属性为SQL语句;
+```java
+public static class Info implements Serializable {
+    private String sql;
+```
+ 也就是每个被匹配到的对象可以去数据库再拿一次，同理，可做推广为 Redis 的某个 key 等...
 
 
 
-3. 有什么不适合的搜索场景吗？
+### 2. 支持搜索结果排序吗？
 
-    字符过长的场景
-    
-    适合的场景主要是短语、名字、企业名、游戏名等较短的条目，不推荐单语句超过500字的内容插入索引树。
-    
-    若开启freeMatch不推荐超过200字。
+同样的手法，你可以直接让这个对象去实现 Comparable 接口，当然你也可以预先去设置权重去设置到对象中，不再赘述。
 
-    更不要录入整本的《三国演义》、《红楼梦》等！
-    
-4. 如何立即升级我的spring-boot项目为一个搜索节点
 
-    - 引入依赖
 
-      ```xml
-              <dependency>
-                  <groupId>com.ck.common</groupId>
-                  <artifactId>minisearch-boot-support</artifactId>
-                  <version>1.0-SNAPSHOT</version>
-              </dependency>
-      ```
+### 3. 有什么不适合的搜索场景吗？
 
-      
+字符过长的场景
 
-    - 配置即可参见 minisearch-server，如下：
+适合的场景主要是短语、名字、企业名、游戏名等较短的条目，不推荐单语句超过500字的内容插入索引树。
 
-      ```java
-      @SpringBootApplication
-      @MiniSearchServer
-      @Configuration
-      @Import(DefaultMiniSearchSpringConfig.class)
-      public class MinisearchServerApplication {
-      
-      
-          public MinisearchServerApplication(RedisTemplate<String, String> redisTemplate, DefaultMiniSearchSpringConfig defaultMiniSearchSpringConfig
-                                             ) {
-              assert redisTemplate != null;
-          }
-      
-          public static void main(String[] args) {
-              SpringApplication.run(MinisearchServerApplication.class, args);
-          }
-      
+若开启freeMatch不推荐超过200字。
+
+更不要录入整本的《三国演义》、《红楼梦》等！
+
+
+
+### 4. 如何立即升级我的spring-boot项目为一个搜索节点
+
+- 引入依赖<span id="jump3">-</span>
+
+  ```xml
+          <dependency>
+              <groupId>com.ck.common</groupId>
+              <artifactId>minisearch-boot-support</artifactId>
+              <version>1.0-SNAPSHOT</version>
+          </dependency>
+  ```
+
+  
+
+- 配置即可参见 minisearch-server，如下：
+
+  ```java
+  @SpringBootApplication
+  @MiniSearchServer
+  @Configuration
+  @Import(DefaultMiniSearchSpringConfig.class)
+  public class MinisearchServerApplication {
+  
+  
+      public MinisearchServerApplication(RedisTemplate<String, String> redisTemplate, DefaultMiniSearchSpringConfig defaultMiniSearchSpringConfig
+                                         ) {
+          assert redisTemplate != null;
       }
-      
-      ```
+  
+      public static void main(String[] args) {
+          SpringApplication.run(MinisearchServerApplication.class, args);
+      }
+  
+  }
+  
+  ```
 
-    或者直接下载一个已配置好的独立springboot项目：
+或者直接下载一个已配置好的独立springboot项目：
 
-    [https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)
+[https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)
 
 
+
+# 总结
+
+1. 想测试、单机部署或者想搞自己的实现，可以使用
+
+   ```xml
+   <dependency>
+       <groupId>com.ck.common</groupId>
+       <artifactId>minisearch-core</artifactId>
+       <version>1.0-SNAPSHOT</version>
+   </dependency>
+   ```
+
+2. 想自己处理集群，可以使用 
+
+   ```xml
+   <dependency>
+       <groupId>com.ck.common</groupId>
+       <artifactId>minisearch-cluster-redis</artifactId>
+       <version>1.0-SNAPSHOT</version>
+   </dependency>
+   ```
+
+3. 想自己实现 springboot 的搜索节点部署形式，或想整合以上到你的springboot项目、以及寻找代码调用范例：
+
+   ```xml
+   <dependency>
+       <groupId>com.ck.common</groupId>
+       <artifactId>minisearch-boot-support</artifactId>
+       <version>1.0-SNAPSHOT</version>
+   </dependency>
+   ```
+
+4. 得到一个整合以上所有完成品--即一个springboot 为基础的 mini-search 的 HTTP 服务：
+
+   直接到：
+
+   [https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)
+
+   接口调用文档也在其中！
+
+
+
+
+
+
+
+
+
+
+
+## 你的star，我的动力
 
 
 
 ## 感谢阅读至此！
-

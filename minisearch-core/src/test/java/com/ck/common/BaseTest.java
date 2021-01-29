@@ -99,8 +99,8 @@ public class BaseTest {
         System.out.println(simpleInstancer.find("ab", 1, 1));
         System.out.println(simpleInstancer.find("ab", 2, 1));
         System.out.println(simpleInstancer.find("ab", 3, 1));
-
-
+        System.out.println("======test=========print");
+        simpleInstancer.printAll();
     }
 
     public static void main(String[] args) {

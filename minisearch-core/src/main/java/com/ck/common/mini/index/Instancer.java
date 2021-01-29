@@ -22,11 +22,26 @@ public interface Instancer {
 
     <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize);
 
+    /**
+     * @param id       do if id is null or not
+     * @param keywords
+     * @param carrier
+     * @return
+     */
+    int addWithId(String id, String keywords, Object carrier);
+
     int add(String keywords, Object carrier);
 
     int add(String keywords);
 
     int remove(String keywords);
+
+    /**
+     * @param id       do if id is null or not
+     * @param keywords
+     * @return
+     */
+    int removeWithId(String id, String keywords);
 
     void printAll();
 

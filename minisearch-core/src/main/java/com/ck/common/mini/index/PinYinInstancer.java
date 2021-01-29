@@ -22,6 +22,10 @@ import static com.ck.common.mini.util.LiteTools.getPingYin;
  **/
 public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
+    private static final String PT_PREFIX = "^";
+    private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
+    private static final String PT_AMPLE_ANY = "(.*)";
+
     private static final Logger logger = LoggerFactory.getLogger(PinYinInstancer.class);
 
     private SpellingDictTree spellingDictTree;
@@ -62,6 +66,13 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
     }
 
+    /**
+     * @param keywords
+     * @param page      from 0
+     * @param pageSize
+     * @param <CARRIER>
+     * @return
+     */
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
@@ -73,9 +84,29 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchPattern(keywords), miniSearchConfigure.isStrict(), page, pageSize);
     }
 
-    private static final String PT_PREFIX = "^";
-    private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
-    private static final String PT_AMPLE_ANY = "(.*)";
+    @Override
+    public synchronized int addWithId(String id, String keywords, Object carrier) {
+        if (!(carrier instanceof Serializable)) {
+            System.err.println("The carrier is not a instance of Serializable");
+        }
+        if (miniSearchConfigure.isIgnoreSymbol()) {
+            keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
+        }
+        if (keywords == null || "".equals(keywords.trim())) {
+            return -1;
+        }
+        SpellingComponent spellingComponent = new SpellingComponent(keywords, (Serializable) carrier);
+        if (id != null) {
+            spellingComponent.setId(id);
+        }
+        int rs = 0;
+        List<String> subKeywords = nlpWorker.work(keywords);
+        for (String kw : subKeywords) {
+            rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
+        }
+        return rs;
+    }
+
 
     protected String catchPattern(String keywords) {
         char[] chars = keywords.toCharArray();
@@ -107,22 +138,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public synchronized int add(String keywords, Object carrier) {
-        if (!(carrier instanceof Serializable)) {
-            System.err.println("The carrier is not a instance of Serializable");
-        }
-        if (miniSearchConfigure.isIgnoreSymbol()) {
-            keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
-        }
-        if (keywords == null || "".equals(keywords.trim())) {
-            return -1;
-        }
-        SpellingComponent spellingComponent = new SpellingComponent(keywords, (Serializable) carrier);
-        int rs = 0;
-        List<String> subKeywords = nlpWorker.work(keywords);
-        for (String kw : subKeywords) {
-            rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
-        }
-        return rs;
+        return addWithId(null, keywords, carrier);
     }
 
     @Override
@@ -132,16 +148,25 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     @Override
     public synchronized int remove(String keywords) {
+        return this.removeWithId(null, keywords);
+    }
+
+    @Override
+    public synchronized int removeWithId(String id, String keywords) {
         List<String> subKeywords = nlpWorker.work(keywords);
+        SpellingComponent spellingComponent = new SpellingComponent(keywords);
+        if (id != null) {
+            spellingComponent.setId(id);
+        }
         int i = 0;
         for (String kw : subKeywords) {
-            i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), keywords);
+            i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), spellingComponent);
         }
         return i;
     }
 
     @Override
-    public void printAll() {
+    public synchronized void printAll() {
         this.spellingDictTree.printChild(this.spellingDictTree.getRoot());
     }
 

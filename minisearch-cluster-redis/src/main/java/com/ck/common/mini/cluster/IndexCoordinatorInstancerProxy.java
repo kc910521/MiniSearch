@@ -63,37 +63,40 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
     }
 
     @Override
-    public int add(String keywords, Object carrier) {
+    public int addWithId(String id, String keywords, Object carrier) {
         try {
             indexEventSender.publish(EventType.ADD, instancer.getInstancerName(), keywords, carrier);
             return 1;
         } catch (Exception e) {
             logger.error("due to {}, standalone adding only.", e.toString(), e);
-            this.instancer.add(keywords, carrier);// 1 ok
+            this.instancer.addWithId(id, keywords, carrier);// 1 ok
         }
         return 0;
     }
 
     @Override
+    public int add(String keywords, Object carrier) {
+        return addWithId(null, keywords, carrier);
+    }
+
+    @Override
     public int add(String keywords) {
-//        try {
-//            indexEventSender.publish(EventType.ADD, instancer.getInstancerName(), keywords, keywords);
-//            return 1;
-//        } catch (Exception e) {
-//            logger.error("due to {}, standalone adding only.", e.toString(), e);
-//            this.instancer.add(keywords);// 1 ok
-//        }
         return this.add(keywords, keywords);
     }
 
     @Override
     public int remove(String keywords) {
+        return removeWithId(null, keywords);
+    }
+
+    @Override
+    public int removeWithId(String id, String keywords) {
         try {
             indexEventSender.publish(EventType.REMOVE, instancer.getInstancerName(), keywords, keywords);
             return 1;
         } catch (Exception e) {
             logger.error("due to {}, standalone removing only.", e.toString(), e);
-            this.instancer.remove(keywords);
+            this.instancer.removeWithId(id, keywords);
         }
         return 0;
     }

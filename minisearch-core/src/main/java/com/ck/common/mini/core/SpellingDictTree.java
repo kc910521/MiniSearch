@@ -2,6 +2,7 @@ package com.ck.common.mini.core;
 
 import com.ck.common.mini.util.LiteTools;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -10,30 +11,43 @@ import java.util.*;
  * Recommended in chinese
  *
  * @Date 下午2:43 20-4-20
- **/
-public class SpellingDictTree<CARRIER extends Map> extends DictTree {
+ *
+ *
+ *
+ * @param <CARRIER> value for enhanced dict tree hold
+ * @param <ORIGIN_CARRIER> the real value that user set
+ */
+public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, ORIGIN_CARRIER>, ORIGIN_CARRIER> extends DictTree {
 
     @Override
     protected int putActionFrom(Node cnode, SpellingComponent spellingComponent) {
         cnode.setTail(true);
         CARRIER cnodeCarrier = (CARRIER) cnode.getCarrier();
+        SpellingDictTree.HolderKey holderKey = new HolderKey(spellingComponent.getId(), spellingComponent.getOriginKey());
         if (cnodeCarrier == null) {
-            HashMap<Object, Object> objectObjectHashMap = new HashMap<>(8);
-            objectObjectHashMap.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier());
-            cnode.setCarrier(objectObjectHashMap);
+            // 还未有元素的初始化工作并直接返回1
+            HashMap<SpellingDictTree.HolderKey, ORIGIN_CARRIER> carrier = new HashMap<>(8);
+            carrier.put(holderKey, (ORIGIN_CARRIER) spellingComponent.getOriginCarrier());
+            cnode.setCarrier(carrier);
             return 1;
         }
-        return cnodeCarrier.put(spellingComponent.getOriginKey(), spellingComponent.getCarrier()) == null ? 0 : 1;
+        // 判断是否可以插入
+        return cnodeCarrier.put(holderKey, (ORIGIN_CARRIER) spellingComponent.getOriginCarrier()) == null ? 1 : 0;
     }
 
 
     @Override
-    protected int removeActionFrom(final Node node, String originKey) {
+    protected int removeActionFrom(final Node node, SpellingComponent spellingComponent) {
         CARRIER carrier = (CARRIER) node.getCarrier();
-        if (carrier == null || !carrier.containsKey(originKey)) {
+        if (carrier == null) {
+            return 0;
+        }
+        SpellingDictTree.HolderKey holderKey = new SpellingDictTree.HolderKey(spellingComponent.getId(), spellingComponent.getOriginKey());
+        // 如果component存在ID并且和carrier Id不对应，直接返回0
+        if (!carrier.containsKey(holderKey)) {
             return 0;
         } else {
-            carrier.remove(originKey);
+            carrier.remove(holderKey);
             if (carrier.isEmpty()) {
                 node.setTail(false);
                 // 子节点为空则可以准备向上删除
@@ -47,80 +61,12 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
     }
 
     /**
-     * remove by keys from Q
-     * from bottom to up
-     * <p>
-     * 如果last还有下一个节点- 设置该节点tail为false.
-     * 如果无下一个节点：1设置该节点tail为false
-     * 2.删除本节点-》出递归
-     *
-     * @param cq
-     * @param father
-     * @param originKey 实际的key值
-     * @return
-     */
-    @Deprecated
-    private int removeToLastTailRecursion(Queue<Character> cq, final Node<CARRIER> father, String originKey) {
-        if (father == null) {
-            return -1;
-        }
-        if (cq.size() == 0) {
-            // 已经便利到尾部
-            // 将当前节点设置为非尾部
-            // 需要判断小子节点是否吻合
-            if (father.getCarrier() == null || father.getCarrier().isEmpty() || father.getCarrier().containsKey(originKey)) {
-                father.setTail(false);
-            }
-            if (father.getDomains() != null && !father.getDomains().isEmpty()) {
-                // 非叶子，啥也不干
-                return 0;
-            }
-            // 叶子节点，进入递归删除,
-            return 1;
-        }
-        Character nowChar = cq.poll();
-        if (father.getDomains() == null || !father.getDomains().containsKey(nowChar)) {
-            return -1;
-        }
-        Node<CARRIER> targetChild = (Node) father.getDomains().get(nowChar);
-        int i = removeToLastTailRecursion(cq, targetChild, originKey);
-
-        if (i == 1) {
-            // 第一次进入已经是倒数第二层
-            // targetChild为最后一层
-            // 删除下面的
-            if (targetChild.getCarrier() != null) {
-                targetChild.getCarrier().remove(originKey);
-                if (targetChild.getCarrier().isEmpty()) {
-                    targetChild.setCarrier(null);//help GC
-                } else {
-                    // 多match，所以直接结束,撤销
-                    targetChild.setTail(true);
-                    return 0;
-                }
-            }
-            if (!father.isTail()) {
-                // 继续
-                return 1;
-            } else {
-                // 撤销
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-    }
-
-    // todo: 此处有额外计算，可以考虑后续缓存; private now
-
-
-    /**
      * 获取该跟 father 下的所有可以搜索到的节点，然后塞到results
      *
      * @param father
      * @param results 不能为空
      */
-    protected void ergodicAndSetBy(Node father, Collection<CARRIER> results, String originKeyPattern, int page, int pageSize) {
+    protected void ergodicAndSetBy(Node father, Collection<ORIGIN_CARRIER> results, String originKeyPattern, int page, int pageSize) {
         assert results != null;
         if (father == null) {
             return;
@@ -133,13 +79,66 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
     }
 
     /**
+     * carrier这个map结构的key
+     */
+    public static class HolderKey implements Serializable {
+
+        // not null
+        private String id;
+
+        private String originChars;
+
+        public HolderKey(String id, String originChars) {
+            this.id = id;
+            this.originChars = originChars;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getOriginChars() {
+            return originChars;
+        }
+
+        public void setOriginChars(String originChars) {
+            this.originChars = originChars;
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode() ^ originChars.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof SpellingDictTree.HolderKey) {
+                HolderKey hk = (HolderKey) obj;
+                if (this.id.equals(hk.getId()) && this.originChars.equals(hk.getOriginChars())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return id + "_" + originChars;
+        }
+    }
+
+    /**
      * 对father下的所有tail==true的节点信息都加入results，最多加入maxReturn个
      *
      * @param father
      * @param hitAndDrop
      * @param results
      */
-    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<CARRIER> results, String originKeyPattern) {
+    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, String originKeyPattern) {
         assert results != null;
         Stack<Node> stack = new Stack<>();
         if (father != null) {
@@ -154,10 +153,10 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
                 if (popNode.isTail()) {
                     CARRIER carrierMap = popNode.getCarrier();
                     if (carrierMap != null) {
-                        Set<Map.Entry<String, CARRIER>> entries = carrierMap.entrySet();
-                        for (Map.Entry<String, CARRIER> entry : entries) {
+                        Set<Map.Entry<SpellingDictTree.HolderKey, ORIGIN_CARRIER>> entries = carrierMap.entrySet();
+                        for (Map.Entry<SpellingDictTree.HolderKey, ORIGIN_CARRIER> entry : entries) {
                             // todo:freematch且允许空格,修改匹配规则
-                            if (canMatch(originKeyPattern, entry.getKey()) && results.add(entry.getValue())) {
+                            if (canMatch(originKeyPattern, entry.getKey().getOriginChars()) && results.add(entry.getValue())) {
                                 hit++;
                                 if (hit <= hitAndDrop) {
                                     results.remove(entry.getValue());
@@ -184,8 +183,9 @@ public class SpellingDictTree<CARRIER extends Map> extends DictTree {
      * @param cq
      * @return
      */
-    public Collection<CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern, boolean strict, int page, int pageSize) {
-        Set<CARRIER> results = new LinkedHashSet<>();
+    public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern, boolean strict, int page, int pageSize) {
+        // 指定返回的类型
+        List<ORIGIN_CARRIER> results = new ArrayList<>();
         Node root = getRoot();
         if (root == null || root.getDomains() == null || root.getDomains().isEmpty()) {
             return results;

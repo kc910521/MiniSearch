@@ -17,7 +17,11 @@ public interface IClusterService {
 
     ResponseWrapper save(String name, String key, String value);
 
+    ResponseWrapper saveWithId(String id, String name, String key, String value);
+
     ResponseWrapper remove(String name, String key);
+
+    ResponseWrapper removeWithId(String id, String name, String key);
 
     ResponseWrapper init(String name, Map<String, Object> initMap);
 

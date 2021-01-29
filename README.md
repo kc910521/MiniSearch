@@ -2,6 +2,13 @@
 
 一个针对小型应用服务集群搜索的工具包（同时可部署为独立服务）
 
+首个独立运行的spring-boot服务已经发布：  
+[https://github.com/kc910521/minisearch-boot-server/releases/tag/0.1](https://github.com/kc910521/minisearch-boot-server/releases/tag/0.1)  
+
+独立服务文档和源码：
+[https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)  
+
+
 > 
 >
 > 刘总（某创业公司 CTO）：

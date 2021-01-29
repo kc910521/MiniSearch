@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @Author caikun
  * @Description redis的集群协作发送者
@@ -27,11 +29,20 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
-        logger.debug("RedisIndexCoordinateSender loaded.");
+
+    }
+
+    @PostConstruct
+    public void init1() {
+
+        if (redisTemplate == null) {
+            logger.error("WARN: redisTemplate is null.");
+        }
         if (this.miniSearchConfigure == null) {
             logger.error("WARN: miniSearchConfigure null, default");
             miniSearchConfigure = new MiniSearchConfigure();
         }
+        logger.debug("RedisIndexCoordinateSender loaded.");
     }
 
     @Override

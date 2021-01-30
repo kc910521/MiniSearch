@@ -3,9 +3,9 @@ package com.ck.common.mini.index;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.core.SpellingComponent;
 import com.ck.common.mini.core.SpellingDictTree;
+import com.ck.common.mini.util.LiteTools;
 import com.ck.common.mini.workshop.nlp.NLPAdmin;
 import com.ck.common.mini.workshop.nlp.NLPWorker;
-import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
-        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchPattern(keywords), miniSearchConfigure.isStrict(), page, pageSize);
+        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), miniSearchConfigure.isStrict(), page, pageSize);
     }
 
     @Override
@@ -107,34 +107,50 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         return rs;
     }
 
-
-    protected String catchPattern(String keywords) {
+    /**
+     * 仅搂出中文，可以修改为也搂出其他占位符即可更加精确的匹配
+     * @param keywords
+     * @return
+     */
+    protected char[] catchBigChars(String keywords) {
         char[] chars = keywords.toCharArray();
-        List<String> stringList = new LinkedList<>();
-        if (miniSearchConfigure.isFreeMatch()) {
-            stringList.add(PT_AMPLE_ANY);
-        } else {
-            stringList.add(PT_PREFIX);
-        }
+        StringBuilder stringBuilder = new StringBuilder();
         for (char c : chars) {
-            // 中文直接追加
-            // 英文判断上个节点是否为 PT_AMPLE_ONE_AT_LEAST 是continue 否则加入
             if ((c >= 0x4e00) && (c <= 0x9fa5)) {
                 // chinese
-                stringList.add(String.valueOf(c));
-            } else {
-                String last = ((LinkedList<String>) stringList).getLast();
-                if (last.equals(PT_AMPLE_ONE_AT_LEAST)) {
-
-                } else {
-                    stringList.add(PT_AMPLE_ONE_AT_LEAST);
-                }
+                stringBuilder.append(c);
             }
         }
-        stringList.add(PT_AMPLE_ANY);
-
-        return Joiner.on("").join(stringList);
+        return LiteTools.defUnDupSort(stringBuilder.toString().toCharArray());
     }
+//
+//    protected String catchPattern(String keywords) {
+//        char[] chars = keywords.toCharArray();
+//        List<String> stringList = new LinkedList<>();
+//        if (miniSearchConfigure.isFreeMatch()) {
+//            stringList.add(PT_AMPLE_ANY);
+//        } else {
+//            stringList.add(PT_PREFIX);
+//        }
+//        for (char c : chars) {
+//            // 中文直接追加
+//            // 英文判断上个节点是否为 PT_AMPLE_ONE_AT_LEAST 是continue 否则加入
+//            if ((c >= 0x4e00) && (c <= 0x9fa5)) {
+//                // chinese
+//                stringList.add(String.valueOf(c));
+//            } else {
+//                String last = ((LinkedList<String>) stringList).getLast();
+//                if (last.equals(PT_AMPLE_ONE_AT_LEAST)) {
+//
+//                } else {
+//                    stringList.add(PT_AMPLE_ONE_AT_LEAST);
+//                }
+//            }
+//        }
+//        stringList.add(PT_AMPLE_ANY);
+//
+//        return Joiner.on("").join(stringList);
+//    }
 
     @Override
     public synchronized int add(String keywords, Object carrier) {

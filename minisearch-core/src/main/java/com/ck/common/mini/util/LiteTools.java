@@ -9,10 +9,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -241,6 +238,32 @@ public final class LiteTools {
         }
         return sb.toString();
     }
+
+    /**
+     * 返回排序去重过的char数组
+     * 压缩之意义
+     */
+    public static char[] toUnDupSortedChars(String strs) {
+        if (strs == null || strs.trim().length() == 0) {
+            return null;
+        }
+        char[] chars = strs.trim().toCharArray();
+        return defUnDupSort(chars);
+    }
+
+    public static char[] defUnDupSort(char[] chars) {
+        Arrays.sort(chars);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int idx = 0; idx < chars.length; idx ++) {
+            if (idx < chars.length - 1 && chars[idx] == chars[idx + 1]) {
+                continue;
+            } else {
+                stringBuilder.append(chars[idx]);
+            }
+        }
+        return stringBuilder.toString().toCharArray();
+    }
+
 
     public static void main(String[] args) {
 

@@ -24,6 +24,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
         cnode.setTail(true);
         CARRIER cnodeCarrier = (CARRIER) cnode.getCarrier();
         SpellingDictTree.HolderKey holderKey = new HolderKey(spellingComponent.getId(), spellingComponent.getOriginKey());
+        holderKey.setSortedOriginChars(LiteTools.toUnDupSortedChars(holderKey.getOriginChars()));
         if (cnodeCarrier == null) {
             // 还未有元素的初始化工作并直接返回1
             HashMap<SpellingDictTree.HolderKey, ORIGIN_CARRIER> carrier = new HashMap<>(8);
@@ -34,6 +35,8 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
         // 判断是否可以插入
         return cnodeCarrier.put(holderKey, (ORIGIN_CARRIER) spellingComponent.getOriginCarrier()) == null ? 1 : 0;
     }
+
+
 
 
     @Override
@@ -66,7 +69,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param father
      * @param results 不能为空
      */
-    protected void ergodicAndSetBy(Node father, Collection<ORIGIN_CARRIER> results, String originKeyPattern, int page, int pageSize) {
+    protected void ergodicAndSetBy(Node father, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, int page, int pageSize) {
         assert results != null;
         if (father == null) {
             return;
@@ -75,7 +78,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
             return;
         }
         int hitAndDrop = page * pageSize;
-        ergodicTailsInBreadth(father, hitAndDrop, pageSize, results, originKeyPattern);
+        ergodicTailsInBreadth(father, hitAndDrop, pageSize, results, sortedOnlyBigChars);
     }
 
     /**
@@ -87,6 +90,8 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
         private String id;
 
         private String originChars;
+
+        private char[] sortedOriginChars;
 
         public HolderKey(String id, String originChars) {
             this.id = id;
@@ -107,6 +112,14 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
 
         public void setOriginChars(String originChars) {
             this.originChars = originChars;
+        }
+
+        public char[] getSortedOriginChars() {
+            return sortedOriginChars;
+        }
+
+        public void setSortedOriginChars(char[] sortedOriginChars) {
+            this.sortedOriginChars = sortedOriginChars;
         }
 
         @Override
@@ -138,7 +151,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param hitAndDrop
      * @param results
      */
-    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, String originKeyPattern) {
+    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars) {
         assert results != null;
         Stack<Node> stack = new Stack<>();
         if (father != null) {
@@ -155,8 +168,8 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
                     if (carrierMap != null) {
                         Set<Map.Entry<SpellingDictTree.HolderKey, ORIGIN_CARRIER>> entries = carrierMap.entrySet();
                         for (Map.Entry<SpellingDictTree.HolderKey, ORIGIN_CARRIER> entry : entries) {
-                            // todo:freematch且允许空格,修改匹配规则
-                            if (canMatch(originKeyPattern, entry.getKey().getOriginChars()) && results.add(entry.getValue())) {
+                            if (canMatch(sortedOnlyBigChars, entry.getKey())
+                                    && results.add(entry.getValue())) {
                                 hit++;
                                 if (hit <= hitAndDrop) {
                                     results.remove(entry.getValue());
@@ -183,7 +196,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param cq
      * @return
      */
-    public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq, String originKeyPattern, boolean strict, int page, int pageSize) {
+    public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq,  char[] sortedOnlyBigChars, boolean strict, int page, int pageSize) {
         // 指定返回的类型
         List<ORIGIN_CARRIER> results = new ArrayList<>();
         Node root = getRoot();
@@ -193,20 +206,67 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
         // 4 root
         Node node = findPositionNode(cq, root, strict);
         if (node != null) {
-            ergodicAndSetBy(node, results, originKeyPattern, page, pageSize);
+            ergodicAndSetBy(node, results, sortedOnlyBigChars, page, pageSize);
         }
         return results;
     }
 
     /**
-     * 匹配原始串和当前节点所有key
+     * 匹配sortedOnlyBigChars内完全存在于 holderKey 的 sortedChars的情况
      *
-     * @param originKeyPattern 原始串处理结果 eg:(.+)什(.*)
-     * @param resultItemKey    前节点key
+     * @param sortedOnlyBigChars 仅包括了大Char字符排序char
+     * @param holderKey  但前节点的一个冲突单元
      * @return
      */
-    private static final boolean canMatch(String originKeyPattern, String resultItemKey) {
-        return LiteTools.match(originKeyPattern, resultItemKey);
+    private static final boolean canMatch(char[] sortedOnlyBigChars, SpellingDictTree.HolderKey holderKey) {
+        char[] sortedOriginChars = holderKey.getSortedOriginChars();
+        if (sortedOnlyBigChars == null || sortedOnlyBigChars.length == 0) {
+            return true;
+        }
+        if (sortedOriginChars == null || sortedOriginChars.length == 0) {
+            return true;
+        }
+        return charsContains(sortedOnlyBigChars, sortedOriginChars);
+    }
+
+    // todo：需要优化的算法
+
+    /**
+     * 判断sortedOnlyBigChars 每个char，在sortedOriginChars 中是否按顺序存在即可，已经排好序；
+     * 可能会相等
+     * @param sortedOnlyBigChars
+     * @param sortedOriginChars
+     * @return
+     */
+    private static boolean charsContains(char[] sortedOnlyBigChars, char[] sortedOriginChars) {
+        int bigCharLowIndex = 0;
+        int originLowIndex = 0;
+        final int originHighIndex = sortedOriginChars.length - 1;
+        for ( ;bigCharLowIndex < sortedOnlyBigChars.length && originLowIndex <= originHighIndex;) {
+            char bigChar = sortedOnlyBigChars[bigCharLowIndex];
+            int indexOf = getIndexOf(bigChar, sortedOriginChars, originLowIndex);
+            if (indexOf >= 0) {
+                originLowIndex = indexOf + 1;
+                bigCharLowIndex ++;
+            } else {
+                return false;
+            }
+        }
+        return bigCharLowIndex >= sortedOnlyBigChars.length - 1;
+    }
+
+    private static int getIndexOf(char c, char[] chars, int lowIndex) {
+        int v = Arrays.binarySearch(Arrays.copyOfRange(chars, lowIndex, chars.length) , c);
+        return v < 0 ? -1 : v + lowIndex;
+    }
+
+    public static void main(String[] args) {
+        char[] sortedOnlyBigChars = new char[]{'a'};
+        char[] sortedOriginChars = new char[]{'b'};
+        Arrays.sort(sortedOnlyBigChars);
+        Arrays.sort(sortedOriginChars);
+        System.out.println(Arrays.binarySearch(sortedOnlyBigChars ,'c'));
+        System.out.println(charsContains(sortedOnlyBigChars, sortedOriginChars));
     }
 
 

@@ -204,6 +204,14 @@ public class CoreTest {
 
     }
 
+    public static void pinyin() {
+        Instancer instance = MiniSearch.findInstance("pinyin");
+        instance.add("和蔼");
+        instance.add("heai2");
+        System.out.println(instance.find("heai"));
+
+    }
+
 
     public static void main(String[] args) {
         fast();
@@ -212,7 +220,7 @@ public class CoreTest {
         dup3();
         pageTest();
         idTest();
-//        pinyin();
+        pinyin();
 //        orderSearchTest();
     }
 

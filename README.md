@@ -9,7 +9,7 @@
 [https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)  
 
   
-
+>
 > 正文开始
 
 > 
@@ -52,6 +52,8 @@
 - **搜索并返回承载对象**！mini-search 可以返回你在插入数据时挂载在字符串匹配位置的对象。比如你可以插入一条字符串 ‘abc’ ，同时将 ‘abc' 的叶子节点放置为User对象,当你下次搜索到 ’abc‘ 时，mini-search 可以直接返回给你匹配的User对象列表。你可以将叶子节点的对象设置为一条 SQL 语句，这个技巧也可以让你把节点的数据存入数据库。
 - 可以处理**分页**请求。
 - 支持**携带业务ID的精准插入。**
+- 组件扩展：可选配redis模块实现集群同步、选配boot模块升级为HTTP的独立搜索节点
+
 ## 一、快速开始
 
 1. 下载源码，通过用maven install后引入gav到你项目的pom文件中：

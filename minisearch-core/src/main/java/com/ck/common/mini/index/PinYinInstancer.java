@@ -62,7 +62,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     @Override
-    public <CARRIER> Collection<CARRIER> find(String keywords) {
+    public synchronized <CARRIER> Collection<CARRIER> find(String keywords) {
         return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
     }
 
@@ -74,7 +74,7 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
      * @return
      */
     @Override
-    public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
+    public synchronized <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
         }

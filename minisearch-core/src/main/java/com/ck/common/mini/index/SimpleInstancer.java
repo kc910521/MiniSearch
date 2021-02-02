@@ -60,12 +60,12 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     @Override
-    public <CARRIER> Collection<CARRIER> find(String keywords) {
+    public synchronized <CARRIER> Collection<CARRIER> find(String keywords) {
         return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
     }
 
     @Override
-    public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
+    public synchronized <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
         }
@@ -140,7 +140,7 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     @Override
-    public void printAll() {
+    public synchronized void printAll() {
         this.dictTree.printChild(this.dictTree.getRoot());
     }
 

@@ -24,7 +24,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
         cnode.setTail(true);
         CARRIER cnodeCarrier = (CARRIER) cnode.getCarrier();
         SpellingDictTree.HolderKey holderKey = new HolderKey(spellingComponent.getId(), spellingComponent.getOriginKey());
-        holderKey.setSortedOriginChars(LiteTools.toUnDupSortedChars(holderKey.getOriginChars()));
+        holderKey.setAspectChars(LiteTools.toUnDupSortedChars(holderKey.getOriginChars()));
         if (cnodeCarrier == null) {
             // 还未有元素的初始化工作并直接返回1
             HashMap<SpellingDictTree.HolderKey, ORIGIN_CARRIER> carrier = new HashMap<>(8);
@@ -91,7 +91,8 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
 
         private String originChars;
 
-        private char[] sortedOriginChars;
+        // 比对特征值判断是否和用户的输入类似，最简单的实现就是原值排序后压缩
+        private char[] aspectChars;
 
         public HolderKey(String id, String originChars) {
             this.id = id;
@@ -114,12 +115,12 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
             this.originChars = originChars;
         }
 
-        public char[] getSortedOriginChars() {
-            return sortedOriginChars;
+        public char[] getAspectChars() {
+            return aspectChars;
         }
 
-        public void setSortedOriginChars(char[] sortedOriginChars) {
-            this.sortedOriginChars = sortedOriginChars;
+        public void setAspectChars(char[] aspectChars) {
+            this.aspectChars = aspectChars;
         }
 
         @Override
@@ -219,7 +220,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @return
      */
     private static final boolean canMatch(char[] sortedOnlyBigChars, SpellingDictTree.HolderKey holderKey) {
-        char[] sortedOriginChars = holderKey.getSortedOriginChars();
+        char[] sortedOriginChars = holderKey.getAspectChars();
         if (sortedOnlyBigChars == null || sortedOnlyBigChars.length == 0) {
             return true;
         }

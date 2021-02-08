@@ -151,26 +151,54 @@ public class CoreTest {
     public static void pageTest() {
         System.out.println("========= pageTest============");
         Instancer instance = MiniSearch.findInstance("hello_world_page");
-        instance.add("争渡争渡惊起一滩鸥鹭");
-        instance.add("争渡争渡惊起二滩鸥鹭");
-        instance.add("争渡争渡惊起三滩鸥鹭");
-        instance.add("争渡争渡惊起四滩鸥鹭");
-        instance.add("争渡争渡惊起五滩鸥鹭");
-        instance.add("争渡争渡惊起六滩鸥鹭");
-        instance.add("争渡争渡惊起七滩鸥鹭");
-        instance.add("争渡争渡惊起八滩鸥鹭");
-        instance.add("争渡争渡惊起久滩鸥鹭");
-        instance.add("争渡争渡惊起十滩鸥鹭");
-        instance.add("争渡争渡惊起十一滩鸥鹭");
-        instance.add("争渡争渡惊起十二滩鸥鹭");
-        instance.add("争渡争渡惊起十三滩鸥鹭");
+        instance.add("高频赫兹充电");
+        instance.add("赫兹充电器1");
+        instance.add("新品-贺子品牌鞋垫3");
+        instance.add("新品-贺子品牌鞋垫1");
+        instance.add("新品-贺子品牌鞋垫2");
+        instance.add("lily-合资电动车1");
+        instance.add("lily-合资电动车2");
+        instance.add("赫兹治疗仪2");
+        instance.add("赫兹治疗仪3");
+        instance.add("赫兹治疗仪4");
+        instance.add("赫兹治疗仪5");
+        instance.add("小盒子装钱用3");
+        instance.add("小盒子装钱用4");
+        instance.add("小盒子装钱用5");
+        instance.add("小盒子装钱用6");
+        instance.add("小盒子装钱用7");
+        instance.add("小盒子装钱用8");
+        instance.add("小盒子装钱用9");
+        instance.add("可怕的正毒1");
+        instance.add("可怕的正毒2");
+        instance.add("可怕的正毒3");
+        instance.add("赫兹治疗仪6");
+        instance.add("赫兹治疗仪7");
+        instance.add("赫兹治疗仪8");
+        instance.add("赫兹治疗仪9");
+        instance.add("赫兹充电头1");
+        instance.add("小盒子装钱用1");
+        instance.add("小盒子装钱用2");
 
-        System.out.println(instance.find("争渡"));
+        String input = "盒子";
+        System.out.println(instance.find(input));
 //
-        System.out.println(instance.find("争渡", -2, -5));
-        System.out.println(instance.find("争渡", 0, 10));
-        System.out.println(instance.find("争渡", 1, 10));
-        System.out.println(instance.find("争渡", 2, 10));
+        System.out.println(instance.find(input, -2, -5));
+        System.out.println("第0页");
+        System.out.println(instance.find(input, 0, 5));
+        System.out.println("第1页");
+        System.out.println(instance.find(input, 1, 5));
+        System.out.println("第2页");
+        System.out.println(instance.find(input, 2, 5));
+        System.out.println("第3页");
+        System.out.println(instance.find(input, 3, 5));
+        System.out.println("第4页");
+        System.out.println(instance.find(input, 4, 5));
+        System.out.println("第5页");
+        System.out.println(instance.find(input, 5, 5));
+        System.out.println("第6页");
+        System.out.println(instance.find(input, 6, 5));
+
     }
 
     static MiniSearchConfigure ufConfig = new MiniSearchConfigure();
@@ -214,13 +242,13 @@ public class CoreTest {
 
 
     public static void main(String[] args) {
-        fast();
-        dup();
-        dup2();
-        dup3();
+//        fast();
+//        dup();
+//        dup2();
+//        dup3();
         pageTest();
-        idTest();
-        pinyin();
+//        idTest();
+//        pinyin();
 //        orderSearchTest();
     }
 

@@ -149,19 +149,49 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * 对father下的所有tail==true的节点信息都加入results，最多加入maxReturn个
      *
      * @param father
-     * @param hitAndDrop
-     * @param results
+     * @param hitAndDrop 需要丢弃的数据个数
+     * @param results 结果集
+     * @param needSize 结果集内最多需要返回的数
+     * @param sortedOnlyBigChars
      */
     protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars) {
         assert results != null;
+        if (father == null) {
+            return;
+        }
+        Node orgFather = father;
+        int hit = searchAndFill(orgFather, hitAndDrop, needSize, results, sortedOnlyBigChars, true);
+        int filledSize = results.size();
+        int stillNeededSize = needSize - filledSize;
+        if (stillNeededSize > 0) {
+            // 能对应上中文的数据不充足，填充错字结果
+            int hitAndDrop4wrongZh = hitAndDrop - hit;
+            hitAndDrop4wrongZh = hitAndDrop4wrongZh < 0 ? 0 : hitAndDrop4wrongZh;
+            // todo:当前为低效率的重新遍历。可优化：记忆节点等
+            searchAndFill(father, hitAndDrop4wrongZh, needSize, results, sortedOnlyBigChars, false);
+        }
+    }
+
+    /**
+     *
+     * @param father
+     * @param hitAndDrop
+     * @param needSize
+     * @param results
+     * @param sortedOnlyBigChars
+     * @param ks 和canMatch同或，为true则正向搜索，为false则搜同或以外的
+     * @return hit
+     */
+    private int searchAndFill(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, boolean ks) {
         Stack<Node> stack = new Stack<>();
+        // 命中个数
+        int hit = 0;
         if (father != null) {
             stack.push(father);
-            int hit = 0;
             while (stack.size() > 0) {
                 if (results.size() >= needSize) {
                     // 判断长度
-                    return;
+                    break;
                 }
                 Node<CARRIER> popNode = stack.pop();
                 if (popNode.isTail()) {
@@ -169,7 +199,11 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
                     if (carrierMap != null) {
                         Set<Map.Entry<SpellingDictTree.HolderKey, ORIGIN_CARRIER>> entries = carrierMap.entrySet();
                         for (Map.Entry<SpellingDictTree.HolderKey, ORIGIN_CARRIER> entry : entries) {
-                            if (canMatch(sortedOnlyBigChars, entry.getKey())
+                            if (results.size() >= needSize) {
+                                // 判断长度
+                                return hit;
+                            }
+                            if (!(canMatch(sortedOnlyBigChars, entry.getKey()) ^ ks)
                                     && results.add(entry.getValue())) {
                                 hit++;
                                 if (hit <= hitAndDrop) {
@@ -189,7 +223,9 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
                 }
             }
         }
+        return hit;
     }
+
 
     /**
      * compose
@@ -262,12 +298,22 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
     }
 
     public static void main(String[] args) {
-        char[] sortedOnlyBigChars = new char[]{'a'};
-        char[] sortedOriginChars = new char[]{'b'};
-        Arrays.sort(sortedOnlyBigChars);
-        Arrays.sort(sortedOriginChars);
-        System.out.println(Arrays.binarySearch(sortedOnlyBigChars ,'c'));
-        System.out.println(charsContains(sortedOnlyBigChars, sortedOriginChars));
+//        char[] sortedOnlyBigChars = new char[]{'a'};
+//        char[] sortedOriginChars = new char[]{'b'};
+//        Arrays.sort(sortedOnlyBigChars);
+//        Arrays.sort(sortedOriginChars);
+//        System.out.println(Arrays.binarySearch(sortedOnlyBigChars ,'c'));
+//        System.out.println(charsContains(sortedOnlyBigChars, sortedOriginChars));
+
+        // true ~ true = true
+        // false ~ true = false
+        // true ~ false = false
+        // false ~ false = true
+
+        System.out.println(true ^ true);
+        System.out.println(false ^ true);
+        System.out.println(true ^ false);
+        System.out.println(false ^ false);
     }
 
 

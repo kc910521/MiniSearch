@@ -8,7 +8,7 @@
 独立服务文档和源码：
 [https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)  
 
-  
+
 >
 > 正文开始
 
@@ -48,6 +48,7 @@
 - mini-search 自身**可以不需要任何额外的服务**，仅自己一个 jar 包就能实现搜索
 - **双向匹配字符**。比如输入‘爱’，可以匹配到‘我爱你’。就像 MYSQL LIKE '%chars%'。
 - 支持**中文拼音**。当你输入 ”huihe“，可能搜索出 ”回合“ 和 “部队汇合在湖北”以及 “我huihe”。
+- **中文错字**搜索：用户的输入法可能没法选出正确的中文，所以需要修正结果集。比如很多小众的品牌名，公司名等场景，基于拼音输入法用户是很难输入正确的，但不应该搜不到。
 - **可以仅开启左侧基准搜索**。当你输入'ABC',就可能搜索出订单号 ‘ABCD’ ,而不会搜索出‘BC’.就像 MYSQL LIKE 'chars%'。
 - **搜索并返回承载对象**！mini-search 可以返回你在插入数据时挂载在字符串匹配位置的对象。比如你可以插入一条字符串 ‘abc’ ，同时将 ‘abc' 的叶子节点放置为User对象,当你下次搜索到 ’abc‘ 时，mini-search 可以直接返回给你匹配的User对象列表。你可以将叶子节点的对象设置为一条 SQL 语句，这个技巧也可以让你把节点的数据存入数据库。
 - 可以处理**分页**请求。
@@ -218,43 +219,91 @@ instance.find("为什么晚上不能照镜子");
 这时我们返回的是：
 > [Info[因为没交电费]]
 
-### 2. 分页搜索
+### 2. 分页搜索+错字搜索
 
-咱们先搞一点数据进去：
-
-```java
-
-        Instancer instance = MiniSearch.findInstance("hello_world_page");
-        instance.add("争渡争渡惊起一滩鸥鹭");
-        instance.add("争渡争渡惊起二滩鸥鹭");
-        instance.add("争渡争渡惊起三滩鸥鹭");
-        instance.add("争渡争渡惊起四滩鸥鹭");
-        instance.add("争渡争渡惊起五滩鸥鹭");
-        instance.add("争渡争渡惊起六滩鸥鹭");
-        instance.add("争渡争渡惊起七滩鸥鹭");
-        instance.add("争渡争渡惊起八滩鸥鹭");
-        instance.add("争渡争渡惊起久滩鸥鹭");
-        instance.add("争渡争渡惊起十滩鸥鹭");
-        instance.add("争渡争渡惊起十一滩鸥鹭");
-        instance.add("争渡争渡惊起十二滩鸥鹭");
-        instance.add("争渡争渡惊起十三滩鸥鹭");
-```
-
-然后做一个搜索：
+咱们先搞一点商品进去：
 
 ```java
-	instance.find("争渡", 0, 10)
-    instance.find("争渡", 1, 10)
-    instance.find("争渡", 2, 10)
+
+       Instancer instance = MiniSearch.findInstance("hello_world_page");
+        instance.add("高频赫兹充电");
+        instance.add("赫兹充电器1");
+        instance.add("新品-贺子品牌鞋垫3");
+        instance.add("新品-贺子品牌鞋垫1");
+        instance.add("新品-贺子品牌鞋垫2");
+        instance.add("lily-合资电动车1");
+        instance.add("lily-合资电动车2");
+        instance.add("赫兹治疗仪2");
+        instance.add("赫兹治疗仪3");
+        instance.add("赫兹治疗仪4");
+        instance.add("赫兹治疗仪5");
+        instance.add("小盒子装钱用3");
+        instance.add("小盒子装钱用4");
+        instance.add("小盒子装钱用5");
+        instance.add("小盒子装钱用6");
+        instance.add("小盒子装钱用7");
+        instance.add("小盒子装钱用8");
+        instance.add("小盒子装钱用9");
+        instance.add("可怕的正毒1");
+        instance.add("可怕的正毒2");
+        instance.add("可怕的正毒3");
+        instance.add("赫兹治疗仪6");
+        instance.add("赫兹治疗仪7");
+        instance.add("赫兹治疗仪8");
+        instance.add("赫兹治疗仪9");
+        instance.add("赫兹充电头1");
+        instance.add("小盒子装钱用1");
+        instance.add("小盒子装钱用2");
+
 ```
 
-0,1,2分别是页码，10就是要返回的数据个数，得到结果：
+这些数据有个共同点就是都有‘hezi’的读音。
 
-> [争渡争渡惊起六滩鸥鹭, 争渡争渡惊起久滩鸥鹭, 争渡争渡惊起一滩鸥鹭, 争渡争渡惊起五滩鸥鹭, 争渡争渡惊起二滩鸥鹭, 争渡争渡惊起四滩鸥鹭, 争渡争渡惊起十一滩鸥鹭, 争渡争渡惊起十二滩鸥鹭, 争渡争渡惊起十滩鸥鹭, 争渡争渡惊起十三滩鸥鹭]
+比如我的鞋垫品牌叫做‘贺子’，用户基于拼音输入法是难以输入正确的，大概率用户会输入‘**盒子**’。
+
+但是我们不应该因为用户输入的中文是错字，就让这个品牌难以被搜索。
+
+```java
+ 		String input = "盒子";
+        System.out.println("第0页");
+        System.out.println(instance.find(input, 0, 5));
+        System.out.println("第1页");
+        System.out.println(instance.find(input, 1, 5));
+        System.out.println("第2页");
+        System.out.println(instance.find(input, 2, 5));
+        System.out.println("第3页");
+        System.out.println(instance.find(input, 3, 5));
+        System.out.println("第4页");
+        System.out.println(instance.find(input, 4, 5));
+        System.out.println("第5页");
+        System.out.println(instance.find(input, 5, 5));
+        System.out.println("第6页");
+        System.out.println(instance.find(input, 6, 5));
+```
+
+0,1,2分别是页码，5就是要返回的数据个数，得到结果：
+
 >
-> [争渡争渡惊起三滩鸥鹭, 争渡争渡惊起八滩鸥鹭, 争渡争渡惊起七滩鸥鹭, 争渡争渡惊起六滩鸥鹭, 争渡争渡惊起久滩鸥鹭, 争渡争渡惊起一滩鸥鹭, 争渡争渡惊起五滩鸥鹭, 争渡争渡惊起二滩鸥鹭, 争渡争渡惊起四滩鸥鹭, 争渡争渡惊起十一滩鸥鹭]
->
-> [争渡争渡惊起十二滩鸥鹭, 争渡争渡惊起十滩鸥鹭, 争渡争渡惊起十三滩鸥鹭, 争渡争渡惊起三滩鸥鹭, 争渡争渡惊起八滩鸥鹭, 争渡争渡惊起七滩鸥鹭]
+> 第0页
+> [小盒子装钱用9, 小盒子装钱用8, 小盒子装钱用7, 小盒子装钱用6, 小盒子装钱用5]
+> 第1页
+> [小盒子装钱用4, 小盒子装钱用3, 小盒子装钱用2, 小盒子装钱用1, 赫兹治疗仪9]
+> 第2页
+> [赫兹治疗仪8, 赫兹治疗仪7, 赫兹治疗仪6, 赫兹治疗仪5, 赫兹治疗仪4]
+> 第3页
+> [赫兹治疗仪3, 赫兹治疗仪2, lily-合资电动车2, lily-合资电动车1, 高频赫兹充电]
+> 第4页
+> [赫兹充电头1, 赫兹充电器1, **新品-贺子品牌鞋垫3, 新品-贺子品牌鞋垫2, 新品-贺子品牌鞋垫1**]
+> 第5页
+> []
+> 第6页
+> []
+
+‘盒子’是最应当被搜索出来的，所以它的优先级最高。
+
+而‘贺子’品牌，依然是可以被搜索到的，只是会附在结果的最后。
+
+我们应当理解 ‘长尾理论’ ，尤其是 mini-search 面向的小型搜索场景中。
 
 ### 3. 携带ID插入同名数据
 

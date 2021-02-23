@@ -1,15 +1,14 @@
 package com.ck.common.mini.cluster;
 
-import com.ck.common.mini.cluster.redis.RedisIndexCoordinateSender;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
 import com.ck.common.mini.index.Instancer;
-import com.ck.common.mini.spring.MiniSearchSpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * @Author caikun
@@ -29,15 +28,13 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
 
     public IndexCoordinatorInstancerProxy(Instancer instancer) {
         this.instancer = instancer;
-        try {
-            this.indexEventSender = MiniSearchSpringUtil.getBean(IndexEventSender.class);
-        } catch (Exception e) {
-            logger.error(e.toString());
+        // SPI find indexEventSender
+        ServiceLoader<IndexEventSender> sl = ServiceLoader.load(IndexEventSender.class);
+        for (IndexEventSender indexEventSender : sl) {
+            this.indexEventSender = indexEventSender;
         }
         if (this.indexEventSender == null) {
-            logger.warn("not indexEventSender found, by default");
-            this.indexEventSender = new RedisIndexCoordinateSender();
-            this.indexEventSender.setMiniSearchConfigure(this.instancer.getMiniSearchConfigure());
+            logger.warn("not indexEventSender found, standalone by default");
         }
     }
 
@@ -69,7 +66,7 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
             return 1;
         } catch (Exception e) {
             logger.error("due to {}, standalone adding only.", e.toString(), e);
-            this.instancer.addWithId(id, keywords, carrier);// 1 ok
+            this.instancer.addWithId(id, keywords, carrier);
         }
         return 0;
     }

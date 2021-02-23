@@ -2,7 +2,6 @@ package com.ck.common.mini.controller;
 
 import com.ck.common.mini.bean.ResponseWrapper;
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.service.ClusterRedisServiceImpl;
 import com.ck.common.mini.service.IClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @Date 下午4:56 21-1-27
  **/
-public class ClusterRedisServiceImpl implements IClusterService {
+public class ClusterServiceImpl implements IClusterService {
 
 
     @Override

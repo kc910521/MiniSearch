@@ -4,11 +4,10 @@ import com.ck.common.mini.cluster.IndexEventSender;
 import com.ck.common.mini.cluster.Intent;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
+import com.ck.common.mini.spring.MiniSearchSpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -17,22 +16,20 @@ import javax.annotation.PostConstruct;
  * @Description redis的集群协作发送者
  * @Date 下午1:38 20-4-24
  **/
-@Component("redisIndexCoordinateSender")
 public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);
 
-    @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired(required = false)
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
-
+        redisTemplate = MiniSearchSpringUtil.getBean("redisTemplate", RedisTemplate.class);
+        miniSearchConfigure = MiniSearchSpringUtil.getBean(MiniSearchConfigure.class);
+        init1();
     }
 
-    @PostConstruct
     public void init1() {
 
         if (redisTemplate == null) {

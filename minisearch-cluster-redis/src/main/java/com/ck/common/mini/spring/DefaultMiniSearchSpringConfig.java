@@ -28,9 +28,6 @@ public class DefaultMiniSearchSpringConfig implements BeanPostProcessor {
     private RedisTemplate redisTemplate;
 
     @Autowired
-    private RedisIndexCoordinateSender redisIndexCoordinateSender;
-
-    @Autowired
     private MSRedisMessageListenerContainer msRedisMessageListenerContainer;
 
     @Autowired

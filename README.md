@@ -14,33 +14,10 @@
 
 > 
 >
-> 刘总（某创业公司 CTO）：
->
-> ​	我们伟大APP下一版本的用户要可以模糊搜索到商品名，我需要开通个ES实例。
->
-> ​	所以问题是哪家最便宜？
->
-> 小陈（该公司唯一开发人员）：
->
-> ​	不贵，直接买个ES实例一个月就三百多吧。或者直接买个服务器咱自己搭一套，一年才一千多。
->
-> ​	（自以为解决了老板预算少的问题，看来年终奖二百的某东卡到手了）
->
-> 刘总：
->
-> ​	贵！咱商品价格都加一起还不到一千呢，你项目里引入个 lucene 好了，免费，我看行！
->
-> 小陈：
->
-> ​	咱这虽然量不大也是集群啊， lucene 没法直接支持，我先研究两天？
->
-> 刘总：
->
-> ​	能不能来个简单可行支持集群便宜轻量接入快速不新开服务就地取材的选择？
->
-> 小陈：
->
-> ​	那试试 **mini-search** ?
+> 使用场景：
+> 敏感词搜索
+> ​十万数据以下量级的简单搜索、因为是内存型，相比使用ES，少一次网络请求
+> 代替 like %%
 
 
 
@@ -563,7 +540,7 @@ public static class Info implements Serializable {
 
 ### 4. 如何立即升级我的spring-boot项目为一个搜索节点
 
-- 引入依赖<span id="jump3">-</span>
+- 在springboot的原始项目中引入依赖即可：<span id="jump3">-</span>
 
   ```xml
           <dependency>
@@ -575,18 +552,14 @@ public static class Info implements Serializable {
 
   
 
-- 配置即可参见 minisearch-server，如下：
+- 确认自己配置好redisTemplate即可，有问题可尝试：
 
   ```java
   @SpringBootApplication
-  @MiniSearchServer
-  @Configuration
-  @Import(DefaultMiniSearchSpringConfig.class)
   public class MinisearchServerApplication {
   
   
-      public MinisearchServerApplication(RedisTemplate<String, String> redisTemplate, DefaultMiniSearchSpringConfig defaultMiniSearchSpringConfig
-                                         ) {
+      public MinisearchServerApplication(RedisTemplate<String, String> redisTemplate) {
           assert redisTemplate != null;
       }
   

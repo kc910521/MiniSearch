@@ -2,6 +2,7 @@ package com.ck.common.mini.config;
 
 import com.ck.common.mini.controller.MiniSearchRestController;
 import com.ck.common.mini.service.ClusterServiceImpl;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -15,5 +16,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({MiniSearchRestController.class, ClusterServiceImpl.class})
+@Configuration
 public @interface MiniSearchServer {
 }

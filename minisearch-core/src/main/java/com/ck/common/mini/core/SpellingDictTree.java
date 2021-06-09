@@ -2,6 +2,7 @@ package com.ck.common.mini.core;
 
 import com.ck.common.mini.util.LiteTools;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,6 +18,7 @@ import java.util.*;
  * @param <CARRIER> value for enhanced dict tree hold
  * @param <ORIGIN_CARRIER> the real value that user set
  */
+@NotThreadSafe
 public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, ORIGIN_CARRIER>, ORIGIN_CARRIER> extends DictTree {
 
     @Override

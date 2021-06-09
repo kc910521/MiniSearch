@@ -9,8 +9,11 @@ import com.ck.common.mini.workshop.nlp.NLPWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.ck.common.mini.util.LiteTools.beQueue;
 import static com.ck.common.mini.util.LiteTools.getPingYin;
@@ -20,21 +23,27 @@ import static com.ck.common.mini.util.LiteTools.getPingYin;
  * @Description 针对中文的，优化过的搜索实例
  * @Date 上午11:49 20-4-28
  **/
+@ThreadSafe
 public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     private static final String PT_PREFIX = "^";
     private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
     private static final String PT_AMPLE_ANY = "(.*)";
+    private static final int lockTimeout = 3;
 
     private static final Logger logger = LoggerFactory.getLogger(PinYinInstancer.class);
 
     private SpellingDictTree spellingDictTree;
+
+    private SpellingDictTree spellingDictTreeBack;
 
     private String instancerName;
 
     private MiniSearchConfigure miniSearchConfigure;
 
     private NLPWorker nlpWorker;
+
+    private final ReentrantReadWriteLock rrw = new ReentrantReadWriteLock();
 
     public PinYinInstancer(String instancerName) {
         this.instancerName = instancerName;
@@ -51,19 +60,36 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     @Override
-    public synchronized void init(Map<String, Object> data) {
-        this.spellingDictTree.clear();
-        Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Object> next = iterator.next();
-            add(next.getKey(), next.getValue());
+    public void init(Map<String, Object> data) {
+        try {
+            rrw.writeLock().tryLock(lockTimeout, TimeUnit.MINUTES);
+            this.spellingDictTree.clear();
+            Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Object> next = iterator.next();
+                add(next.getKey(), next.getValue());
+            }
+            logger.info("init success");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            rrw.writeLock().unlock();
         }
-        logger.info("init success");
     }
 
     @Override
-    public synchronized <CARRIER> Collection<CARRIER> find(String keywords) {
-        return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
+    public <CARRIER> Collection<CARRIER> find(String keywords) {
+        try {
+            rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
+            return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            rrw.readLock().unlock();
+        }
+
     }
 
     /**
@@ -74,18 +100,28 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
      * @return
      */
     @Override
-    public synchronized <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
+    public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
         }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
-        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), miniSearchConfigure.isStrict(), page, pageSize);
+        Collection result = null;
+        try {
+            rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
+            result = this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), miniSearchConfigure.isStrict(), page, pageSize);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            rrw.readLock().unlock();
+        }
+        return result;
     }
 
     @Override
-    public synchronized int addWithId(String id, String keywords, Object carrier) {
+    public int addWithId(String id, String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {
             System.err.println("The carrier is not a instance of Serializable");
         }
@@ -101,9 +137,18 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
         }
         int rs = 0;
         List<String> subKeywords = nlpWorker.work(keywords);
-        for (String kw : subKeywords) {
-            rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
+        try {
+            rrw.writeLock().tryLock(lockTimeout, TimeUnit.MINUTES);
+            for (String kw : subKeywords) {
+                rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            rrw.writeLock().unlock();
         }
+
         return rs;
     }
 
@@ -153,17 +198,17 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 //    }
 
     @Override
-    public synchronized int add(String keywords, Object carrier) {
+    public int add(String keywords, Object carrier) {
         return addWithId(null, keywords, carrier);
     }
 
     @Override
-    public synchronized int add(String keywords) {
+    public int add(String keywords) {
         return this.add(keywords, keywords);
     }
 
     @Override
-    public synchronized int remove(String keywords) {
+    public int remove(String keywords) {
         return this.removeWithId(null, keywords);
     }
 
@@ -175,15 +220,32 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
             spellingComponent.setId(id);
         }
         int i = 0;
-        for (String kw : subKeywords) {
-            i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), spellingComponent);
+        try {
+            rrw.writeLock().tryLock(lockTimeout, TimeUnit.MINUTES);
+            for (String kw : subKeywords) {
+                i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), spellingComponent);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            rrw.writeLock().unlock();
         }
         return i;
     }
 
+    @Deprecated
     @Override
-    public synchronized void printAll() {
-        this.spellingDictTree.printChild(this.spellingDictTree.getRoot());
+    public void printAll() {
+        try {
+            rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
+            this.spellingDictTree.printChild(this.spellingDictTree.getRoot());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            rrw.readLock().unlock();
+        }
     }
 
     @Override

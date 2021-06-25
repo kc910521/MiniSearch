@@ -25,8 +25,17 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
-        redisTemplate = MiniSearchSpringUtil.getBean("redisTemplate", RedisTemplate.class);
-        miniSearchConfigure = MiniSearchSpringUtil.getBean(MiniSearchConfigure.class);
+        try {
+            redisTemplate = MiniSearchSpringUtil.getBean("redisTemplate", RedisTemplate.class);
+        } catch (Throwable e) {
+            logger.error("redisTemplate init failed", e);
+        }
+        try {
+            miniSearchConfigure = MiniSearchSpringUtil.getBean(MiniSearchConfigure.class);
+        } catch (Throwable e) {
+            logger.error("miniSearchConfigure init failed, new one generated");
+            miniSearchConfigure = new MiniSearchConfigure();
+        }
         init1();
     }
 

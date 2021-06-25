@@ -61,7 +61,9 @@ public final class LiteTools {
                     if (isBigChar(input[i])) {
                         String[] temp = PinyinHelper.toHanyuPinyinStringArray(
                                 input[i], format);
-                        output.append(temp[0]);
+                        if (temp != null && temp.length > 0) {
+                            output.append(temp[0]);
+                        }
                     } else {
                         output.append(Character.toString(input[i]));
                     }
@@ -267,10 +269,8 @@ public final class LiteTools {
 
     public static void main(String[] args) {
 
-        List<String> aa = combinationKeywordsChar("BCD212--121啊");
 
-        System.out.println(aa);
-        System.out.println(aa.size());
+        System.out.println(getPingYin("超美少女系列 蛯原舞"));
     }
 
 

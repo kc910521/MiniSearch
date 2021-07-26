@@ -255,7 +255,7 @@ public class CoreTest {
     public static void orderSearchTest() {
         MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
         miniSearchConfigure.setFreeMatch(false);
-        miniSearchConfigure.setCoreType(MiniSearchConfigure.CoreType.CODE.getCode());
+        miniSearchConfigure.setCoreType(1);
         Instancer instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
         instance.add("abc12345");
         instance.add("mbc12345");

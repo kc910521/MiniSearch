@@ -1,5 +1,12 @@
 package com.ck.common.mini.config;
 
+import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.PinYinInstancer;
+import com.ck.common.mini.index.SimpleInstancer;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @Author caikun
  * @Description
@@ -53,7 +60,7 @@ public class MiniSearchConfigure {
     /**
      * 核心类型偏好，中文0; 英文/数字1
      */
-    private int coreType = CoreType.PINYIN.getCode();
+    private int coreType = 0;
 
     /**
      * 全匹配(freeMatch)模式下，单语句最大处理的字符短语总数（超过则不继续匹配）
@@ -166,24 +173,37 @@ public class MiniSearchConfigure {
         }
     }
 
-    public enum CoreType {
+    public enum InstanceType {
 
-        // ignore uppercase
-        PINYIN(0),
 
-        // not ignore uppercase, for alphabet,code
-        CODE(1),
+        PinYin(0, PinYinInstancer.class),
+
+        SIMPLE(1, SimpleInstancer.class),
 
         ;
 
-        private int code;
 
-        CoreType(int code) {
-            this.code = code;
+        private int type;
+
+        private Class instancerClass;
+
+        <I extends Instancer> InstanceType(int type, Class<I> instancerClass) {
+            this.type = type;
+            this.instancerClass = instancerClass;
         }
 
-        public int getCode() {
-            return code;
+        public Instancer getInstance(String initName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+            Constructor constructor = instancerClass.getConstructor(new Class[]{String.class});
+            return (Instancer) constructor.newInstance(initName);
+        }
+
+        public static InstanceType judge(int type) {
+            for (InstanceType ins : InstanceType.values()) {
+                if (type == ins.type) {
+                    return ins;
+                }
+            }
+            return InstanceType.PinYin;
         }
 
     }

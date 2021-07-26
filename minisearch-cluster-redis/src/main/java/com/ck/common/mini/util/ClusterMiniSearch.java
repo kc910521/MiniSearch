@@ -15,11 +15,7 @@ public class ClusterMiniSearch extends MiniSearch {
 
 
     public static Instancer findInstance(String instancerName) {
-        if (!instancerMap.containsKey(instancerName)) {
-            Instancer instancer = instancer(instancerName);
-            instancerMap.put(instancerName, instancer);
-        }
-        return new IndexCoordinatorInstancerProxy(instancerMap.get(instancerName));
+        return new IndexCoordinatorInstancerProxy(MiniSearch.findInstance(instancerName));
     }
 
     /**
@@ -29,12 +25,7 @@ public class ClusterMiniSearch extends MiniSearch {
      * @param miniSearchConfigure
      * @return
      */
-    @Deprecated
     public static Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        if (!instancerMap.containsKey(instancerName)) {
-            Instancer instancer = instancer(instancerName, miniSearchConfigure);
-            instancerMap.put(instancerName, instancer);
-        }
-        return new IndexCoordinatorInstancerProxy(instancerMap.get(instancerName));
+        return new IndexCoordinatorInstancerProxy(MiniSearch.findInstance(instancerName, miniSearchConfigure));
     }
 }

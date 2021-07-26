@@ -51,6 +51,8 @@ public interface Instancer {
 
     /**
      * 不参与集群标识
+     * not a clusters node
+     *
      */
     interface BasicInstancer {
 

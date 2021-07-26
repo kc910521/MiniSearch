@@ -2,9 +2,8 @@ package com.ck.common.mini.util;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.index.Instancer;
-import com.ck.common.mini.index.PinYinInstancer;
-import com.ck.common.mini.index.SimpleInstancer;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,40 +17,41 @@ import java.util.Map;
  **/
 public class MiniSearch {
 
-    static final Map<String, Instancer> instancerMap = new HashMap<String, Instancer>();
+    static final Map<String, Instancer> miniSearchMap = new HashMap<String, Instancer>();
 
     public static synchronized Instancer findInstance(String instancerName) {
-        if (instancerMap.containsKey(instancerName)) {
-            return instancerMap.get(instancerName);
-        } else {
-            Instancer instancer = instancer(instancerName);
-            instancerMap.put(instancerName, instancer);
-            return instancer;
-        }
+        return MiniSearch.findInstance(instancerName, null);
     }
 
-    public static synchronized Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        if (instancerMap.containsKey(instancerName)) {
-            return instancerMap.get(instancerName);
+    public static Instancer findInstance(String instancerName, @Nullable MiniSearchConfigure miniSearchConfigure) {
+        if (miniSearchMap.containsKey(instancerName)) {
+            return miniSearchMap.get(instancerName);
         } else {
-            Instancer instancer = instancer(instancerName, miniSearchConfigure);
-            instancerMap.put(instancerName, instancer);
-            return instancer;
+            synchronized (miniSearchMap) {
+                if (!miniSearchMap.containsKey(instancerName)) {
+                    Instancer instancer = instancer(instancerName, miniSearchConfigure);
+                    miniSearchMap.put(instancerName, instancer);
+                    return instancer;
+                }
+            }
+            return miniSearchMap.get(instancerName);
+
         }
     }
 
     protected static synchronized Instancer instancer(String instancerName) {
-        return new PinYinInstancer(instancerName);
+        return MiniSearch.instancer(instancerName, null);
     }
 
-    protected static synchronized Instancer instancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        if (miniSearchConfigure.getCoreType() == MiniSearchConfigure.CoreType.PINYIN.getCode()) {
-            return new PinYinInstancer(instancerName, miniSearchConfigure);
-        } else if (miniSearchConfigure.getCoreType() == MiniSearchConfigure.CoreType.CODE.getCode()) {
-            return new SimpleInstancer(instancerName, miniSearchConfigure);
-        } else {
-            throw new RuntimeException("where are you ?");
+    protected static synchronized Instancer instancer(String instancerName, @Nullable MiniSearchConfigure miniSearchConfigure) {
+        if (miniSearchConfigure == null) {
+            miniSearchConfigure = new MiniSearchConfigure();
         }
-
+        try {
+            return MiniSearchConfigure.InstanceType.judge(miniSearchConfigure.getCoreType()).getInstance(instancerName);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

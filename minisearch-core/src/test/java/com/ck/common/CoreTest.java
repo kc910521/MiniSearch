@@ -246,16 +246,54 @@ public class CoreTest {
 //        dup();
 //        dup2();
 //        dup3();
-        pageTest();
+//        pageTest();
 //        idTest();
 //        pinyin();
 //        orderSearchTest();
+        taskTiming();
     }
+
+    public static void taskTiming() {
+        // create
+        Instancer instance1 = MiniSearch.findInstance("hello_world");
+        MiniSearch.enableRebuilder();
+        // add all into index
+        Instancer instance2 = MiniSearch.findInstance("hello_world2");
+        MiniSearch.enableRebuilder();
+        MiniSearch.enableRebuilder();
+        //try searching
+        Collection<Object> result = instance1.find("为什么");
+        System.out.println(result);
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
+//        params.put("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
+//        instance.init(params);
+        Instancer.BasicInstancer basicInstancer = (Instancer.BasicInstancer) instance1;
+        basicInstancer.setRebuildWorker((instancer) -> {
+            int add = instancer.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
+            instancer.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
+            instancer.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
+            instancer.add("为蛇要放弃治疗", new Info("weisheyaofangqizhiliao4"));
+            System.out.println(Thread.currentThread().getName() + " rebuild " + add + " in " + System.currentTimeMillis());
+        });
+        try {
+            Thread.sleep(1000 * 40);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        result = instance1.find("为什么");
+        System.out.println("1" + result);
+        result = instance2.find("为什么");
+        System.out.println("2" + result);
+    }
+
 
     public static void orderSearchTest() {
         MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
         miniSearchConfigure.setFreeMatch(false);
-        miniSearchConfigure.setCoreType(1);
+        miniSearchConfigure.setCoreType(0);
         Instancer instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
         instance.add("abc12345");
         instance.add("mbc12345");

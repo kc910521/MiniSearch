@@ -67,6 +67,15 @@ public class MiniSearchConfigure {
      */
     private static int phraseCharNum = 5;
 
+    /**
+     * 允许定时重建
+     */
+    private boolean enableRebuilder = true;
+    /**
+     * cpu 核心数
+     */
+    private static final int uCoreNumber = Runtime.getRuntime().availableProcessors();
+
     public static int getPhraseCharNum() {
         return phraseCharNum;
     }
@@ -145,6 +154,14 @@ public class MiniSearchConfigure {
 
     public void setCoreType(int coreType) {
         this.coreType = coreType;
+    }
+
+    public static int getuCoreNumber() {
+        return uCoreNumber;
+    }
+
+    public boolean isEnableRebuilder() {
+        return enableRebuilder;
     }
 
     /**

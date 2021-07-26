@@ -45,6 +45,8 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     private final ReentrantReadWriteLock rrw = new ReentrantReadWriteLock();
 
+    private RebuildWorker rebuildWorker;
+
     public PinYinInstancer(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
@@ -256,5 +258,17 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
     @Override
     public String getInstancerName() {
         return instancerName;
+    }
+
+    @Override
+    public void timingRebuild() {
+        if (this.rebuildWorker != null) {
+            this.rebuildWorker.doWork(this);
+        }
+    }
+
+    @Override
+    public void setRebuildWorker(RebuildWorker rebuildWorker) {
+        this.rebuildWorker = rebuildWorker;
     }
 }

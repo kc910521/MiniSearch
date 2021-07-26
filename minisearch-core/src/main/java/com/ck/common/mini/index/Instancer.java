@@ -1,6 +1,7 @@
 package com.ck.common.mini.index;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
+import com.ck.common.mini.timing.RebuildCycler;
 
 import java.util.Collection;
 import java.util.Map;
@@ -52,9 +53,37 @@ public interface Instancer {
     /**
      * 不参与集群标识
      * not a clusters node
+     * @see RebuildCycler
      *
      */
     interface BasicInstancer {
+
+        /**
+         * 定时器调用的方法
+         */
+        void timingRebuild();
+
+        /**
+         * 设定业务方规则
+         *
+         * @param rebuildWorker
+         */
+        void setRebuildWorker(RebuildWorker rebuildWorker);
+
+    }
+
+    /**
+     * 给业务方定义重建规则
+     */
+    @FunctionalInterface
+    interface RebuildWorker {
+
+        /**
+         * implements by biz
+         *
+         * @param searchInstance
+         */
+        void doWork(Instancer searchInstance);
 
     }
 }

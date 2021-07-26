@@ -2,6 +2,7 @@ package com.ck.common.mini.util;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.timing.RebuildCycler;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -37,6 +38,13 @@ public class MiniSearch {
             return miniSearchMap.get(instancerName);
 
         }
+    }
+
+    /**
+     * 设置循环调用器
+     */
+    public static void enableRebuilder() {
+        RebuildCycler.goForCycler(miniSearchMap);
     }
 
     protected static synchronized Instancer instancer(String instancerName) {

@@ -76,6 +76,12 @@ public class MiniSearchConfigure {
      */
     private static final int uCoreNumber = Runtime.getRuntime().availableProcessors();
 
+    /**
+     * 任务重建间隔秒数
+     */
+    private static int rebuildTaskInterval = 600;
+
+
     public static int getPhraseCharNum() {
         return phraseCharNum;
     }
@@ -163,6 +169,11 @@ public class MiniSearchConfigure {
     public boolean isEnableRebuilder() {
         return enableRebuilder;
     }
+
+    public static int getRebuildTaskInterval() {
+        return rebuildTaskInterval;
+    }
+
 
     /**
      * 持久化形式/未实现

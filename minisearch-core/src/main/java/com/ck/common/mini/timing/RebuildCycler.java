@@ -57,7 +57,7 @@ public class RebuildCycler {
                     }
                 });
             }
-        }, 10, 10, TimeUnit.SECONDS);
+        }, 10, MiniSearchConfigure.getRebuildTaskInterval(), TimeUnit.SECONDS);
 
     }
 

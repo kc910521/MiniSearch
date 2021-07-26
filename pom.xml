@@ -6,8 +6,8 @@
 
     <groupId>com.ck.common</groupId>
     <artifactId>mini-search</artifactId>
-    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <modules>
         <module>minisearch-core</module>
         <module>minisearch-cluster-redis</module>

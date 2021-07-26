@@ -256,11 +256,11 @@ public class CoreTest {
     public static void taskTiming() {
         // create
         Instancer instance1 = MiniSearch.findInstance("hello_world");
-        MiniSearch.enableRebuilder();
+        MiniSearch.enableRebuild();
         // add all into index
         Instancer instance2 = MiniSearch.findInstance("hello_world2");
-        MiniSearch.enableRebuilder();
-        MiniSearch.enableRebuilder();
+        MiniSearch.enableRebuild();
+        MiniSearch.enableRebuild();
         //try searching
         Collection<Object> result = instance1.find("为什么");
         System.out.println(result);

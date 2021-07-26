@@ -43,7 +43,7 @@ public class MiniSearch {
     /**
      * 设置循环调用器
      */
-    public static void enableRebuilder() {
+    public static void enableRebuild() {
         RebuildCycler.goForCycler(miniSearchMap);
     }
 

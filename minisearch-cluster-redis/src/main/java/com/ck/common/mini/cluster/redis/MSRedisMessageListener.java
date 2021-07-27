@@ -1,13 +1,14 @@
 package com.ck.common.mini.cluster.redis;
 
-import com.ck.common.mini.cluster.IndexEventExecutor;
 import com.ck.common.mini.cluster.Intent;
 import com.ck.common.mini.constant.EventType;
 import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
 import com.ck.common.mini.util.MiniSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,10 +28,8 @@ import java.util.Map;
 public class MSRedisMessageListener implements MessageListener {
 
     @Autowired
+    @Qualifier(SpringRedisDefinitionSupport.MSRedisTemplateBeanName)
     private RedisTemplate redisTemplate;
-
-    @Autowired(required = false)
-    private IndexEventExecutor indexEventExecutor;
 
     private static final Logger logger = LoggerFactory.getLogger(MSRedisMessageListener.class);
 
@@ -44,7 +43,7 @@ public class MSRedisMessageListener implements MessageListener {
         logger.debug("redis message received");
         try {
             byte[] body = message.getBody();
-            Intent deserializeBody = (Intent) getRedisTemplate().getValueSerializer().deserialize(body);
+            Intent deserializeBody = (Intent) redisTemplate.getValueSerializer().deserialize(body);
             logger.debug("deserializeBody:{}", deserializeBody);
 //            String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
 //            logger.debug("deserializeChannel:{}", deserializeChannel);
@@ -72,22 +71,6 @@ public class MSRedisMessageListener implements MessageListener {
             logger.debug("consume finished");
         }
 
-    }
-
-    public RedisTemplate getRedisTemplate() {
-        return redisTemplate;
-    }
-
-    public IndexEventExecutor getIndexEventExecutor() {
-        return indexEventExecutor;
-    }
-
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
-
-    public void setIndexEventExecutor(IndexEventExecutor indexEventExecutor) {
-        this.indexEventExecutor = indexEventExecutor;
     }
 
 }

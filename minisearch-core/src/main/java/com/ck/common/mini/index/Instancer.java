@@ -51,6 +51,13 @@ public interface Instancer {
     String getInstancerName();
 
     /**
+     * 设定业务方规则
+     *
+     * @param rebuildWorker
+     */
+    void setRebuildWorker(RebuildWorker rebuildWorker);
+
+    /**
      * 不参与集群标识
      * not a clusters node
      * @see RebuildCycler
@@ -62,14 +69,6 @@ public interface Instancer {
          * 定时器调用的方法
          */
         void timingRebuild();
-
-        /**
-         * 设定业务方规则
-         *
-         * @param rebuildWorker
-         */
-        void setRebuildWorker(RebuildWorker rebuildWorker);
-
     }
 
     /**

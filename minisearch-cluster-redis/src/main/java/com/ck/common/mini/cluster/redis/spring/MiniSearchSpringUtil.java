@@ -1,4 +1,4 @@
-package com.ck.common.mini.spring;
+package com.ck.common.mini.cluster.redis.spring;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ public class MiniSearchSpringUtil implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
+    @Override
     @Autowired
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (MiniSearchSpringUtil.applicationContext == null) {

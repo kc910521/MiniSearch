@@ -7,6 +7,9 @@ import com.ck.common.mini.constant.EventType;
  * @Author caikun
  * @Description 索引事件发送器
  * @Date 下午1:52 20-4-24
+ *
+ * 支持单点向集群发送事件通知的功能
+ *
  **/
 public interface IndexEventSender {
 

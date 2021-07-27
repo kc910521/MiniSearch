@@ -15,6 +15,9 @@ import java.util.ServiceLoader;
  * @Description
  * 索引协调器，处理集群环境索引同步
  * 代理基础instancer
+ * IndexEventSender 由各个集群支持包自行实现
+ *
+ * @see IndexEventSender
  *
  * @Date 上午11:29 20-4-24
  **/
@@ -111,6 +114,11 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
     @Override
     public String getInstancerName() {
         return this.instancer.getInstancerName();
+    }
+
+    @Override
+    public void setRebuildWorker(RebuildWorker rebuildWorker) {
+        this.instancer.setRebuildWorker(rebuildWorker);
     }
 
 

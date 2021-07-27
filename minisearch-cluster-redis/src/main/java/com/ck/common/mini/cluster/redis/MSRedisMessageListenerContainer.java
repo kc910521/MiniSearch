@@ -32,7 +32,7 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
     @Autowired
     private RedisConnectionFactory connectionFactory;
 
-    @Autowired(required = false)
+    @Autowired
     private MiniSearchConfigure miniSearchConfigure;
 
     @Autowired
@@ -50,11 +50,6 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
         } catch (Exception e) {
             logger.error("msRedisMessageListener:{}", e);
             return;
-        }
-        // thread pool
-        if (miniSearchConfigure == null) {
-            miniSearchConfigure = new MiniSearchConfigure();
-            logger.warn("no MiniSearchConfigure found, use default.");
         }
 
         threadPoolTaskScheduler.setPoolSize(miniSearchConfigure.getClusterContainerPoolSize());

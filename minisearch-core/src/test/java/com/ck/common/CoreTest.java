@@ -269,8 +269,7 @@ public class CoreTest {
 //        params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
 //        params.put("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
 //        instance.init(params);
-        Instancer.BasicInstancer basicInstancer = (Instancer.BasicInstancer) instance1;
-        basicInstancer.setRebuildWorker((instancer) -> {
+        instance1.setRebuildWorker((instancer) -> {
             int add = instancer.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
             instancer.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
             instancer.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));

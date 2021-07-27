@@ -1,16 +1,13 @@
-package com.ck.common.mini.spring;
+package com.ck.common.mini.config;
 
 import com.ck.common.mini.cluster.redis.MSRedisMessageListener;
 import com.ck.common.mini.cluster.redis.MSRedisMessageListenerContainer;
-import com.ck.common.mini.cluster.redis.RedisIndexCoordinateSender;
-import com.ck.common.mini.config.MiniSearchConfigure;
-import org.springframework.beans.BeansException;
+import com.ck.common.mini.cluster.redis.spring.MiniSearchSpringUtil;
+import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.context.annotation.Import;
 
 /**
  * @Author caikun
@@ -21,23 +18,19 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @Date 下午6:53 20-4-26
  **/
 @Configuration
-@ComponentScan("com.ck.common.mini")
-public class DefaultMiniSearchSpringConfig implements BeanPostProcessor {
+@ComponentScan("com.ck.common.mini.cluster.redis")
+@Import(SpringRedisDefinitionSupport.class)
+public class DefaultMiniSearchSpringRedisConfig {
 
-    @Autowired
-    private RedisTemplate redisTemplate;
+//    @Autowired
+//    private MSRedisMessageListenerContainer msRedisMessageListenerContainer;
+//
+//    @Autowired
+//    private MSRedisMessageListener msRedisMessageListener;
+//
+//    @Autowired
+//    private MiniSearchSpringUtil miniSearchSpringUtil;
 
-    @Autowired
-    private MSRedisMessageListenerContainer msRedisMessageListenerContainer;
-
-    @Autowired
-    private MSRedisMessageListener msRedisMessageListener;
-
-    @Autowired
-    private MiniSearchSpringUtil miniSearchSpringUtil;
-
-    @Autowired(required = false)
-    private MiniSearchConfigure miniSearchConfigure;
 
 //    @Bean(name = "miniSearchSpringUtil")
 ////    @DependsOn("msRedisMessageListener")
@@ -54,14 +47,6 @@ public class DefaultMiniSearchSpringConfig implements BeanPostProcessor {
 //        msRedisMessageListener.setRedisTemplate(redisTemplate);
 //        return msRedisMessageListener;
 //    }
-
-    @Bean("miniSearchConfigure")
-    public MiniSearchConfigure miniSearchConfigure() {
-        if (miniSearchConfigure == null) {
-            return new MiniSearchConfigure();
-        }
-        return miniSearchConfigure;
-    }
 
 //    @Bean(name = "msRedisMessageListenerContainer")
 //    @DependsOn("redisIndexCoordinateSender")
@@ -82,17 +67,4 @@ public class DefaultMiniSearchSpringConfig implements BeanPostProcessor {
 //        return redisIndexCoordinateSender;
 //    }
 
-    @Override
-    public Object postProcessBeforeInitialization(Object o, String s) throws BeansException {
-        return o;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
-        return o;
-    }
-
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 }

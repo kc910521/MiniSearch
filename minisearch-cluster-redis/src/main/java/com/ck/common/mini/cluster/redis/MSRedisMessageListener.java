@@ -35,7 +35,7 @@ public class MSRedisMessageListener implements MessageListener {
 
     @PostConstruct
     public void init() {
-        System.out.println("MSRedisMessageListener");
+        logger.info("MSRedisMessageListener init");
     }
 
     @Override

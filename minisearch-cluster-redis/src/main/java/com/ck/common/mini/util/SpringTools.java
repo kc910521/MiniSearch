@@ -1,4 +1,4 @@
-package com.ck.common.mini.cluster.redis.util;
+package com.ck.common.mini.util;
 
 import org.springframework.util.ClassUtils;
 

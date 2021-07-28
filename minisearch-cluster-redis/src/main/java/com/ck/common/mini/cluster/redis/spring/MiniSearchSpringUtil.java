@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * @Author caikun
  * @Description
@@ -38,6 +40,10 @@ public class MiniSearchSpringUtil implements ApplicationContextAware {
 
     public static <T> T getBean(Class<T> clazz) {
         return getApplicationContext().getBean(clazz);
+    }
+
+    public static <T> Map<String, T> getBeans(Class<T> clazz) {
+        return getApplicationContext().getBeansOfType(clazz);
     }
 
     /**

@@ -399,45 +399,22 @@ redis 几乎任何一个分布式的系统都会引入，使用 redis 体现了 
 
 ### 2. 配置redisTemplate
 
-你要确保你可以使用redisTemplate，同时需要配置其序列化形式：
+你不需要自行配置redisTemplate，而是需要关注 RedisConnectionFactory。  
+你可以声明一个bean名称为 “miniSearchRedisConnectionFactory” 的连接工厂给 RedisTemplate 使用。  
+(参考： com.ck.common.mini.cluster.redis.spring.MiniSearchRedisTemplateFactoryBean.defaultRedisConnectionFactoryBeanName)  
+如果不存在，mini-search 会找第一个可用的。  
 
-你可以试着简单的使用：
 
-```java
-@Import(DefaultMiniSearchSpringConfig.class)
-public class 某springboot的主类Application {
-        public 某springboot的主类Application(RedisTemplate<String, String> redisTemplate, DefaultMiniSearchSpringConfig defaultMiniSearchSpringConfig
-                                       ) {
-        assert redisTemplate != null;
-    }
-}
 ```
 
-或者精细化配置：
-
-// [必要]value值的序列化采用GenericJackson2JsonRedisSerializer，若有问题可尝试切换为jdk序列化
-```java
-@Bean
-@ConditionalOnMissingBean(name = "redisTemplate")
-public RedisTemplate<Object, Object> redisTemplate(
-        RedisConnectionFactory redisConnectionFactory) {
-    RedisTemplate<Object, Object> template = new RedisTemplate<>();
-    GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
-    template.setValueSerializer(jackson2JsonRedisSerializer);
-    template.setHashValueSerializer(jackson2JsonRedisSerializer);
-    template.setDefaultSerializer(jackson2JsonRedisSerializer);
-    template.setKeySerializer(new StringRedisSerializer());
-    template.setHashKeySerializer(new StringRedisSerializer());
-    template.setConnectionFactory(redisConnectionFactory);
-    return template;
-}
-```
 
 之后你可以直接加入包扫描：
 ```java
 @Configuration
 @ComponentScan("com.ck.common.mini")
 public class MiniConfig {
+    
+}
 
 ```
 ### 3. 数据初始化
@@ -552,24 +529,7 @@ public static class Info implements Serializable {
 
   
 
-- 确认自己配置好redisTemplate即可，有问题可尝试：
-
-  ```java
-  @SpringBootApplication
-  public class MinisearchServerApplication {
-  
-  
-      public MinisearchServerApplication(RedisTemplate<String, String> redisTemplate) {
-          assert redisTemplate != null;
-      }
-  
-      public static void main(String[] args) {
-          SpringApplication.run(MinisearchServerApplication.class, args);
-      }
-  
-  }
-  
-  ```
+- 务必确认你导入了 spring RedisTemplate相关依赖jar包：
 
 或者直接下载一个已配置好的独立springboot项目：
 

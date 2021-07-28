@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  *
  *
  **/
-public class RedisIndexCoordinateSender implements IndexEventSender, BeanFactoryPostProcessor {
+public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);
 
@@ -82,10 +82,5 @@ public class RedisIndexCoordinateSender implements IndexEventSender, BeanFactory
     @Override
     public void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure) {
         this.miniSearchConfigure = miniSearchConfigure;
-    }
-
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
-
     }
 }

@@ -3,7 +3,6 @@ package com.ck.common.mini.cluster.redis;
 import com.ck.common.mini.cluster.IndexCoordinatorInstancerProxy;
 import com.ck.common.mini.cluster.IndexEventSender;
 import com.ck.common.mini.cluster.Intent;
-import com.ck.common.mini.cluster.redis.spring.MiniSearchSpringUtil;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
 import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
@@ -15,8 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @Author caikun
@@ -33,9 +37,14 @@ import org.springframework.stereotype.Component;
  *
  *
  **/
-public class RedisIndexCoordinateSender implements IndexEventSender {
+@DependsOn({SpringRedisDefinitionSupport.MSRedisTemplateBeanName, "miniSearchSpringUtil"})
+public class RedisIndexCoordinateSender implements IndexEventSender, ApplicationContextAware {
+
+    private volatile boolean init = false;
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);
+
+    private ApplicationContext applicationContext;
 
     @Autowired
     @Qualifier(SpringRedisDefinitionSupport.MSRedisTemplateBeanName)
@@ -45,8 +54,12 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     private MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
-        redisTemplate = MiniSearchSpringUtil.getBean(SpringRedisDefinitionSupport.MSRedisTemplateBeanName, RedisTemplate.class);
-        miniSearchConfigure = MiniSearchSpringUtil.getBean(MiniSearchConfigure.class);
+    }
+
+    @PostConstruct
+    public void postCons() {
+        redisTemplate = this.applicationContext.getBean(SpringRedisDefinitionSupport.MSRedisTemplateBeanName, RedisTemplate.class);
+        miniSearchConfigure = this.applicationContext.getBean(MiniSearchConfigure.class);
         init1();
     }
 
@@ -59,10 +72,14 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
             miniSearchConfigure = new MiniSearchConfigure();
         }
         logger.debug("RedisIndexCoordinateSender loaded.");
+        this.init = true;
     }
 
     @Override
     public void publish(EventType eventType, String instancerName, String key, Object carrier) throws Exception {
+        if (!this.init) {
+            throw new RuntimeException("RedisIndexCoordinateSender no init");
+        }
         Intent intent = new Intent();
         intent.setCarrier(carrier);
         intent.setAction(eventType.name());
@@ -82,5 +99,10 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
     @Override
     public void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure) {
         this.miniSearchConfigure = miniSearchConfigure;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

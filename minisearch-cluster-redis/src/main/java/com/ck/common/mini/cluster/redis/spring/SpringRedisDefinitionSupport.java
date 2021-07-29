@@ -36,10 +36,13 @@ public class SpringRedisDefinitionSupport implements BeanDefinitionRegistryPostP
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
+        // commons
+        beanDefinitionRegistry.registerBeanDefinition("miniSearchSpringUtil", BeanDefinitionBuilder.genericBeanDefinition(MiniSearchSpringUtil.class).getBeanDefinition());
         // redis
         if (!beanDefinitionRegistry.containsBeanDefinition(MSRedisTemplateBeanName)) {
             if (SpringTools.isClassPresent(RedisTemplateClassName)) {
                 beanDefinitionRegistry.registerBeanDefinition(SpringRedisDefinitionSupport.MSRedisTemplateBeanName, BeanDefinitionBuilder.genericBeanDefinition(MiniSearchRedisTemplateFactoryBean.class).getBeanDefinition());
+
 //                BeanDefinitionBuilder sdtBDBuilder = BeanDefinitionBuilder.genericBeanDefinition(StringRedisTemplate.class);
 //                sdtBDBuilder.addConstructorArgReference(defaultRedisConnectionFactoryBeanName);
 //                sdtBDBuilder.addDependsOn(defaultRedisConnectionFactoryBeanName);

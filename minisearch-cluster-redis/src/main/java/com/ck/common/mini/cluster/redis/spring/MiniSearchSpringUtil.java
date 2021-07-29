@@ -15,18 +15,14 @@ import java.util.Map;
  *
  * @Date 下午5:05 20-4-26
  **/
-@Component
+//@Component("miniSearchSpringUtil")
 public class MiniSearchSpringUtil implements ApplicationContextAware {
-
 
     private static ApplicationContext applicationContext;
 
     @Override
-    @Autowired
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (MiniSearchSpringUtil.applicationContext == null) {
-            MiniSearchSpringUtil.applicationContext = applicationContext;
-        }
+        MiniSearchSpringUtil.applicationContext = applicationContext;
     }
 
     // 获取applicationContext

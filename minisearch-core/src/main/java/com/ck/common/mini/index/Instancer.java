@@ -1,7 +1,7 @@
 package com.ck.common.mini.index;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.timing.RebuildCycler;
+import com.ck.common.mini.timing.TimingIndexReBuilder;
 
 import java.util.Collection;
 import java.util.Map;
@@ -60,7 +60,7 @@ public interface Instancer {
     /**
      * 不参与集群标识
      * not a clusters node
-     * @see RebuildCycler
+     * @see TimingIndexReBuilder
      *
      */
     interface BasicInstancer {

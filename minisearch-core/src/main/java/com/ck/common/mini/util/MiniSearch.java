@@ -2,7 +2,7 @@ package com.ck.common.mini.util;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.index.Instancer;
-import com.ck.common.mini.timing.RebuildCycler;
+import com.ck.common.mini.timing.TimingIndexReBuilder;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import java.util.Map;
  **/
 public class MiniSearch {
 
-    static final Map<String, Instancer> miniSearchMap = new HashMap<String, Instancer>();
+    static final Map<String, Instancer> miniSearchMap = new HashMap<String, Instancer>(128);
 
     public static synchronized Instancer findInstance(String instancerName) {
         return MiniSearch.findInstance(instancerName, null);
@@ -44,7 +44,7 @@ public class MiniSearch {
      * 设置循环调用器
      */
     public static void enableRebuild() {
-        RebuildCycler.goForCycler(miniSearchMap);
+        TimingIndexReBuilder.registerReBuildMap(miniSearchMap);
     }
 
     protected static synchronized Instancer instancer(String instancerName) {

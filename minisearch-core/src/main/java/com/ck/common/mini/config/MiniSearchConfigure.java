@@ -79,7 +79,7 @@ public class MiniSearchConfigure {
     /**
      * 任务重建间隔秒数
      */
-    private static int rebuildTaskInterval = 600;
+    private static int rebuildTaskInterval = 15;
 
 
     public static int getPhraseCharNum() {
@@ -174,6 +174,9 @@ public class MiniSearchConfigure {
         return rebuildTaskInterval;
     }
 
+    public static void setRebuildTaskInterval(int rebuildTaskInterval) {
+        MiniSearchConfigure.rebuildTaskInterval = rebuildTaskInterval;
+    }
 
     /**
      * 持久化形式/未实现

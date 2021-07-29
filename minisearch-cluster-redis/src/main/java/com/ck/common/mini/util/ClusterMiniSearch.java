@@ -15,7 +15,9 @@ public class ClusterMiniSearch extends MiniSearch {
 
 
     public static Instancer findInstance(String instancerName) {
-        return new IndexCoordinatorInstancerProxy(MiniSearch.findInstance(instancerName));
+        Instancer instance = MiniSearch.findInstance(instancerName);
+        MiniSearch.enableRebuild();
+        return new IndexCoordinatorInstancerProxy(instance);
     }
 
     /**
@@ -26,6 +28,8 @@ public class ClusterMiniSearch extends MiniSearch {
      * @return
      */
     public static Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        return new IndexCoordinatorInstancerProxy(MiniSearch.findInstance(instancerName, miniSearchConfigure));
+        Instancer instance = MiniSearch.findInstance(instancerName, miniSearchConfigure);
+        MiniSearch.enableRebuild();
+        return new IndexCoordinatorInstancerProxy(instance);
     }
 }

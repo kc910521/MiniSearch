@@ -1,6 +1,6 @@
 package com.ck.common;
 
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.util.MiniSearch;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Collection;
  **/
 public class PinYinTest {
 
-    static Instancer instance = MiniSearch.findInstance("hello_world");
+    static IndexInstance instance = MiniSearch.findInstance("hello_world");
 
     public static void main(String[] args) {
         // add all into index

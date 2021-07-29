@@ -1,7 +1,7 @@
 package com.ck.common;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.index.SimpleInstancer;
+import com.ck.common.mini.index.SimpleIndexInstance;
 
 import java.util.Collection;
 
@@ -18,7 +18,7 @@ public class BaseTest {
         miniSearchConfigure.setFreeMatch(false);
     }
 
-    static SimpleInstancer simpleInstancer = new SimpleInstancer("hussar", miniSearchConfigure);
+    static SimpleIndexInstance simpleInstancer = new SimpleIndexInstance("hussar", miniSearchConfigure);
 
     public static void tt1() {
         int abcdefghi = simpleInstancer.add("abcdefghi");
@@ -77,7 +77,7 @@ public class BaseTest {
 
     public static void pageTest() {
         System.out.println("pageTest");
-        SimpleInstancer simpleInstancer = new SimpleInstancer("hussar", miniSearchConfigure);
+        SimpleIndexInstance simpleInstancer = new SimpleIndexInstance("hussar", miniSearchConfigure);
         simpleInstancer.add("abc016");
         simpleInstancer.add("abc020");
         simpleInstancer.add("abc004");

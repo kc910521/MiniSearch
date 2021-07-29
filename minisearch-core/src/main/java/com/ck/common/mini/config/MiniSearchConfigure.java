@@ -1,8 +1,8 @@
 package com.ck.common.mini.config;
 
-import com.ck.common.mini.index.Instancer;
-import com.ck.common.mini.index.PinYinInstancer;
-import com.ck.common.mini.index.SimpleInstancer;
+import com.ck.common.mini.index.IndexInstance;
+import com.ck.common.mini.index.PinYinIndexInstance;
+import com.ck.common.mini.index.SimpleIndexInstance;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -207,9 +207,9 @@ public class MiniSearchConfigure {
     public enum InstanceType {
 
 
-        PinYin(0, PinYinInstancer.class),
+        PinYin(0, PinYinIndexInstance.class),
 
-        SIMPLE(1, SimpleInstancer.class),
+        SIMPLE(1, SimpleIndexInstance.class),
 
         ;
 
@@ -218,14 +218,14 @@ public class MiniSearchConfigure {
 
         private Class instancerClass;
 
-        <I extends Instancer> InstanceType(int type, Class<I> instancerClass) {
+        <I extends IndexInstance> InstanceType(int type, Class<I> instancerClass) {
             this.type = type;
             this.instancerClass = instancerClass;
         }
 
-        public Instancer getInstance(String initName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        public IndexInstance getInstance(String initName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
             Constructor constructor = instancerClass.getConstructor(new Class[]{String.class});
-            return (Instancer) constructor.newInstance(initName);
+            return (IndexInstance) constructor.newInstance(initName);
         }
 
         public static InstanceType judge(int type) {

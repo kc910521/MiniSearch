@@ -1,7 +1,7 @@
 package com.ck.common.mini.util;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.timing.TimingIndexReBuilder;
 
 import javax.annotation.Nullable;
@@ -18,21 +18,21 @@ import java.util.Map;
  **/
 public class MiniSearch {
 
-    static final Map<String, Instancer> miniSearchMap = new HashMap<String, Instancer>(128);
+    static final Map<String, IndexInstance> miniSearchMap = new HashMap<String, IndexInstance>(128);
 
-    public static synchronized Instancer findInstance(String instancerName) {
+    public static synchronized IndexInstance findInstance(String instancerName) {
         return MiniSearch.findInstance(instancerName, null);
     }
 
-    public static Instancer findInstance(String instancerName, @Nullable MiniSearchConfigure miniSearchConfigure) {
+    public static IndexInstance findInstance(String instancerName, @Nullable MiniSearchConfigure miniSearchConfigure) {
         if (miniSearchMap.containsKey(instancerName)) {
             return miniSearchMap.get(instancerName);
         } else {
             synchronized (miniSearchMap) {
                 if (!miniSearchMap.containsKey(instancerName)) {
-                    Instancer instancer = instancer(instancerName, miniSearchConfigure);
-                    miniSearchMap.put(instancerName, instancer);
-                    return instancer;
+                    IndexInstance indexInstance = instancer(instancerName, miniSearchConfigure);
+                    miniSearchMap.put(instancerName, indexInstance);
+                    return indexInstance;
                 }
             }
             return miniSearchMap.get(instancerName);
@@ -47,11 +47,11 @@ public class MiniSearch {
         TimingIndexReBuilder.registerReBuildMap(miniSearchMap);
     }
 
-    protected static synchronized Instancer instancer(String instancerName) {
+    protected static synchronized IndexInstance instancer(String instancerName) {
         return MiniSearch.instancer(instancerName, null);
     }
 
-    protected static synchronized Instancer instancer(String instancerName, @Nullable MiniSearchConfigure miniSearchConfigure) {
+    protected static synchronized IndexInstance instancer(String instancerName, @Nullable MiniSearchConfigure miniSearchConfigure) {
         if (miniSearchConfigure == null) {
             miniSearchConfigure = new MiniSearchConfigure();
         }

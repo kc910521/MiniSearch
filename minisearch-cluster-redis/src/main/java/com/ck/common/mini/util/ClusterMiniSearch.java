@@ -1,8 +1,8 @@
 package com.ck.common.mini.util;
 
-import com.ck.common.mini.cluster.IndexCoordinatorInstancerProxy;
+import com.ck.common.mini.cluster.IndexCoordinatorIndexInstanceProxy;
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.IndexInstance;
 
 /**
  * @Author caikun
@@ -14,10 +14,10 @@ import com.ck.common.mini.index.Instancer;
 public class ClusterMiniSearch extends MiniSearch {
 
 
-    public static Instancer findInstance(String instancerName) {
-        Instancer instance = MiniSearch.findInstance(instancerName);
+    public static IndexInstance findInstance(String instancerName) {
+        IndexInstance instance = MiniSearch.findInstance(instancerName);
         MiniSearch.enableRebuild();
-        return new IndexCoordinatorInstancerProxy(instance);
+        return new IndexCoordinatorIndexInstanceProxy(instance);
     }
 
     /**
@@ -27,9 +27,9 @@ public class ClusterMiniSearch extends MiniSearch {
      * @param miniSearchConfigure
      * @return
      */
-    public static Instancer findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
-        Instancer instance = MiniSearch.findInstance(instancerName, miniSearchConfigure);
+    public static IndexInstance findInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+        IndexInstance instance = MiniSearch.findInstance(instancerName, miniSearchConfigure);
         MiniSearch.enableRebuild();
-        return new IndexCoordinatorInstancerProxy(instance);
+        return new IndexCoordinatorIndexInstanceProxy(instance);
     }
 }

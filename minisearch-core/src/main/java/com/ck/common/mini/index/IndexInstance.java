@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @Date 下午3:14 20-4-21
  **/
-public interface Instancer {
+public interface IndexInstance {
 
     void init(Map<String, Object> data);
 
@@ -48,7 +48,7 @@ public interface Instancer {
 
     MiniSearchConfigure getMiniSearchConfigure();
 
-    String getInstancerName();
+    String getInstanceName();
 
     /**
      * 设定业务方规则
@@ -59,16 +59,17 @@ public interface Instancer {
 
     /**
      * 不参与集群标识
+     * 定时任务标志
      * not a clusters node
      * @see TimingIndexReBuilder
      *
      */
-    interface BasicInstancer {
+    interface TimingReindexFunction {
 
         /**
          * 定时器调用的方法
          */
-        void timingRebuild();
+        void reindexing();
     }
 
     /**
@@ -79,10 +80,10 @@ public interface Instancer {
 
         /**
          * implements by biz
+         * only work for localization
          *
-         * @param searchInstance
+         * @param indexInstance only work for localization
          */
-        void doWork(Instancer searchInstance);
-
+        void doWork(IndexInstance indexInstance);
     }
 }

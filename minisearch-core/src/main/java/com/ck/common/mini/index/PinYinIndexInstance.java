@@ -24,14 +24,14 @@ import static com.ck.common.mini.util.LiteTools.getPingYin;
  * @Date 上午11:49 20-4-28
  **/
 @ThreadSafe
-public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
+public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.TimingReindexFunction {
 
     private static final String PT_PREFIX = "^";
     private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
     private static final String PT_AMPLE_ANY = "(.*)";
     private static final int lockTimeout = 3;
 
-    private static final Logger logger = LoggerFactory.getLogger(PinYinInstancer.class);
+    private static final Logger logger = LoggerFactory.getLogger(PinYinIndexInstance.class);
 
     private SpellingDictTree spellingDictTree;
 
@@ -47,14 +47,14 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
 
     private RebuildWorker rebuildWorker;
 
-    public PinYinInstancer(String instancerName) {
+    public PinYinIndexInstance(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
         this.spellingDictTree = new SpellingDictTree();
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
-    public PinYinInstancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+    public PinYinIndexInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
         this.spellingDictTree = new SpellingDictTree();
@@ -256,12 +256,12 @@ public class PinYinInstancer implements Instancer, Instancer.BasicInstancer {
     }
 
     @Override
-    public String getInstancerName() {
+    public String getInstanceName() {
         return instancerName;
     }
 
     @Override
-    public void timingRebuild() {
+    public void reindexing() {
         if (this.rebuildWorker != null) {
             this.rebuildWorker.doWork(this);
         }

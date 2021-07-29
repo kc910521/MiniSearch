@@ -1,7 +1,7 @@
 package com.ck.common;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.util.MiniSearch;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class CoreTest {
 
     public static void fast() {
         // create
-        Instancer instance = MiniSearch.findInstance("hello_world");
+        IndexInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
         instance.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
@@ -58,7 +58,7 @@ public class CoreTest {
 
     public static void dup() {
         // create
-        Instancer instance = MiniSearch.findInstance("hello_world");
+        IndexInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("为什么放弃治疗", new Info("因为我没钱了"));
         instance.add("为什么月经迟迟不来", new Info("因为我爱你"));
@@ -80,7 +80,7 @@ public class CoreTest {
 
     public static void dup2() {
         // create
-        Instancer instance = MiniSearch.findInstance("hello_world");
+        IndexInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("我爱");
 //        instance.add("爱");
@@ -106,7 +106,7 @@ public class CoreTest {
 
     public static void dup3() {
         // create
-        Instancer instance = MiniSearch.findInstance("hello_world");
+        IndexInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("我爱花");
         instance.add("woaihua");
@@ -150,7 +150,7 @@ public class CoreTest {
 
     public static void pageTest() {
         System.out.println("========= pageTest============");
-        Instancer instance = MiniSearch.findInstance("hello_world_page");
+        IndexInstance instance = MiniSearch.findInstance("hello_world_page");
         instance.add("高频赫兹充电");
         instance.add("赫兹充电器1");
         instance.add("新品-贺子品牌鞋垫3");
@@ -210,7 +210,7 @@ public class CoreTest {
 
     public static void idTest() {
         System.out.println("========= idTest============");
-        Instancer instance = MiniSearch.findInstance("id_test");
+        IndexInstance instance = MiniSearch.findInstance("id_test");
 
         instance.addWithId("0001", "极品狗粮", "极品狗粮1");
         instance.addWithId("0002", "极品狗粮", "极品狗粮2");
@@ -233,7 +233,7 @@ public class CoreTest {
     }
 
     public static void pinyin() {
-        Instancer instance = MiniSearch.findInstance("pinyin");
+        IndexInstance instance = MiniSearch.findInstance("pinyin");
         instance.add("和蔼");
         instance.add("heai2");
         System.out.println(instance.find("heai"));
@@ -255,10 +255,10 @@ public class CoreTest {
 
     public static void taskTiming() {
         // create
-        Instancer instance1 = MiniSearch.findInstance("hello_world");
+        IndexInstance instance1 = MiniSearch.findInstance("hello_world");
         MiniSearch.enableRebuild();
         // add all into index
-        Instancer instance2 = MiniSearch.findInstance("hello_world2");
+        IndexInstance instance2 = MiniSearch.findInstance("hello_world2");
         MiniSearch.enableRebuild();
         MiniSearch.enableRebuild();
         //try searching
@@ -293,7 +293,7 @@ public class CoreTest {
         MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
         miniSearchConfigure.setFreeMatch(false);
         miniSearchConfigure.setCoreType(0);
-        Instancer instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
+        IndexInstance instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
         instance.add("abc12345");
         instance.add("mbc12345");
         instance.add("bck12345");

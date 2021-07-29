@@ -2,7 +2,9 @@ package com.ck.common.mini.cluster;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.ClusterIndexInstance;
+import com.ck.common.mini.index.IndexInstance;
+import com.ck.common.mini.index.LocalIndexInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,25 +14,22 @@ import java.util.ServiceLoader;
 
 /**
  * @Author caikun
- * @Description
- * 索引协调器，处理集群环境索引同步
+ * @Description 索引协调器，处理集群环境索引同步
  * 代理基础instancer
  * IndexEventSender 由各个集群支持包自行实现
- *
- * @see IndexEventSender
- *
  * @Date 上午11:29 20-4-24
+ * @see IndexEventSender
  **/
-public class IndexCoordinatorInstancerProxy implements Instancer {
+public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance {
 
-    private Instancer instancer;
+    private LocalIndexInstance localRealInstance;
 
     private IndexEventSender indexEventSender;
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexCoordinatorInstancerProxy.class);
+    private static final Logger logger = LoggerFactory.getLogger(IndexCoordinatorIndexInstanceProxy.class);
 
-    public IndexCoordinatorInstancerProxy(Instancer instancer) {
-        this.instancer = instancer;
+    public IndexCoordinatorIndexInstanceProxy(IndexInstance localRealInstance) {
+        this.localRealInstance = (LocalIndexInstance) localRealInstance;
         // SPI find indexEventSender
         ServiceLoader<IndexEventSender> sl = ServiceLoader.load(IndexEventSender.class);
         for (IndexEventSender indexEventSender : sl) {
@@ -44,10 +43,10 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
     @Override
     public void init(Map<String, Object> data) {
         try {
-            indexEventSender.publish(EventType.INIT, instancer.getInstancerName(), "init", data);
+            indexEventSender.publish(EventType.INIT, localRealInstance.getInstanceName(), "init", data);
         } catch (Exception e) {
-            logger.error("due to {}, standalone update only.", e.toString(), e);
-            this.instancer.init(data);
+            logger.warn(" {}, standalone update only.", e.toString());
+            getLocalInstance().init(data);
         }
     }
 
@@ -58,18 +57,18 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
 
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
-        Collection<CARRIER> objects = this.instancer.find(keywords, page, pageSize);
+        Collection<CARRIER> objects = getLocalInstance().find(keywords, page, pageSize);
         return objects;
     }
 
     @Override
     public int addWithId(String id, String keywords, Object carrier) {
         try {
-            indexEventSender.publish(EventType.ADD, instancer.getInstancerName(), keywords, carrier);
+            indexEventSender.publish(EventType.ADD, localRealInstance.getInstanceName(), keywords, carrier);
             return 1;
         } catch (Exception e) {
-            logger.error("due to {}, standalone adding only.", e.toString(), e);
-            this.instancer.addWithId(id, keywords, carrier);
+            logger.warn(" {}, standalone adding only.", e.toString());
+            getLocalInstance().addWithId(id, keywords, carrier);
         }
         return 0;
     }
@@ -92,34 +91,38 @@ public class IndexCoordinatorInstancerProxy implements Instancer {
     @Override
     public int removeWithId(String id, String keywords) {
         try {
-            indexEventSender.publish(EventType.REMOVE, instancer.getInstancerName(), keywords, keywords);
+            indexEventSender.publish(EventType.REMOVE, localRealInstance.getInstanceName(), keywords, keywords);
             return 1;
         } catch (Exception e) {
-            logger.error("due to {}, standalone removing only.", e.toString(), e);
-            this.instancer.removeWithId(id, keywords);
+            logger.warn(" {}, standalone removing only.", e.toString());
+            getLocalInstance().removeWithId(id, keywords);
         }
         return 0;
     }
 
     @Override
     public void printAll() {
-        this.instancer.printAll();
+        getLocalInstance().printAll();
     }
 
     @Override
     public MiniSearchConfigure getMiniSearchConfigure() {
-        return this.instancer.getMiniSearchConfigure();
+        return getLocalInstance().getMiniSearchConfigure();
     }
 
     @Override
-    public String getInstancerName() {
-        return this.instancer.getInstancerName();
+    public String getInstanceName() {
+        return getLocalInstance().getInstanceName();
     }
 
     @Override
     public void setRebuildWorker(RebuildWorker rebuildWorker) {
-        this.instancer.setRebuildWorker(rebuildWorker);
+        getLocalInstance().setRebuildWorker(rebuildWorker);
     }
 
 
+    @Override
+    public LocalIndexInstance getLocalInstance() {
+        return this.localRealInstance;
+    }
 }

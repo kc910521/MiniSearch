@@ -20,9 +20,9 @@ import static com.ck.common.mini.util.LiteTools.beQueue;
  *
  * @Date 下午2:45 20-4-21
  **/
-public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
+public class SimpleIndexInstance implements LocalIndexInstance, IndexInstance.TimingReindexFunction {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleInstancer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleIndexInstance.class);
 
     private DictTree dictTree;
 
@@ -34,14 +34,14 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
     private RebuildWorker rebuildWorker;
 
-    public SimpleInstancer(String instancerName) {
+    public SimpleIndexInstance(String instancerName) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
         this.dictTree = new DictTree();
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
     }
 
-    public SimpleInstancer(String instancerName, MiniSearchConfigure miniSearchConfigure) {
+    public SimpleIndexInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
         this.dictTree = new DictTree();
@@ -153,12 +153,12 @@ public class SimpleInstancer implements Instancer, Instancer.BasicInstancer {
 
 
     @Override
-    public String getInstancerName() {
+    public String getInstanceName() {
         return instancerName;
     }
 
     @Override
-    public void timingRebuild() {
+    public void reindexing() {
         if (this.rebuildWorker != null) {
             this.rebuildWorker.doWork(this);
         }

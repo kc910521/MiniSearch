@@ -1,6 +1,6 @@
 package com.ck.common.mini.cluster.redis;
 
-import com.ck.common.mini.cluster.IndexCoordinatorInstancerProxy;
+import com.ck.common.mini.cluster.IndexCoordinatorIndexInstanceProxy;
 import com.ck.common.mini.cluster.IndexEventSender;
 import com.ck.common.mini.cluster.Intent;
 import com.ck.common.mini.config.MiniSearchConfigure;
@@ -9,16 +9,12 @@ import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -33,7 +29,7 @@ import javax.annotation.PostConstruct;
  * 找不到则会变为单机操作
  *
  *
- * @see IndexCoordinatorInstancerProxy
+ * @see IndexCoordinatorIndexInstanceProxy
  *
  *
  **/

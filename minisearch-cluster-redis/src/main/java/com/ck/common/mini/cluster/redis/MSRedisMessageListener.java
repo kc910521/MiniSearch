@@ -2,7 +2,8 @@ package com.ck.common.mini.cluster.redis;
 
 import com.ck.common.mini.cluster.Intent;
 import com.ck.common.mini.constant.EventType;
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.ClusterIndexInstance;
+import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
 import com.ck.common.mini.util.MiniSearch;
 import org.slf4j.Logger;
@@ -47,7 +48,10 @@ public class MSRedisMessageListener implements MessageListener {
             logger.debug("deserializeBody:{}", deserializeBody);
 //            String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
 //            logger.debug("deserializeChannel:{}", deserializeChannel);
-            Instancer instance = MiniSearch.findInstance(deserializeBody.getIndexName());
+            IndexInstance instance = MiniSearch.findInstance(deserializeBody.getIndexName());
+            if (instance instanceof ClusterIndexInstance) {
+                instance = ((ClusterIndexInstance) instance).getLocalInstance();
+            }
             if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
                 logger.debug(deserializeBody.getAction());
                 instance.remove(deserializeBody.getKey());

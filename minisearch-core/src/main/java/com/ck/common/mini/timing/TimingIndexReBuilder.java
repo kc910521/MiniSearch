@@ -1,22 +1,21 @@
 package com.ck.common.mini.timing;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.index.Instancer;
+import com.ck.common.mini.index.ClusterIndexInstance;
+import com.ck.common.mini.index.IndexInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 /**
  * @Author caikun
- * @Description 定时调用容器内所有 BasicInstancer#timingRebuild
+ * @Description 定时调用容器内所有 BasicInstancer#reindexing
  * @Date 下午4:01 21-7-26
- * @see Instancer.BasicInstancer
- * @see Instancer.RebuildWorker
+ * @see IndexInstance.TimingReindexFunction
+ * @see IndexInstance.RebuildWorker
  **/
 public class TimingIndexReBuilder {
 
@@ -25,7 +24,7 @@ public class TimingIndexReBuilder {
     /**
      * 注册在这个容器的都会被反复调用
      */
-    private static Map</* machineTaskId */String, /* instanceMap */Map<String, Instancer>> mapHolder = new ConcurrentHashMap<>(256);
+    private static Map</* machineTaskId */String, /* instanceMap */Map<String, IndexInstance>> mapHolder = new ConcurrentHashMap<>(256);
 
     /**
      * warn, unlimited queue
@@ -42,25 +41,28 @@ public class TimingIndexReBuilder {
 
     static {
 
-        TimingIndexReBuilder.rebuildPool.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                logger.info("rebuilding tools actives : {}", rebuildPool.getActiveCount());
-                try {
-                    TimingIndexReBuilder.mapHolder.forEach((k, mp) -> {
-                        logger.debug("{} go rebuilding", k);
-                        mp.forEach((insName, instance) -> {
-                            if (instance instanceof Instancer.BasicInstancer) {
-                                ((Instancer.BasicInstancer) instance).timingRebuild();
-                            }
-                        });
-
+        TimingIndexReBuilder.rebuildPool.scheduleAtFixedRate(() -> {
+            logger.info("rebuilding tools actives : {}", rebuildPool.getActiveCount());
+            try {
+                TimingIndexReBuilder.mapHolder.forEach((k, mp) -> {
+                    logger.debug("{} go rebuilding", k);
+                    mp.forEach((insName, instance) -> {
+                        IndexInstance r1 = instance;
+                        if (r1 instanceof ClusterIndexInstance) {
+                            r1 = ((ClusterIndexInstance) r1).getLocalInstance();
+                        }
+                        if (r1 instanceof IndexInstance.TimingReindexFunction) {
+                            ((IndexInstance.TimingReindexFunction) instance).reindexing();
+                        } else {
+                            logger.warn("unknown type of {} ", r1);
+                        }
                     });
-                } catch (Throwable t) {
-                    logger.error("rebuild pool exception ", t);
-                }
+
+                });
+            } catch (Throwable t) {
+                logger.error("rebuild pool exception ", t);
             }
-        }, 0, MiniSearchConfigure.getRebuildTaskInterval(), TimeUnit.SECONDS);
+        }, MiniSearchConfigure.getRebuildTaskInterval(), MiniSearchConfigure.getRebuildTaskInterval(), TimeUnit.SECONDS);
 
     }
 
@@ -71,9 +73,9 @@ public class TimingIndexReBuilder {
      * @param miniSearchMap
      * @see com.ck.common.mini.util.MiniSearch
      */
-    public static void registerReBuildMap(final Map<String, Instancer> miniSearchMap) {
+    public static void registerReBuildMap(final Map<String, IndexInstance> miniSearchMap) {
         synchronized (mapHolder) {
-            for (Map.Entry<String, Map<String, Instancer>> mapEntry : mapHolder.entrySet()) {
+            for (Map.Entry<String, Map<String, IndexInstance>> mapEntry : mapHolder.entrySet()) {
                 if (mapEntry.getValue() == miniSearchMap) {
                     // 存在相等则退出
                     return;

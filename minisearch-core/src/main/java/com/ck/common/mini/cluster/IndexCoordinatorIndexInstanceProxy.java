@@ -20,11 +20,13 @@ import java.util.ServiceLoader;
  * @Date 上午11:29 20-4-24
  * @see IndexEventSender
  **/
-public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance {
+public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance, IndexInstance.TimingReindexFunction {
 
     private LocalIndexInstance localRealInstance;
 
     private IndexEventSender indexEventSender;
+
+    private RebuildWorker rebuildWorker;
 
     private static final Logger logger = LoggerFactory.getLogger(IndexCoordinatorIndexInstanceProxy.class);
 
@@ -118,6 +120,14 @@ public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance 
     @Override
     public void setRebuildWorker(RebuildWorker rebuildWorker) {
         getLocalInstance().setRebuildWorker(rebuildWorker);
+    }
+
+    @Override
+    public void reindexing() {
+        if (this.rebuildWorker != null) {
+            // always do batch in local
+            this.rebuildWorker.doWork(getLocalInstance());
+        }
     }
 
 

@@ -77,9 +77,9 @@ public class MiniSearchConfigure {
     private static final int uCoreNumber = Runtime.getRuntime().availableProcessors();
 
     /**
-     * 任务重建间隔秒数
+     * 任务重建间隔秒数 sec
      */
-    private static int rebuildTaskInterval = 15;
+    private static int rebuildTaskInterval = 3600;
 
 
     public static int getPhraseCharNum() {

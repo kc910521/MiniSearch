@@ -20,7 +20,7 @@ import java.util.ServiceLoader;
  * @Date 上午11:29 20-4-24
  * @see IndexEventSender
  **/
-public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance, IndexInstance.TimingReindexFunction {
+public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance, IndexInstance.TimingLocalReindex {
 
     private LocalIndexInstance localRealInstance;
 
@@ -117,11 +117,21 @@ public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance,
         return getLocalInstance().getInstanceName();
     }
 
+    /**
+     * rebuild work 还是设置到代理上
+     *
+     * @param rebuildWorker
+     */
     @Override
     public void setRebuildWorker(RebuildWorker rebuildWorker) {
-        getLocalInstance().setRebuildWorker(rebuildWorker);
+        this.rebuildWorker = rebuildWorker;
     }
 
+    /**
+     * 执行本地的rebuild
+     *
+     * @see #setRebuildWorker
+     */
     @Override
     public void reindexing() {
         if (this.rebuildWorker != null) {

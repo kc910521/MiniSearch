@@ -20,7 +20,7 @@ import static com.ck.common.mini.util.LiteTools.beQueue;
  *
  * @Date 下午2:45 20-4-21
  **/
-public class SimpleIndexInstance implements LocalIndexInstance, IndexInstance.TimingReindexFunction {
+public class SimpleIndexInstance implements LocalIndexInstance, IndexInstance.TimingLocalReindex {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleIndexInstance.class);
 

@@ -24,7 +24,7 @@ import static com.ck.common.mini.util.LiteTools.getPingYin;
  * @Date 上午11:49 20-4-28
  **/
 @ThreadSafe
-public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.TimingReindexFunction {
+public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.TimingLocalReindex {
 
     private static final String PT_PREFIX = "^";
     private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";

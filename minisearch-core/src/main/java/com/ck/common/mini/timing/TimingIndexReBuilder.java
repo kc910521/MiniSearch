@@ -14,7 +14,7 @@ import java.util.concurrent.*;
  * @Author caikun
  * @Description 定时调用容器内所有 BasicInstancer#reindexing
  * @Date 下午4:01 21-7-26
- * @see IndexInstance.TimingReindexFunction
+ * @see IndexInstance.TimingLocalReindex
  * @see IndexInstance.RebuildWorker
  **/
 public class TimingIndexReBuilder {
@@ -51,8 +51,8 @@ public class TimingIndexReBuilder {
                         if (r1 instanceof ClusterIndexInstance) {
                             r1 = ((ClusterIndexInstance) r1).getLocalInstance();
                         }
-                        if (r1 instanceof IndexInstance.TimingReindexFunction) {
-                            ((IndexInstance.TimingReindexFunction) instance).reindexing();
+                        if (r1 instanceof IndexInstance.TimingLocalReindex) {
+                            ((IndexInstance.TimingLocalReindex) instance).reindexing();
                         } else {
                             logger.warn("unknown type of {} ", r1);
                         }

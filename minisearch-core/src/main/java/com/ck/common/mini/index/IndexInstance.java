@@ -8,11 +8,8 @@ import java.util.Map;
 
 /**
  * @Author caikun
- * @Description
- *
- * 每个索引一个实例，
+ * @Description 每个索引一个实例，
  * 以多例模式出现
- *
  * @Date 下午3:14 20-4-21
  **/
 public interface IndexInstance {
@@ -54,6 +51,8 @@ public interface IndexInstance {
      * 设定业务方规则
      *
      * @param rebuildWorker
+     *
+     * @see TimingLocalReindex
      */
     void setRebuildWorker(RebuildWorker rebuildWorker);
 
@@ -61,10 +60,11 @@ public interface IndexInstance {
      * 不参与集群标识
      * 定时任务标志
      * not a clusters node
-     * @see TimingIndexReBuilder
      *
+     * @see TimingIndexReBuilder
+     * @see #setRebuildWorker
      */
-    interface TimingReindexFunction {
+    interface TimingLocalReindex {
 
         /**
          * 定时器调用的方法

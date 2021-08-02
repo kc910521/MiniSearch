@@ -3,6 +3,7 @@ package com.ck.common.mini.cluster.redis;
 import com.ck.common.mini.cluster.IndexCoordinatorIndexInstanceProxy;
 import com.ck.common.mini.cluster.IndexEventSender;
 import com.ck.common.mini.cluster.Intent;
+import com.ck.common.mini.config.DefaultMiniSearchSpringRedisConfig;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
 import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.PostConstruct;

@@ -206,6 +206,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
                                 return hit;
                             }
                             if (!(canMatch(sortedOnlyBigChars, entry.getKey()) ^ ks)
+                                    && !results.contains(entry.getValue())
                                     && results.add(entry.getValue())) {
                                 hit++;
                                 if (hit <= hitAndDrop) {

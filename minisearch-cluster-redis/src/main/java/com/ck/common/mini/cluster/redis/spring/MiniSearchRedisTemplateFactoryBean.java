@@ -29,6 +29,9 @@ public class MiniSearchRedisTemplateFactoryBean implements FactoryBean<RedisTemp
     @Override
     public RedisTemplate getObject() throws Exception {
         Map<String, RedisConnectionFactory> beans = this.applicationContext.getBeansOfType(RedisConnectionFactory.class);
+        if (beans.isEmpty()) {
+            throw new RuntimeException("RedisConnectionFactory is not defined in Spring !");
+        }
         RedisConnectionFactory target = beans.getOrDefault(defaultRedisConnectionFactoryBeanName,
                 beans.entrySet().iterator().next().getValue()
         );

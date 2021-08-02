@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Author caikun
@@ -148,6 +149,22 @@ public class CoreTest {
         System.out.println(result2);
     }
 
+    public static void dupTest() {
+        IndexInstance instance = MiniSearch.findInstance("duplicate_chars");
+        instance.add(new String("1111"));
+        instance.add(new String("111"));
+
+        instance.add(new String("11"));
+
+        instance.add("aaaa2", UUID.randomUUID().toString());
+
+        instance.add("aaaab", UUID.randomUUID().toString());
+        System.out.println(instance.find("11"));
+
+    }
+
+
+
     public static void pageTest() {
         System.out.println("========= pageTest============");
         IndexInstance instance = MiniSearch.findInstance("hello_world_page");
@@ -250,7 +267,8 @@ public class CoreTest {
 //        idTest();
 //        pinyin();
 //        orderSearchTest();
-        taskTiming();
+//        taskTiming();
+        dupTest();
     }
 
     public static void taskTiming() {

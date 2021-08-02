@@ -238,7 +238,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      */
     public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq,  char[] sortedOnlyBigChars, boolean strict, int page, int pageSize) {
         // 指定返回的类型
-        List<ORIGIN_CARRIER> results = new ArrayList<>();
+        List<ORIGIN_CARRIER> results = new ArrayList<>(pageSize > 10000 ? 10000 : pageSize);
         Node root = getRoot();
         if (root == null || root.getDomains() == null || root.getDomains().isEmpty()) {
             return results;

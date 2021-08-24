@@ -1,6 +1,8 @@
 package com.ck.common.mini.core;
 
 
+import com.ck.common.mini.core.condition.ConditionMatcher;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,6 +19,8 @@ public class DictTree<CARRIER extends Serializable> {
     }
 
     private Node root = new Node(64);
+
+    private ConditionMatcher conditionMatcher = null;
 
     static class Node<CARRIER> {
 
@@ -287,6 +291,13 @@ public class DictTree<CARRIER extends Serializable> {
         }
     }
 
+    public <CONDITION> boolean filter(CONDITION condtion, CARRIER carrier) {
+        if (conditionMatcher != null) {
+            return conditionMatcher.match(condtion, carrier);
+        }
+        return true;
+    }
+
     protected void printChildBreadth(Node<CARRIER> root) {
         if (root == null) {
             throw new RuntimeException("How could you ...");
@@ -458,4 +469,7 @@ public class DictTree<CARRIER extends Serializable> {
         return results;
     }
 
+    public void setConditionMatcher(ConditionMatcher conditionMatcher) {
+        this.conditionMatcher = conditionMatcher;
+    }
 }

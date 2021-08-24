@@ -20,6 +20,7 @@ public interface IndexInstance {
 
     <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize);
 
+    <CARRIER> Collection<CARRIER> findByCondition(String keywords, Object condition, int page, int pageSize);
     /**
      * @param id       do if id is null or not
      * @param keywords

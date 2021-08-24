@@ -71,7 +71,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param father
      * @param results 不能为空
      */
-    protected void ergodicAndSetBy(Node father, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, int page, int pageSize) {
+    protected void ergodicAndSetBy(Node father, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, ORIGIN_CARRIER condition, int page, int pageSize) {
         assert results != null;
         if (father == null) {
             return;
@@ -80,7 +80,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
             return;
         }
         int hitAndDrop = page * pageSize;
-        ergodicTailsInBreadth(father, hitAndDrop, pageSize, results, sortedOnlyBigChars);
+        ergodicTailsInBreadth(father, hitAndDrop, pageSize, results, sortedOnlyBigChars, condition);
     }
 
     /**
@@ -156,13 +156,13 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param needSize 结果集内最多需要返回的数
      * @param sortedOnlyBigChars
      */
-    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars) {
+    protected void ergodicTailsInBreadth(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, ORIGIN_CARRIER condition) {
         assert results != null;
         if (father == null) {
             return;
         }
         Node orgFather = father;
-        int hit = searchAndFill(orgFather, hitAndDrop, needSize, results, sortedOnlyBigChars, true);
+        int hit = searchAndFill(orgFather, hitAndDrop, needSize, results, sortedOnlyBigChars, condition, true);
         int filledSize = results.size();
         int stillNeededSize = needSize - filledSize;
         if (stillNeededSize > 0) {
@@ -170,7 +170,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
             int hitAndDrop4wrongZh = hitAndDrop - hit;
             hitAndDrop4wrongZh = hitAndDrop4wrongZh < 0 ? 0 : hitAndDrop4wrongZh;
             // todo:当前为低效率的重新遍历。可优化：记忆节点等
-            searchAndFill(father, hitAndDrop4wrongZh, needSize, results, sortedOnlyBigChars, false);
+            searchAndFill(father, hitAndDrop4wrongZh, needSize, results, sortedOnlyBigChars, condition, false);
         }
     }
 
@@ -184,7 +184,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param ks 和canMatch同或，为true则正向搜索，为false则搜同或以外的
      * @return hit
      */
-    private int searchAndFill(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, boolean ks) {
+    private int searchAndFill(Node father, int hitAndDrop, int needSize, Collection<ORIGIN_CARRIER> results, char[] sortedOnlyBigChars, ORIGIN_CARRIER condition, boolean ks) {
         Stack<Node> stack = new Stack<>();
         // 命中个数
         int hit = 0;
@@ -205,12 +205,14 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
                                 // 判断长度
                                 return hit;
                             }
+                            ORIGIN_CARRIER value = entry.getValue();
                             if (!(canMatch(sortedOnlyBigChars, entry.getKey()) ^ ks)
-                                    && !results.contains(entry.getValue())
-                                    && results.add(entry.getValue())) {
+                                    && !results.contains(value)
+                                    && filter(condition, (Serializable) value)
+                                    && results.add(value)) {
                                 hit++;
                                 if (hit <= hitAndDrop) {
-                                    results.remove(entry.getValue());
+                                    results.remove(value);
                                 }
                             }
 
@@ -236,7 +238,7 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
      * @param cq
      * @return
      */
-    public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq,  char[] sortedOnlyBigChars, boolean strict, int page, int pageSize) {
+    public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq, char[] sortedOnlyBigChars, ORIGIN_CARRIER condition, boolean strict, int page, int pageSize) {
         // 指定返回的类型
         List<ORIGIN_CARRIER> results = new ArrayList<>(pageSize > 10000 ? 10000 : pageSize);
         Node root = getRoot();
@@ -246,9 +248,13 @@ public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, OR
         // 4 root
         Node node = findPositionNode(cq, root, strict);
         if (node != null) {
-            ergodicAndSetBy(node, results, sortedOnlyBigChars, page, pageSize);
+            ergodicAndSetBy(node, results, sortedOnlyBigChars, condition, page, pageSize);
         }
         return results;
+    }
+
+    public Collection<ORIGIN_CARRIER> fetchSimilar(Queue<Character> cq, char[] sortedOnlyBigChars, boolean strict, int page, int pageSize) {
+        return this.fetchSimilar(cq, sortedOnlyBigChars, null, strict, page, pageSize);
     }
 
     /**

@@ -20,6 +20,13 @@ public class CoreTest {
     public static class Info implements Serializable {
         private String i;
 
+        private Integer tm;
+
+        private int tm2;
+
+        public Info() {
+        }
+
         private Info(String i) {
             this.i = i;
         }
@@ -30,8 +37,39 @@ public class CoreTest {
 
         @Override
         public String toString() {
-            return "Info[" + i + "]";
+            return "Info{" +
+                    "i='" + i + '\'' +
+                    ", tm=" + tm +
+                    ", tm2=" + tm2 +
+                    '}';
         }
+    }
+
+    public static void conditionTest() {
+        IndexInstance instance = MiniSearch.findInstance("hello_world");
+        // add all into index
+        instance.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
+        Info weishenmeyuejingchichibulai2 = new Info("weishenmeyuejingchichibulai2");
+        weishenmeyuejingchichibulai2.tm2 = 31111;
+        weishenmeyuejingchichibulai2.tm = 10087;
+        instance.add("为什么月经迟迟不来", weishenmeyuejingchichibulai2);
+        Info weishenmewanshangbunengzhaojingzi3 = new Info("weishenmewanshangbunengzhaojingzi3");
+        weishenmewanshangbunengzhaojingzi3.tm = 998;
+        instance.add("为什么晚上不能照镜子", weishenmewanshangbunengzhaojingzi3);
+
+        Info weishenmeyuejingchichibulai21 = new Info("weishenmeyuejingchichibulai2");
+        weishenmeyuejingchichibulai21.tm2 = 31111;
+        Collection<Object> result1 = instance.findByCondition("为什么", weishenmeyuejingchichibulai21, 0, 200);
+        System.out.println("result1:" + result1);
+        Collection<Object> result2 = instance.findByCondition("为什么", new Info("weishenmeyuejingchichibulai2"), 0, 200);
+        System.out.println("result2:" + result2);
+        Collection<Object> result3 = instance.findByCondition("为什么", new Info(), 0, 200);
+        System.out.println("result3:" + result3);
+        Info info3 = new Info();
+        info3.tm = 0;
+        Collection<Object> result4 = instance.findByCondition("为什么", info3, 0, 200);
+        System.out.println("result4:" + result4);
+
     }
 
     public static void fast() {
@@ -43,8 +81,10 @@ public class CoreTest {
         instance.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
         instance.add("为蛇要放弃治疗", new Info("weisheyaofangqizhiliao4"));
         //try searching
-        Collection<Object> result = instance.find("为什么");
-        System.out.println(result);
+        Collection<Object> result1 = instance.find("为什么");
+        System.out.println("result1:" + result1);
+        Collection<Object> result2 = instance.findByCondition("为什么", new Info("weishenmeyuejingchichibulai2"), 0, 200);
+        System.out.println("result2:" + result2);
 
         Map<String, Object> params = new HashMap<>();
         params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
@@ -268,7 +308,8 @@ public class CoreTest {
 //        pinyin();
 //        orderSearchTest();
 //        taskTiming();
-        dupTest();
+//        dupTest();
+        conditionTest();
     }
 
     public static void taskTiming() {

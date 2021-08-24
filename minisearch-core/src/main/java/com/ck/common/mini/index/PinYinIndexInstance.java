@@ -3,6 +3,7 @@ package com.ck.common.mini.index;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.core.SpellingComponent;
 import com.ck.common.mini.core.SpellingDictTree;
+import com.ck.common.mini.core.condition.SimpleConditionMatcher;
 import com.ck.common.mini.util.LiteTools;
 import com.ck.common.mini.workshop.nlp.NLPAdmin;
 import com.ck.common.mini.workshop.nlp.NLPWorker;
@@ -51,14 +52,21 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
         this.instancerName = instancerName;
         this.miniSearchConfigure = new MiniSearchConfigure();
         this.spellingDictTree = new SpellingDictTree();
-        this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
+        this.spellingDictTree.setConditionMatcher(new SimpleConditionMatcher());
+        init0();
     }
 
     public PinYinIndexInstance(String instancerName, MiniSearchConfigure miniSearchConfigure) {
         this.instancerName = instancerName;
         this.miniSearchConfigure = miniSearchConfigure;
         this.spellingDictTree = new SpellingDictTree();
+        this.spellingDictTree.setConditionMatcher(new SimpleConditionMatcher());
+        init0();
+    }
+
+    private void init0() {
         this.nlpWorker = NLPAdmin.pickBy(this.miniSearchConfigure);
+
     }
 
     @Override
@@ -103,6 +111,19 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
      */
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords, int page, int pageSize) {
+        return this.findByCondition(keywords, null, page, pageSize);
+    }
+
+    /**
+     * @param keywords
+     * @param condition
+     * @param page      从0开始
+     * @param pageSize
+     * @param <CARRIER>
+     * @return
+     */
+    @Override
+    public <CARRIER> Collection<CARRIER> findByCondition(String keywords, Object condition, int page, int pageSize) {
         if (keywords == null || keywords.trim().length() == 0) {
             return Collections.emptySet();
         }
@@ -112,7 +133,7 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
         Collection result = null;
         try {
             rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            result = this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), miniSearchConfigure.isStrict(), page, pageSize);
+            result = this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), condition, miniSearchConfigure.isStrict(), page, pageSize);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);

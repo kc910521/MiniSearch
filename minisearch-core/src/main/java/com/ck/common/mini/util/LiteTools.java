@@ -9,6 +9,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -24,6 +25,54 @@ public final class LiteTools {
 
     public final static boolean match(String pattern, String originStr) {
         return Pattern.matches(pattern, originStr);
+    }
+
+    /**
+     * 比对conditions到data
+     *
+     * @param conditions
+     * @param data
+     * @param <Obj>
+     * @return
+     */
+    public final static <Obj> boolean objectConditionMatch(Obj conditions, Obj data) {
+        if (conditions == null) {
+            return true;
+        }
+        if (conditions instanceof String && data instanceof String) {
+            return true;
+        }
+        Field[] conditionFields = listAllFields(conditions);
+        for (int i = 0; i < conditionFields.length; i++) {
+            Field cField = conditionFields[i];
+            cField.setAccessible(true);
+            try {
+                Object condVal = cField.get(conditions);
+                if (condVal != null && !condVal.equals(cField.get(data))) {
+                    return false;
+                }
+
+            } catch (IllegalAccessException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 列出obj所有字段
+     *
+     * @param obj 目标
+     * @return
+     */
+    private final static Field[] listAllFields(Object obj) {
+        List<Field> fields = new ArrayList<>();
+        Class tempClass = obj.getClass();
+        while (tempClass != null && !tempClass.getName().toLowerCase().equals("java.lang.object")) {
+            fields.addAll(Arrays.asList(tempClass.getDeclaredFields()));
+            tempClass = tempClass.getSuperclass();
+        }
+        return fields.toArray(new Field[0]);
     }
 
     /**
@@ -266,11 +315,38 @@ public final class LiteTools {
         return stringBuilder.toString().toCharArray();
     }
 
+    static class A {
+        private int a;
+
+        private String mk;
+
+        public int getA() {
+            return a;
+        }
+
+        public void setA(int a) {
+            this.a = a;
+        }
+
+        public String getMk() {
+            return mk;
+        }
+
+        public void setMk(String mk) {
+            this.mk = mk;
+        }
+    }
 
     public static void main(String[] args) {
 
 
-        System.out.println(getPingYin("超美少女系列 蛯原舞"));
+//        System.out.println(getPingYin("超美少女系列 蛯原舞"));
+        A aa = new A();
+        aa.setMk("da");
+        aa.setA(3);
+        A bb = new A();
+        bb.setMk("da");
+        System.out.println(objectConditionMatch(aa, bb));
     }
 
 

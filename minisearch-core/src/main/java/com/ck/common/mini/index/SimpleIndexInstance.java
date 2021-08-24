@@ -81,6 +81,11 @@ public class SimpleIndexInstance implements LocalIndexInstance, IndexInstance.Ti
     }
 
     @Override
+    public <CARRIER> Collection<CARRIER> findByCondition(String keywords, Object condition, int page, int pageSize) {
+        throw new RuntimeException("not support #findByCondition");
+    }
+
+    @Override
     @Deprecated
     public synchronized int addWithId(String id, String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {

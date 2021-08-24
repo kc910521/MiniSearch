@@ -64,6 +64,12 @@ public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance,
     }
 
     @Override
+    public <CARRIER> Collection<CARRIER> findByCondition(String keywords, Object condition, int page, int pageSize) {
+        Collection<CARRIER> objects = getLocalInstance().findByCondition(keywords, condition, page, pageSize);
+        return objects;
+    }
+
+    @Override
     public int addWithId(String id, String keywords, Object carrier) {
         try {
             indexEventSender.publish(EventType.ADD, localRealInstance.getInstanceName(), keywords, carrier);

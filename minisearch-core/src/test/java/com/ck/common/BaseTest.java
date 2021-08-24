@@ -7,7 +7,7 @@ import java.util.Collection;
 
 /**
  * @Author caikun
- * @Description //TODO $END
+ * @Description
  * @Date 下午6:55 21-1-25
  **/
 public class BaseTest {
@@ -103,11 +103,8 @@ public class BaseTest {
         simpleInstancer.printAll();
     }
 
+
     public static void main(String[] args) {
-        tt1();
-        simpleInstancer.init(null);
-        tt2();
-        pageTest();
     }
 
 }

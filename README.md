@@ -9,15 +9,13 @@
 [https://github.com/kc910521/minisearch-boot-server](https://github.com/kc910521/minisearch-boot-server)  
 
 
->
-> 正文开始
 
 > 
 >
 > 使用场景：
-> 敏感词搜索
-> ​十万数据以下量级的简单搜索、因为是内存型，相比使用ES，少一次网络请求
-> 代替 like %%
+> 敏感词搜索、针对用户输入的短语、句子进行风控。比如用户注册姓名的风控。
+> ​百万内数据量级的简单搜索、相比使用ES，至少少一次网络请求。比如简单后台系统的拼音搜索、订单号联想搜索等。
+> 代替 like %%。
 
 
 
@@ -28,9 +26,10 @@
 - **中文错字**搜索：用户的输入法可能没法选出正确的中文，所以需要修正结果集。比如很多小众的品牌名，公司名等场景，基于拼音输入法用户是很难输入正确的，但不应该搜不到。
 - **可以仅开启左侧基准搜索**。当你输入'ABC',就可能搜索出订单号 ‘ABCD’ ,而不会搜索出‘BC’.就像 MYSQL LIKE 'chars%'。
 - **搜索并返回承载对象**！mini-search 可以返回你在插入数据时挂载在字符串匹配位置的对象。比如你可以插入一条字符串 ‘abc’ ，同时将 ‘abc' 的叶子节点放置为User对象,当你下次搜索到 ’abc‘ 时，mini-search 可以直接返回给你匹配的User对象列表。你可以将叶子节点的对象设置为一条 SQL 语句，这个技巧也可以让你把节点的数据存入数据库。
+- 支持简单**条件筛选**  
 - 可以处理**分页**请求。
 - 支持**携带业务ID的精准插入。**
-- 组件扩展：可选配redis模块实现集群同步、选配boot模块升级为HTTP的独立搜索节点
+- 组件扩展：可选配redis模块实现集群同步、选配boot模块升级为HTTP的独立搜索节点  
 
 ## 一、快速开始
 
@@ -94,8 +93,41 @@ Collection<Object> result2 = instance.find("shubiao");
 > [白色鼠标, 术镖，起立！, 鼠标(shubiao)的英文：mouse, 白色鼠标有球, 为什么shubiao没球了, 光电鼠标没有球]
 
 可以看到 ‘术镖’ 也被搜索进来了。
+### 4. 条件搜索
+在需要多个条件搜索的地方，需要对除核心中文字段外，其他字段进行再筛选。  
+```java
 
-### 4. 订单号搜索
+IndexInstance instance = MiniSearch.findInstance("hello_world");
+// add all into index
+// add 1
+instance.add("为什么放弃治疗", new Info("fangqi"));
+// add 2
+Info bulai = new Info("bulai");
+bulai.tm2 = 31111;
+bulai.tm = 10087;
+instance.add("为什么月经迟迟不来", bulai);
+// add 3
+Info zhaojingzi = new Info("zhaojingzi");
+zhaojingzi.tm = 998;
+instance.add("为什么晚上不能照镜子", zhaojingzi);
+// condition
+// 因为bulaiCondition的tm2和i与数据对应，所以输出，因为condition的tm为空，所以不对此字段进行筛选
+Info bulaiCondition = new Info("bulai");
+bulaiCondition.tm2 = 31111;
+Collection<Object> result1 = instance.findByCondition("为什么", bulaiCondition, 0, 200);
+System.out.println("result1:" + result1);
+// 因为条件语句tm2为对象默认值0,但是原始数据被赋值，所以无法筛选出数据
+Collection<Object> result2 = instance.findByCondition("为什么", new Info("bulai"), 0, 200);
+System.out.println("result2:" + result2);
+Collection<Object> result3 = instance.findByCondition("为什么", new Info(), 0, 200);
+System.out.println("result3:" + result3);
+Info info3Condition = new Info();
+info3Condition.tm = 0;
+Collection<Object> result4 = instance.findByCondition("为什么", info3Condition, 0, 200);
+System.out.println("result4:" + result4);
+```
+
+### 5. 订单号搜索
 针对订单号等场景，可能你只想从字符的最左端进行匹配，就像 MYSQL 的 ‘LIKE "eg%"’一样。
 当你想搜索 ‘bc’, 而不搜索到  ‘abc12345’。你需要作出如下调整：
 

@@ -1,5 +1,6 @@
 package com.ck.common.mini.cluster.redis.spring;
 
+import com.ck.common.mini.cluster.redis.RedisIndexCoordinateSender;
 import com.ck.common.mini.util.SpringTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class SpringRedisDefinitionSupport implements BeanDefinitionRegistryPostProcessor {
 
     public final static String MSRedisTemplateBeanName = "miniSearchRedisTemplate";
+//    public final static String MSRedisTemplateBeanName = "miniSearchSpringUtil";
+
 
     private final static String RedisTemplateClassName = "org.springframework.data.redis.core.StringRedisTemplate";
 

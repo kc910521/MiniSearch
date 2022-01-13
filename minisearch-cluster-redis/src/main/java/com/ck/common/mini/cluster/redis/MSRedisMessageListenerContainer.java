@@ -56,8 +56,7 @@ public class MSRedisMessageListenerContainer extends RedisMessageListenerContain
         threadPoolTaskScheduler.initialize();
 
 
-
-        String s = miniSearchConfigure.getNotifyPatternChars() + "*";
+        String s = miniSearchConfigure.getNotifyCharsPrefix() + "*";
         // 1
         PatternTopic patternTopic = new PatternTopic(s);
         List<Topic> list = new ArrayList<Topic>();

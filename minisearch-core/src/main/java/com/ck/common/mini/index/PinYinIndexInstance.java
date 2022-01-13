@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.ck.common.mini.util.LiteTools.beQueue;
 import static com.ck.common.mini.util.LiteTools.getPingYin;
@@ -27,10 +25,10 @@ import static com.ck.common.mini.util.LiteTools.getPingYin;
 @ThreadSafe
 public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.TimingLocalReindex {
 
-    private static final String PT_PREFIX = "^";
-    private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
-    private static final String PT_AMPLE_ANY = "(.*)";
-    private static final int lockTimeout = 3;
+//    private static final String PT_PREFIX = "^";
+//    private static final String PT_AMPLE_ONE_AT_LEAST = "(.+)";
+//    private static final String PT_AMPLE_ANY = "(.*)";
+
 
     private static final Logger logger = LoggerFactory.getLogger(PinYinIndexInstance.class);
 
@@ -44,7 +42,7 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
 
     private NLPWorker nlpWorker;
 
-    private final ReentrantReadWriteLock rrw = new ReentrantReadWriteLock();
+
 
     private RebuildWorker rebuildWorker;
 
@@ -71,35 +69,18 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
 
     @Override
     public void init(Map<String, Object> data) {
-        try {
-            rrw.writeLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            this.spellingDictTree.clear();
-            Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Object> next = iterator.next();
-                add(next.getKey(), next.getValue());
-            }
-            logger.info("init success");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } finally {
-            rrw.writeLock().unlock();
+        this.spellingDictTree.clear();
+        Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Object> next = iterator.next();
+            add(next.getKey(), next.getValue());
         }
+        logger.info("init success");
     }
 
     @Override
     public <CARRIER> Collection<CARRIER> find(String keywords) {
-        try {
-            rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } finally {
-            rrw.readLock().unlock();
-        }
-
+        return this.find(keywords, 0, miniSearchConfigure.getMaxFetchNum());
     }
 
     /**
@@ -130,17 +111,7 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");
         }
-        Collection result = null;
-        try {
-            rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            result = this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), condition, miniSearchConfigure.isStrict(), page, pageSize);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } finally {
-            rrw.readLock().unlock();
-        }
-        return result;
+        return this.spellingDictTree.fetchSimilar(beQueue(getPingYin(keywords)), catchBigChars(keywords), condition, miniSearchConfigure.isStrict(), page, pageSize);
     }
 
     @Override
@@ -160,18 +131,9 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
         }
         int rs = 0;
         List<String> subKeywords = nlpWorker.work(keywords);
-        try {
-            rrw.writeLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            for (String kw : subKeywords) {
-                rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } finally {
-            rrw.writeLock().unlock();
+        for (String kw : subKeywords) {
+            rs += this.spellingDictTree.insert(beQueue(getPingYin(kw)), spellingComponent);
         }
-
         return rs;
     }
 
@@ -243,16 +205,8 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
             spellingComponent.setId(id);
         }
         int i = 0;
-        try {
-            rrw.writeLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            for (String kw : subKeywords) {
-                i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), spellingComponent);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } finally {
-            rrw.writeLock().unlock();
+        for (String kw : subKeywords) {
+            i += this.spellingDictTree.removeToLastTail(beQueue(getPingYin(kw)), this.spellingDictTree.getRoot(), spellingComponent);
         }
         return i;
     }
@@ -260,15 +214,7 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
     @Deprecated
     @Override
     public void printAll() {
-        try {
-            rrw.readLock().tryLock(lockTimeout, TimeUnit.MINUTES);
-            this.spellingDictTree.printChild(this.spellingDictTree.getRoot());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } finally {
-            rrw.readLock().unlock();
-        }
+        this.spellingDictTree.printChild(this.spellingDictTree.getRoot());
     }
 
     @Override

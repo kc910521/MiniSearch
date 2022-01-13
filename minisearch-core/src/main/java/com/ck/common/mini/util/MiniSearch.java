@@ -56,7 +56,7 @@ public class MiniSearch {
             miniSearchConfigure = new MiniSearchConfigure();
         }
         try {
-            return MiniSearchConfigure.InstanceType.judge(miniSearchConfigure.getCoreType()).getInstance(instancerName);
+            return MiniSearchConfigure.LocalIndexInstanceType.judge(miniSearchConfigure.getCoreType()).getInstance(instancerName);
         } catch (Throwable e) {
             e.printStackTrace();
         }

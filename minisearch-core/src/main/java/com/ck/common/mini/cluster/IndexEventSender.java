@@ -15,5 +15,4 @@ public interface IndexEventSender {
 
     void publish(EventType eventType, String instancerName, String key, Object carrier) throws Exception;
 
-    void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure);
 }

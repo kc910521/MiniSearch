@@ -3,22 +3,13 @@ package com.ck.common.mini.cluster.redis;
 import com.ck.common.mini.cluster.IndexCoordinatorIndexInstanceProxy;
 import com.ck.common.mini.cluster.IndexEventSender;
 import com.ck.common.mini.cluster.Intent;
-import com.ck.common.mini.config.DefaultMiniSearchSpringRedisConfig;
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
-import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
+import com.ck.common.mini.util.SpringTools;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @Author caikun
@@ -35,72 +26,50 @@ import javax.annotation.PostConstruct;
  *
  *
  **/
-@DependsOn({SpringRedisDefinitionSupport.MSRedisTemplateBeanName, "miniSearchSpringUtil"})
-public class RedisIndexCoordinateSender implements IndexEventSender, ApplicationContextAware {
-
-    private volatile boolean init = false;
+public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisIndexCoordinateSender.class);
 
-    private ApplicationContext applicationContext;
+    private static RedisTemplate redisTemplate;
 
-    @Autowired
-    @Qualifier(SpringRedisDefinitionSupport.MSRedisTemplateBeanName)
-    private RedisTemplate redisTemplate;
-
-    @Autowired
-    private MiniSearchConfigure miniSearchConfigure;
+    private static MiniSearchConfigure miniSearchConfigure;
 
     public RedisIndexCoordinateSender() {
+        checkDep();
     }
 
-    @PostConstruct
-    public void postCons() {
-        redisTemplate = this.applicationContext.getBean(SpringRedisDefinitionSupport.MSRedisTemplateBeanName, RedisTemplate.class);
-        miniSearchConfigure = this.applicationContext.getBean(MiniSearchConfigure.class);
-        init1();
-    }
-
-    public void init1() {
-        if (redisTemplate == null) {
+    public void checkDep() {
+        if (RedisIndexCoordinateSender.redisTemplate == null) {
             logger.error("WARN: redisTemplate is null.");
         }
-        if (this.miniSearchConfigure == null) {
+        if (RedisIndexCoordinateSender.miniSearchConfigure == null) {
             logger.error("WARN: miniSearchConfigure null, default");
             miniSearchConfigure = new MiniSearchConfigure();
         }
         logger.debug("RedisIndexCoordinateSender loaded.");
-        this.init = true;
     }
 
     @Override
     public void publish(EventType eventType, String instancerName, String key, Object carrier) throws Exception {
-        if (!this.init) {
-            throw new RuntimeException("RedisIndexCoordinateSender no init");
-        }
-        Intent intent = new Intent();
+        //  不考虑时钟回拨、节点所在时间对时不一致问题
+        Intent intent = new Intent(System.currentTimeMillis());
         intent.setCarrier(carrier);
         intent.setAction(eventType.name());
         intent.setIndexName(instancerName);
         intent.setKey(key);
-        logger.debug("send to " + miniSearchConfigure.getNotifyPatternChars() + instancerName);
+        logger.debug("send to " + miniSearchConfigure.getNotifyCharsPrefix() + instancerName);
         if (redisTemplate == null) {
             throw new RuntimeException("redisTemplate may not involved, all operations will be standalone");
         }
-        redisTemplate.convertAndSend(miniSearchConfigure.getNotifyPatternChars() + instancerName, intent);
+        redisTemplate.convertAndSend(miniSearchConfigure.getNotifyCharsPrefix() + instancerName, intent);
     }
 
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public static void setRedisTemplate(RedisTemplate redisTemplate) {
+        RedisIndexCoordinateSender.redisTemplate = redisTemplate;
     }
 
-    @Override
-    public void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure) {
-        this.miniSearchConfigure = miniSearchConfigure;
+    public static void setMiniSearchConfigure(MiniSearchConfigure miniSearchConfigure) {
+        RedisIndexCoordinateSender.miniSearchConfigure = miniSearchConfigure;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 }

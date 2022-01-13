@@ -35,6 +35,7 @@ public class IndexCoordinatorIndexInstanceProxy implements ClusterIndexInstance,
         // SPI find indexEventSender
         ServiceLoader<IndexEventSender> sl = ServiceLoader.load(IndexEventSender.class);
         for (IndexEventSender indexEventSender : sl) {
+            logger.debug("IndexEventSender here {}", indexEventSender);
             this.indexEventSender = indexEventSender;
         }
         if (this.indexEventSender == null) {

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Author caikun
@@ -32,6 +33,8 @@ public class MSRedisMessageListener implements MessageListener {
     @Qualifier(SpringRedisDefinitionSupport.MSRedisTemplateBeanName)
     private RedisTemplate redisTemplate;
 
+    private AtomicLong lastAcceptedVersion = new AtomicLong(-1L);
+
     private static final Logger logger = LoggerFactory.getLogger(MSRedisMessageListener.class);
 
     @PostConstruct
@@ -42,37 +45,45 @@ public class MSRedisMessageListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] bytes) {
         logger.debug("redis message received");
+        boolean executed = false;
         try {
             byte[] body = message.getBody();
             Intent deserializeBody = (Intent) redisTemplate.getValueSerializer().deserialize(body);
+            long msgVersion = deserializeBody.getVersion();
             logger.debug("deserializeBody:{}", deserializeBody);
-//            String deserializeChannel = (String) getRedisTemplate().getKeySerializer().deserialize(message.getChannel());
-//            logger.debug("deserializeChannel:{}", deserializeChannel);
-            IndexInstance instance = MiniSearch.findInstance(deserializeBody.getIndexName());
-            if (instance instanceof ClusterIndexInstance) {
-                instance = ((ClusterIndexInstance) instance).getLocalInstance();
-            }
-            if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                instance.remove(deserializeBody.getKey());
-            } else if (EventType.UPDATE.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                instance.remove(deserializeBody.getKey());
-                instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
-            } else if (EventType.ADD.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
-            } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
-                logger.debug(deserializeBody.getAction());
-                // fixme : try it
-                instance.init((Map<String, Object>) deserializeBody.getCarrier());
-            } else {
-                logger.error("action {} ,not support", deserializeBody.getAction());
+            while (msgVersion > lastAcceptedVersion.get()
+                    &&
+                    lastAcceptedVersion.compareAndSet(lastAcceptedVersion.get(), msgVersion)) {
+                IndexInstance instance = MiniSearch.findInstance(deserializeBody.getIndexName());
+                if (instance instanceof ClusterIndexInstance) {
+                    instance = ((ClusterIndexInstance) instance).getLocalInstance();
+                }
+                if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.remove(deserializeBody.getKey());
+                } else if (EventType.UPDATE.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.remove(deserializeBody.getKey());
+                    instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
+                } else if (EventType.ADD.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
+                } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
+                    logger.debug(deserializeBody.getAction());
+                    instance.init((Map<String, Object>) deserializeBody.getCarrier());
+                } else {
+                    logger.error("action {} ,not support", deserializeBody.getAction());
+                }
+                executed = true;
             }
         } catch (Exception e) {
             logger.error("error: ", e);
+            executed = false;
         } finally {
             logger.debug("consume finished");
+            if (!executed) {
+                logger.warn("info: {} , no operation, ", message);
+            }
         }
 
     }

@@ -6,7 +6,9 @@ import java.util.Collection;
 
 /**
  * @Author caikun
- * @Description //TODO $END
+ * @Description
+ * 统一响应体
+ *
  * @Date 下午5:10 21-1-27
  **/
 public class ResponseWrapper implements Serializable {
@@ -29,7 +31,7 @@ public class ResponseWrapper implements Serializable {
         } else {
             this.data = data;
         }
-
+        this.result = data.size();
     }
 
 

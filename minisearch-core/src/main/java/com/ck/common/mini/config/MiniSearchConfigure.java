@@ -1,5 +1,7 @@
 package com.ck.common.mini.config;
 
+import com.ck.common.mini.index.LocalIndexInstance;
+import com.ck.common.mini.index.proxy.DataLockProxy;
 import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.index.PinYinIndexInstance;
 import com.ck.common.mini.index.SimpleIndexInstance;
@@ -18,7 +20,7 @@ public class MiniSearchConfigure {
     /**
      * 遍历条目时最大返回结果数
      */
-    private int maxFetchNum = 50;
+    private int maxFetchNum = 100;
 
     /**
      * 仅返回全部匹配的入参结果，false则根据入参从尾向头截取进行匹配
@@ -45,7 +47,7 @@ public class MiniSearchConfigure {
     /**
      * 集群化通知标识前缀,后接 实例（index）名
      */
-    private String notifyPatternChars = "search:notify:core:instancer:";
+    private String notifyCharsPrefix = "mini:search:notify:instance:";
 
     /**
      * 持久化方式
@@ -146,12 +148,12 @@ public class MiniSearchConfigure {
         this.symbolPattern = symbolPattern;
     }
 
-    public String getNotifyPatternChars() {
-        return notifyPatternChars;
+    public String getNotifyCharsPrefix() {
+        return notifyCharsPrefix;
     }
 
-    public void setNotifyPatternChars(String notifyPatternChars) {
-        this.notifyPatternChars = notifyPatternChars;
+    public void setNotifyCharsPrefix(String notifyCharsPrefix) {
+        this.notifyCharsPrefix = notifyCharsPrefix;
     }
 
     public int getCoreType() {
@@ -204,7 +206,7 @@ public class MiniSearchConfigure {
         }
     }
 
-    public enum InstanceType {
+    public enum LocalIndexInstanceType {
 
 
         PinYin(0, PinYinIndexInstance.class),
@@ -218,23 +220,25 @@ public class MiniSearchConfigure {
 
         private Class instancerClass;
 
-        <I extends IndexInstance> InstanceType(int type, Class<I> instancerClass) {
+        <I extends IndexInstance> LocalIndexInstanceType(int type, Class<I> instancerClass) {
             this.type = type;
             this.instancerClass = instancerClass;
         }
 
         public IndexInstance getInstance(String initName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
             Constructor constructor = instancerClass.getConstructor(new Class[]{String.class});
-            return (IndexInstance) constructor.newInstance(initName);
+            LocalIndexInstance indexInstance = (LocalIndexInstance) constructor.newInstance(initName);
+            Constructor<DataLockProxy> dataLockProxyConstructor = DataLockProxy.class.getConstructor(new Class[]{LocalIndexInstance.class});
+            return dataLockProxyConstructor.newInstance(indexInstance);
         }
 
-        public static InstanceType judge(int type) {
-            for (InstanceType ins : InstanceType.values()) {
+        public static LocalIndexInstanceType judge(int type) {
+            for (LocalIndexInstanceType ins : LocalIndexInstanceType.values()) {
                 if (type == ins.type) {
                     return ins;
                 }
             }
-            return InstanceType.PinYin;
+            return LocalIndexInstanceType.PinYin;
         }
 
     }

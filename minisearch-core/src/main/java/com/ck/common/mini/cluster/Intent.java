@@ -1,5 +1,7 @@
 package com.ck.common.mini.cluster;
 
+import com.ck.common.mini.constant.EventType;
+
 import java.io.Serializable;
 
 /**
@@ -13,10 +15,25 @@ public class Intent<CARRIER> implements Serializable {
 
     private CARRIER carrier;
 
-    // #EventType
+    /**
+     * 消息版本号
+     * 和集群内消息对应，数据顺序一致性保证
+     */
+    private long version;
+
+    /**
+     * @see EventType
+     */
     private String action;
 
     private String key;
+
+    public Intent() {
+    }
+
+    public Intent(long version) {
+        this.version = version;
+    }
 
     public String getKey() {
         return key;
@@ -48,5 +65,13 @@ public class Intent<CARRIER> implements Serializable {
 
     public void setCarrier(CARRIER carrier) {
         this.carrier = carrier;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

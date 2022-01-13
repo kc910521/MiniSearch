@@ -170,7 +170,8 @@ Collection<Object> bc = instance.find("bc");
 
 - **minisearch-boot-support**
 
-  一键完成对于minisearch-cluster-*、minisearch-core 的整合，它会增强你的 springboot 项目，通过简单配置就可以将你的spring-boot服务直接升级为一台集群搜索的节点！并自动提供对外 http 的接口完成CRUD！
+  一键完成对于minisearch-cluster-*、minisearch-core 的整合，它会增强你的 springboot 项目，通过简单配置就可以将你的spring-boot服务直接升级为一台集群搜索的节点！并自动提供对外 http 的接口完成CRUD！  
+  可以利用@EnableMiniSearchAPI 注解开放内嵌API
 
 可能你对一个可以独立运行的小型搜索服务更感兴趣？
 
@@ -372,7 +373,7 @@ instance.find("为什么晚上不能照镜子");
     /**
      * 集群化通知标识前缀,后接 实例（index）名
      */
-    private String notifyPatternChars = "search:notify:core:instancer:";
+    private String notifyCharsPrefix = "search:notify:core:instancer:";
 
     /**
      * 持久化方式

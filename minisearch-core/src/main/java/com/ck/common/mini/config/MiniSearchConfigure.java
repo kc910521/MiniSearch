@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
  * @Author caikun
  * @Description
  * 全局总配置
+ * @See ./config/ms_default.properties
  * @Date 下午2:31 20-4-21
  **/
 public class MiniSearchConfigure {

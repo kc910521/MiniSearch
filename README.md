@@ -1,6 +1,6 @@
 # mini-search  
 
-一个针对小型应用服务集群搜索的工具包（同时可部署为独立服务）
+可以实现文本搜索的工具（可以整合至项目，也可独立运行或集群通信）
 
 首个独立运行的spring-boot服务已经发布：  
 [https://github.com/kc910521/minisearch-boot-server/releases/tag/0.1](https://github.com/kc910521/minisearch-boot-server/releases/tag/0.1)  

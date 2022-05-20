@@ -3,8 +3,6 @@ package com.ck.common.mini.config;
 import com.ck.common.mini.index.LocalIndexInstance;
 import com.ck.common.mini.index.proxy.DataLockProxy;
 import com.ck.common.mini.index.IndexInstance;
-import com.ck.common.mini.index.PinYinIndexInstance;
-import com.ck.common.mini.index.SimpleIndexInstance;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -48,7 +46,7 @@ public class MiniSearchConfigure {
     /**
      * 集群化通知标识前缀,后接 实例（index）名
      */
-    private String notifyCharsPrefix = "mini:search:notify:instance:";
+    private String notifyCharsPrefix = "mini:search:notify:struct:";
 
     /**
      * 持久化方式
@@ -207,40 +205,40 @@ public class MiniSearchConfigure {
         }
     }
 
-    public enum LocalIndexInstanceType {
-
-
-        PinYin(0, PinYinIndexInstance.class),
-
-        SIMPLE(1, SimpleIndexInstance.class),
-
-        ;
-
-
-        private int type;
-
-        private Class instancerClass;
-
-        <I extends IndexInstance> LocalIndexInstanceType(int type, Class<I> instancerClass) {
-            this.type = type;
-            this.instancerClass = instancerClass;
-        }
-
-        public IndexInstance getInstance(String initName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-            Constructor constructor = instancerClass.getConstructor(new Class[]{String.class});
-            LocalIndexInstance indexInstance = (LocalIndexInstance) constructor.newInstance(initName);
-            Constructor<DataLockProxy> dataLockProxyConstructor = DataLockProxy.class.getConstructor(new Class[]{LocalIndexInstance.class});
-            return dataLockProxyConstructor.newInstance(indexInstance);
-        }
-
-        public static LocalIndexInstanceType judge(int type) {
-            for (LocalIndexInstanceType ins : LocalIndexInstanceType.values()) {
-                if (type == ins.type) {
-                    return ins;
-                }
-            }
-            return LocalIndexInstanceType.PinYin;
-        }
-
-    }
+//    public enum LocalIndexInstanceType {
+//
+//
+//        PinYin(0, PinYinIndexInstance.class),
+//
+//        SIMPLE(1, SimpleIndexInstance.class),
+//
+//        ;
+//
+//
+//        private int type;
+//
+//        private Class instancerClass;
+//
+//        <I extends IndexInstance> LocalIndexInstanceType(int type, Class<I> instancerClass) {
+//            this.type = type;
+//            this.instancerClass = instancerClass;
+//        }
+//
+//        public IndexInstance getInstance(String initName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+//            Constructor constructor = instancerClass.getConstructor(new Class[]{String.class});
+//            LocalIndexInstance indexInstance = (LocalIndexInstance) constructor.newInstance(initName);
+//            Constructor<DataLockProxy> dataLockProxyConstructor = DataLockProxy.class.getConstructor(new Class[]{LocalIndexInstance.class});
+//            return dataLockProxyConstructor.newInstance(indexInstance);
+//        }
+//
+//        public static LocalIndexInstanceType judge(int type) {
+//            for (LocalIndexInstanceType ins : LocalIndexInstanceType.values()) {
+//                if (type == ins.type) {
+//                    return ins;
+//                }
+//            }
+//            return LocalIndexInstanceType.PinYin;
+//        }
+//
+//    }
 }

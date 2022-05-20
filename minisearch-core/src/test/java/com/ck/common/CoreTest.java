@@ -2,6 +2,7 @@ package com.ck.common;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.index.IndexInstance;
+import com.ck.common.mini.index.struct.IExternalInstance;
 import com.ck.common.mini.util.MiniSearch;
 
 import java.io.Serializable;
@@ -46,7 +47,7 @@ public class CoreTest {
     }
 
     public static void conditionTest() {
-        IndexInstance instance = MiniSearch.findInstance("hello_world");
+        IExternalInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         // add 1
         instance.add("为什么放弃治疗", new Info("fangqi"));
@@ -79,7 +80,7 @@ public class CoreTest {
 
     public static void fast() {
         // create
-        IndexInstance instance = MiniSearch.findInstance("hello_world");
+        IExternalInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
         instance.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
@@ -104,7 +105,7 @@ public class CoreTest {
 
     public static void dup() {
         // create
-        IndexInstance instance = MiniSearch.findInstance("hello_world");
+        IExternalInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("为什么放弃治疗", new Info("因为我没钱了"));
         instance.add("为什么月经迟迟不来", new Info("因为我爱你"));
@@ -116,27 +117,27 @@ public class CoreTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
 //        params.put("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
-//        instance.init(params);
+//        struct.init(params);
 //
-//        int wc = instance.remove("为什么月经迟迟不来");
-//        int a22 = instance.remove("为什么月经迟迟不来");
-//        int a33 = instance.remove("为什么晚上不能照镜子");
+//        int wc = struct.remove("为什么月经迟迟不来");
+//        int a22 = struct.remove("为什么月经迟迟不来");
+//        int a33 = struct.remove("为什么晚上不能照镜子");
 //        System.out.println(wc + "," + a22 + "," + a33);
     }
 
     public static void dup2() {
         // create
-        IndexInstance instance = MiniSearch.findInstance("hello_world");
+        IExternalInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("我爱");
-//        instance.add("爱");
-//        instance.add("为什么月经迟迟不来", new Info("因为我爱你"));
-//        instance.add("为什么晚上不能照镜子", new Info("因为没交电费"));
+//        struct.add("爱");
+//        struct.add("为什么月经迟迟不来", new Info("因为我爱你"));
+//        struct.add("为什么晚上不能照镜子", new Info("因为没交电费"));
         //try searching
         Collection<Object> result = instance.find("爱");
         System.out.println(result);
         instance.remove("我爱");
-//        instance.remove("爱");
+//        struct.remove("爱");
         Collection<Object> result2 = instance.find("我爱");
         System.out.println(result2);
         instance.remove("我爱");
@@ -152,7 +153,7 @@ public class CoreTest {
 
     public static void dup3() {
         // create
-        IndexInstance instance = MiniSearch.findInstance("hello_world");
+        IExternalInstance instance = MiniSearch.findInstance("hello_world");
         // add all into index
         instance.add("我爱花");
         instance.add("woaihua");
@@ -172,14 +173,14 @@ public class CoreTest {
         instance.add("wo爱h");
         instance.add("爱花");
         instance.add("我");
-//        instance.add("爱");
-//        instance.add("为什么月经迟迟不来", new Info("因为我爱你"));
-//        instance.add("为什么晚上不能照镜子", new Info("因为没交电费"));
+//        struct.add("爱");
+//        struct.add("为什么月经迟迟不来", new Info("因为我爱你"));
+//        struct.add("为什么晚上不能照镜子", new Info("因为没交电费"));
         //try searching
         Collection<Object> result = instance.find("爱");
         System.out.println(result);
         instance.remove("我爱");
-//        instance.remove("爱");
+//        struct.remove("爱");
         Collection<Object> result2 = instance.find("我爱");
         System.out.println(result2);
         instance.remove("我爱");
@@ -195,7 +196,7 @@ public class CoreTest {
     }
 
     public static void dupTest() {
-        IndexInstance instance = MiniSearch.findInstance("duplicate_chars");
+        IExternalInstance instance = MiniSearch.findInstance("duplicate_chars");
         instance.add(new String("1111"));
         instance.add(new String("111"));
 
@@ -212,7 +213,7 @@ public class CoreTest {
 
     public static void pageTest() {
         System.out.println("========= pageTest============");
-        IndexInstance instance = MiniSearch.findInstance("hello_world_page");
+        IExternalInstance instance = MiniSearch.findInstance("hello_world_page");
         instance.add("高频赫兹充电");
         instance.add("赫兹充电器1");
         instance.add("新品-贺子品牌鞋垫3");
@@ -272,7 +273,7 @@ public class CoreTest {
 
     public static void idTest() {
         System.out.println("========= idTest============");
-        IndexInstance instance = MiniSearch.findInstance("id_test");
+        IExternalInstance instance = MiniSearch.findInstance("id_test");
 
         instance.addWithId("0001", "极品狗粮", "极品狗粮1");
         instance.addWithId("0002", "极品狗粮", "极品狗粮2");
@@ -282,20 +283,20 @@ public class CoreTest {
         System.out.println(jp);
 //
 //        System.out.println();
-//        System.out.println(instance.add("素卡素卡你"));
-//        System.out.println(instance.remove("素卡素卡你"));
-//        System.out.println(instance.remove("素卡素卡你"));
-//        System.out.println(instance.find("素"));
+//        System.out.println(struct.add("素卡素卡你"));
+//        System.out.println(struct.remove("素卡素卡你"));
+//        System.out.println(struct.remove("素卡素卡你"));
+//        System.out.println(struct.find("素"));
 //        System.out.println("----go---");
-//        System.out.println(instance.addWithId("32", "素卡1", "素卡素卡你32"));
-//        System.out.println(instance.addWithId("33", "素卡1", "素卡素卡你33"));
-//        System.out.println(instance.find("素"));
-//        instance.printAll();
+//        System.out.println(struct.addWithId("32", "素卡1", "素卡素卡你32"));
+//        System.out.println(struct.addWithId("33", "素卡1", "素卡素卡你33"));
+//        System.out.println(struct.find("素"));
+//        struct.printAll();
 
     }
 
     public static void pinyin() {
-        IndexInstance instance = MiniSearch.findInstance("pinyin");
+        IExternalInstance instance = MiniSearch.findInstance("pinyin");
         instance.add("和蔼");
         instance.add("heai2");
         System.out.println(instance.find("heai"));
@@ -319,12 +320,9 @@ public class CoreTest {
 
     public static void taskTiming() {
         // create
-        IndexInstance instance1 = MiniSearch.findInstance("hello_world");
-        MiniSearch.enableRebuild();
+        IExternalInstance instance1 = MiniSearch.findInstance("hello_world");
         // add all into index
-        IndexInstance instance2 = MiniSearch.findInstance("hello_world2");
-        MiniSearch.enableRebuild();
-        MiniSearch.enableRebuild();
+        IExternalInstance instance2 = MiniSearch.findInstance("hello_world2");
         //try searching
         Collection<Object> result = instance1.find("为什么");
         System.out.println(result);
@@ -332,8 +330,8 @@ public class CoreTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("为什么月经迟迟不来", new Info("weishenmefangqizhiliao1"));
 //        params.put("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
-//        instance.init(params);
-        instance1.setRebuildWorker((instancer) -> {
+//        struct.init(params);
+        MiniSearch.registerJob("hello_world", instancer -> {
             int add = instancer.add("为什么放弃治疗", new Info("weishenmefangqizhiliao1"));
             instancer.add("为什么月经迟迟不来", new Info("weishenmeyuejingchichibulai2"));
             instancer.add("为什么晚上不能照镜子", new Info("weishenmewanshangbunengzhaojingzi3"));
@@ -357,7 +355,7 @@ public class CoreTest {
         MiniSearchConfigure miniSearchConfigure = new MiniSearchConfigure();
         miniSearchConfigure.setFreeMatch(false);
         miniSearchConfigure.setCoreType(0);
-        IndexInstance instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
+        IExternalInstance instance = MiniSearch.findInstance("code_finder", miniSearchConfigure);
         instance.add("abc12345");
         instance.add("mbc12345");
         instance.add("bck12345");
@@ -392,27 +390,27 @@ public class CoreTest {
     //=====================
 
 //    String name = "search";
-//    Instancer instance = MiniSearch.findInstance(name);
-//        instance.add("abc");
-//        instance.add("abcd");
-//        instance.add("cd");
-//        instance.add("男1");
-//        instance.add("男士撒sa");
-//        instance.add("男士撒s");
-//        instance.add("男士撒sbd");
-//        instance.add("男士撒sac");
-//        instance.add("男士撒saf");
-//        instance.add("男士撒sadm");
-//        instance.add(",.!，，D_NAME。！；‘’”“**dfs  #$%^&()-+1431221\"\"中           国123漢字かどうかのjavaを決定");
+//    Instancer struct = MiniSearch.findInstance(name);
+//        struct.add("abc");
+//        struct.add("abcd");
+//        struct.add("cd");
+//        struct.add("男1");
+//        struct.add("男士撒sa");
+//        struct.add("男士撒s");
+//        struct.add("男士撒sbd");
+//        struct.add("男士撒sac");
+//        struct.add("男士撒saf");
+//        struct.add("男士撒sadm");
+//        struct.add(",.!，，D_NAME。！；‘’”“**dfs  #$%^&()-+1431221\"\"中           国123漢字かどうかのjavaを決定");
 
-    //        Collection<String> men = instance.find("男");
+    //        Collection<String> men = struct.find("男");
 //        System.out.println(men);
-//        int w = instance.remove("男士撒s");
+//        int w = struct.remove("男士撒s");
 //        System.out.println("r" + w);
-//        Collection<String> men99 = instance.find("男");
+//        Collection<String> men99 = struct.find("男");
 //        System.out.println(men99);
-//        instance.add("男士撒s");
-//    Collection<String> men98 = instance.find("");
+//        struct.add("男士撒s");
+//    Collection<String> men98 = struct.find("");
 //        System.out.println(men98);
 //        Map<String, Object> map = new HashMap<>();
 //        map.put("a6", new TestBean("a6", 3));
@@ -428,16 +426,16 @@ public class CoreTest {
 //        map.put("aaaa6", new TestBean("aaaa6", 53));
 //        map.put("aa素", new TestBean("aa素", 553));
 //        map.put("po", new TestBean("po", 5553));
-//        instance.init(new HashMap<>());
-//        instance.init(map);
+//        struct.init(new HashMap<>());
+//        struct.init(map);
 //
-//        Collection<String> men2 = instance.find("男");
+//        Collection<String> men2 = struct.find("男");
 //        System.out.println(men2);
 //
-//        Collection<String> men3 = instance.find("c");
+//        Collection<String> men3 = struct.find("c");
 //        System.out.println(men3);
 //
-//        Collection<String> men4 = instance.find("a");
+//        Collection<String> men4 = struct.find("a");
 //        System.out.println(men4);
 
 }

@@ -13,6 +13,6 @@ import com.ck.common.mini.constant.EventType;
  **/
 public interface IndexEventSender {
 
-    void publish(EventType eventType, String instancerName, String key, Object carrier) throws Exception;
+    void publish(EventType eventType, String indexName, String key, Object carrier) throws Exception;
 
 }

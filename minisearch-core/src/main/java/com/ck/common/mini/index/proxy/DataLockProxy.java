@@ -1,8 +1,10 @@
 package com.ck.common.mini.index.proxy;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
+import com.ck.common.mini.core.SpellingDictTree;
 import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.index.LocalIndexInstance;
+import com.ck.common.mini.index.struct.IExternalInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +21,12 @@ import java.util.concurrent.locks.StampedLock;
  *
  * @Date 下午6:29 21-11-22
  **/
-public class DataLockProxy implements LocalIndexInstance, IndexInstance.TimingLocalReindex {
+public class DataLockProxy implements IExternalInstance {
 
     /**
      * 被代理对象
      */
-    private final LocalIndexInstance idx;
+    private final IExternalInstance idx;
     /**
      * 写入等待超时时间
      */
@@ -34,28 +36,28 @@ public class DataLockProxy implements LocalIndexInstance, IndexInstance.TimingLo
 
     private static final Logger logger = LoggerFactory.getLogger(DataLockProxy.class);
 
-    public DataLockProxy(LocalIndexInstance idx) {
+    public DataLockProxy(IExternalInstance idx) {
         this.idx = idx;
     }
-
-    @Override
-    public void reindexing() {
-        if (!(idx instanceof IndexInstance.TimingLocalReindex)) {
-            logger.warn("not a TimingLocalReindex");
-            return;
-        }
-        Long stamp = null;
-        try {
-            stamp = lock.tryWriteLock(writeLockTimeoutSec, TimeUnit.SECONDS);
-            ((IndexInstance.TimingLocalReindex) idx).reindexing();
-        } catch (InterruptedException e) {
-            logger.error("write lock timeout", e);
-        } finally {
-            if (stamp != null) {
-                lock.unlockWrite(stamp);
-            }
-        }
-    }
+//
+//    @Override
+//    public void reindexing() {
+//        if (!(idx instanceof IndexInstance.TimingLocalReindex)) {
+//            logger.warn("not a TimingLocalReindex");
+//            return;
+//        }
+//        Long stamp = null;
+//        try {
+//            stamp = lock.tryWriteLock(writeLockTimeoutSec, TimeUnit.SECONDS);
+//            ((IndexInstance.TimingLocalReindex) idx).reindexing();
+//        } catch (InterruptedException e) {
+//            logger.error("write lock timeout", e);
+//        } finally {
+//            if (stamp != null) {
+//                lock.unlockWrite(stamp);
+//            }
+//        }
+//    }
 
     @Override
     public void init(Map<String, Object> data) {
@@ -214,20 +216,14 @@ public class DataLockProxy implements LocalIndexInstance, IndexInstance.TimingLo
         }
     }
 
+
     @Override
-    public MiniSearchConfigure getMiniSearchConfigure() {
-        return idx.getMiniSearchConfigure();
+    public void setConfig(MiniSearchConfigure config) {
+
     }
 
     @Override
-    public String getInstanceName() {
-        return idx.getInstanceName();
+    public void setTree(SpellingDictTree dictTree) {
+
     }
-
-    @Override
-    public void setRebuildWorker(RebuildWorker rebuildWorker) {
-        idx.setRebuildWorker(rebuildWorker);
-    }
-
-
 }

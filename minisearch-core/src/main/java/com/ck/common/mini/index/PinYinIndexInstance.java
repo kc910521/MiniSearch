@@ -117,7 +117,7 @@ public class PinYinIndexInstance implements LocalIndexInstance, IndexInstance.Ti
     @Override
     public int addWithId(String id, String keywords, Object carrier) {
         if (!(carrier instanceof Serializable)) {
-            System.err.println("The carrier is not a instance of Serializable");
+            System.err.println("The carrier is not a struct of Serializable");
         }
         if (miniSearchConfigure.isIgnoreSymbol()) {
             keywords = keywords.replaceAll(miniSearchConfigure.getSymbolPattern(), "");

@@ -14,7 +14,7 @@ public interface IChangeInstance extends GodInstance {
      *
      * @param data
      */
-    void init(Map<String, Object> data);
+    void initData(Map<String, Object> data);
 
     /**
      * @param id       do if id is null or not

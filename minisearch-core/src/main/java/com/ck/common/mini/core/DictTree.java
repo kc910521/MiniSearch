@@ -14,8 +14,10 @@ import java.util.*;
  **/
 public class DictTree<CARRIER extends Serializable> {
 
+    private String indexName;
 
-    public DictTree() {
+    public DictTree(String indexName) {
+        this.indexName = indexName;
     }
 
     private Node root = new Node(64);
@@ -448,7 +450,6 @@ public class DictTree<CARRIER extends Serializable> {
         }
     }
 
-
     /**
      * compose
      *
@@ -467,6 +468,14 @@ public class DictTree<CARRIER extends Serializable> {
             ergodicAndSetBy(node, results, page, pageSize);
         }
         return results;
+    }
+
+    public String getIndexName() {
+        return indexName;
+    }
+
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
     }
 
     public void setConditionMatcher(ConditionMatcher conditionMatcher) {

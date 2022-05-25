@@ -2,9 +2,8 @@ package com.ck.common.mini.cluster.redis;
 
 import com.ck.common.mini.cluster.Intent;
 import com.ck.common.mini.constant.EventType;
-import com.ck.common.mini.index.ClusterIndexInstance;
-import com.ck.common.mini.index.IndexInstance;
 import com.ck.common.mini.cluster.redis.spring.SpringRedisDefinitionSupport;
+import com.ck.common.mini.index.struct.MiniInstance;
 import com.ck.common.mini.util.MiniSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,9 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @Author caikun
  * @Description 集群广播信息监听
- * 对redis实现来说，此处需注意线程安全问题
+ * 对redis实现来说，此处需注意线程安全问题.
+ *
+ * 不需要考虑循环消费，因为接收后不再转发。
  *
  * @Date 下午3:06 20-4-24
  **/
@@ -39,7 +40,7 @@ public class MSRedisMessageListener implements MessageListener {
 
     @PostConstruct
     public void init() {
-        logger.info("MSRedisMessageListener init");
+        logger.info("MSRedisMessageListener initData");
     }
 
     @Override
@@ -54,10 +55,7 @@ public class MSRedisMessageListener implements MessageListener {
             while (msgVersion > lastAcceptedVersion.get()
                     &&
                     lastAcceptedVersion.compareAndSet(lastAcceptedVersion.get(), msgVersion)) {
-                IndexInstance instance = MiniSearch.findInstance(deserializeBody.getIndexName());
-                if (instance instanceof ClusterIndexInstance) {
-                    instance = ((ClusterIndexInstance) instance).getLocalInstance();
-                }
+                MiniInstance instance = MiniSearch.findInstance(deserializeBody.getIndexName());
                 if (EventType.REMOVE.name().equals(deserializeBody.getAction())) {
                     logger.debug(deserializeBody.getAction());
                     instance.remove(deserializeBody.getKey());
@@ -70,7 +68,7 @@ public class MSRedisMessageListener implements MessageListener {
                     instance.add(deserializeBody.getKey(), deserializeBody.getCarrier());
                 } else if (EventType.INIT.name().equals(deserializeBody.getAction())) {
                     logger.debug(deserializeBody.getAction());
-                    instance.init((Map<String, Object>) deserializeBody.getCarrier());
+                    instance.initData((Map<String, Object>) deserializeBody.getCarrier());
                 } else {
                     logger.error("action {} ,not support", deserializeBody.getAction());
                 }

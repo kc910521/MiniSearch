@@ -2,6 +2,7 @@ package com.ck.common.mini.cluster;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.constant.EventType;
+import com.ck.common.mini.util.exception.MiniSearchSuperException;
 
 /**
  * @Author caikun
@@ -13,6 +14,8 @@ import com.ck.common.mini.constant.EventType;
  **/
 public interface IndexEventSender {
 
-    void publish(EventType eventType, String indexName, String key, Object carrier) throws Exception;
+    void publish(EventType eventType, String indexName, String key, Object carrier) throws MiniSearchSuperException;
+
+    void loadMiniSearchConfig(MiniSearchConfigure configure);
 
 }

@@ -67,6 +67,11 @@ public class LocalMatchInstance implements ISearchInstance, GodInstance {
         this.tree = dictTree;
     }
 
+    @Override
+    public void setNLPWorker(NLPWorker nlpWorker) {
+        this.nlpWorker = nlpWorker;
+    }
+
 
     /**
      * 仅搂出中文，可以修改为也搂出其他占位符即可更加精确的匹配

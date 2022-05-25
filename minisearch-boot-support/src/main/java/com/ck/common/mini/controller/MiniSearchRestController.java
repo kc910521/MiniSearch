@@ -56,7 +56,7 @@ public class MiniSearchRestController {
         return clusterService.find(indexName, key, page, pageSize);
     }
 
-    @RequestMapping("init/{indexName}")
+    @RequestMapping("initData/{indexName}")
     public ResponseWrapper init(@PathVariable String indexName, Map<String, Object> data) {
         return clusterService.init(indexName, data);
     }

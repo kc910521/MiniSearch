@@ -1,9 +1,9 @@
 package com.ck.common.mini.index.instance;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
-import com.ck.common.mini.core.DictTree;
 import com.ck.common.mini.core.SpellingDictTree;
 import com.ck.common.mini.index.struct.*;
+import com.ck.common.mini.util.MiniSearch;
 import com.ck.common.mini.workshop.nlp.NLPAdmin;
 import com.ck.common.mini.workshop.nlp.NLPWorker;
 
@@ -14,9 +14,13 @@ import java.util.ServiceLoader;
 /**
  * @Author caikun
  * @Description SPI class composer, customize search instance
+ * 此为容器装入的顶层实例, 采用组合模式处理搜索实例searchInstance，
+ * 和数据变更实例changeInstance。
+ * @see MiniSearch#findInstance(java.lang.String)
+ *
  * @Date 下午1:54 22-5-20
  **/
-public class FlexibleMatchInstance implements IExternalInstance {
+public class FlexibleMatchInstance implements MiniInstance {
 
     private MiniSearchConfigure configure;
 
@@ -29,8 +33,8 @@ public class FlexibleMatchInstance implements IExternalInstance {
     private NLPWorker nlpWorker;
 
 
-    public FlexibleMatchInstance(MiniSearchConfigure configure) {
-        this.init0(configure, new SpellingDictTree(), NLPAdmin.pickBy(configure));
+    public FlexibleMatchInstance(String indexName, MiniSearchConfigure configure) {
+        this.init0(configure, new SpellingDictTree(indexName), NLPAdmin.pickBy(configure));
     }
 
     /**
@@ -42,7 +46,7 @@ public class FlexibleMatchInstance implements IExternalInstance {
     }
 
     /**
-     * real init
+     * real initData
      *
      * @param configure
      * @param tree
@@ -60,11 +64,13 @@ public class FlexibleMatchInstance implements IExternalInstance {
         searchInstanceSL.forEach(s -> {
             s.setConfig(configure);
             s.setTree(tree);
+            s.setNLPWorker(nlpWorker);
             this.searchInstance = s;
         });
         changeInstanceSL.forEach(s -> {
             s.setConfig(configure);
             s.setTree(tree);
+            s.setNLPWorker(nlpWorker);
             this.changeInstance = s;
         });
         if (this.searchInstance == null) {
@@ -73,11 +79,14 @@ public class FlexibleMatchInstance implements IExternalInstance {
         if (this.changeInstance == null) {
             this.changeInstance = new LocalIndexInstance(this.configure, this.tree, this.nlpWorker);
         }
+        // 准备进行索引激活
+        this.changeInstance.activate();
+        this.searchInstance.activate();
     }
 
     @Override
-    public void init(Map<String, Object> data) {
-        changeInstance.init(data);
+    public void initData(Map<String, Object> data) {
+        changeInstance.initData(data);
     }
 
     @Override
@@ -133,6 +142,11 @@ public class FlexibleMatchInstance implements IExternalInstance {
     @Override
     public void setTree(SpellingDictTree dictTree) {
         this.tree = dictTree;
+    }
+
+    @Override
+    public void setNLPWorker(NLPWorker nlpWorker) {
+        this.nlpWorker = nlpWorker;
     }
 
 

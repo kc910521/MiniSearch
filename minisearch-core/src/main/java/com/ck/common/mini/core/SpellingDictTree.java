@@ -21,6 +21,10 @@ import java.util.*;
 @NotThreadSafe
 public class SpellingDictTree<CARRIER extends Map<SpellingDictTree.HolderKey, ORIGIN_CARRIER>, ORIGIN_CARRIER> extends DictTree {
 
+    public SpellingDictTree(String indexName) {
+        super(indexName);
+    }
+
     @Override
     protected int putActionFrom(Node cnode, SpellingComponent spellingComponent) {
         cnode.setTail(true);

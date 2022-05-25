@@ -25,9 +25,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  **/
 public class SpringRedisDefinitionSupport implements BeanDefinitionRegistryPostProcessor {
 
+    /**
+     * mini search RedisTemplate bean Name
+     */
     public final static String MSRedisTemplateBeanName = "miniSearchRedisTemplate";
-//    public final static String MSRedisTemplateBeanName = "miniSearchSpringUtil";
-
 
     private final static String RedisTemplateClassName = "org.springframework.data.redis.core.StringRedisTemplate";
 
@@ -45,16 +46,6 @@ public class SpringRedisDefinitionSupport implements BeanDefinitionRegistryPostP
         if (!beanDefinitionRegistry.containsBeanDefinition(MSRedisTemplateBeanName)) {
             if (SpringTools.isClassPresent(RedisTemplateClassName)) {
                 beanDefinitionRegistry.registerBeanDefinition(SpringRedisDefinitionSupport.MSRedisTemplateBeanName, BeanDefinitionBuilder.genericBeanDefinition(MiniSearchRedisTemplateFactoryBean.class).getBeanDefinition());
-
-//                BeanDefinitionBuilder sdtBDBuilder = BeanDefinitionBuilder.genericBeanDefinition(StringRedisTemplate.class);
-//                sdtBDBuilder.addConstructorArgReference(defaultRedisConnectionFactoryBeanName);
-//                sdtBDBuilder.addDependsOn(defaultRedisConnectionFactoryBeanName);
-//                sdtBDBuilder.addPropertyValue("defaultSerializer", new GenericJackson2JsonRedisSerializer());
-//                sdtBDBuilder.addPropertyValue("keySerializer", new StringRedisSerializer());
-//                sdtBDBuilder.addPropertyValue("valueSerializer", new GenericJackson2JsonRedisSerializer());
-//                sdtBDBuilder.addPropertyValue("hashKeySerializer", new GenericJackson2JsonRedisSerializer());
-//                sdtBDBuilder.addPropertyValue("hashValueSerializer", new GenericJackson2JsonRedisSerializer());
-//                beanDefinitionRegistry.registerBeanDefinition(MSRedisTemplateBeanName, sdtBDBuilder.getBeanDefinition());
             } else {
                 throw new RuntimeException(RedisTemplateClassName + " not found");
             }

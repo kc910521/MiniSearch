@@ -2,9 +2,8 @@ package com.ck.common.mini.timing;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.external.CoreHolder;
-import com.ck.common.mini.index.IndexInstance;
-import com.ck.common.mini.index.struct.IExternalInstance;
-import com.ck.common.mini.util.MiniSearchException;
+import com.ck.common.mini.index.struct.MiniInstance;
+import com.ck.common.mini.util.exception.MiniSearchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +16,6 @@ import java.util.concurrent.*;
  * @Author caikun
  * @Description 定时调用容器内所有 BasicInstancer#reindexing
  * @Date 下午4:01 21-7-26
- * @see IndexInstance.TimingLocalReindex
- * @see IndexInstance.RebuildWorker
  **/
 public class TimingIndexReBuilder {
 
@@ -27,7 +24,7 @@ public class TimingIndexReBuilder {
     /**
      * 注册在这个容器的都会被定时反复调用,
      * 一个索引持有一个定时任务。
-     *
+     * <p>
      * WeakReference
      */
     private static final Map</* indexName */String, /* instance */IRotateInstance.RebuildWorker> jobHolder = new WeakHashMap<>(128);
@@ -55,12 +52,12 @@ public class TimingIndexReBuilder {
                         for (Map.Entry<String, IRotateInstance.RebuildWorker> entry : entries) {
                             if (entry != null) {
                                 // try in block for do not affecting other job
-                                IExternalInstance iExternalInstance = CoreHolder.geInstance(entry.getKey());
-                                if (iExternalInstance == null) {
+                                MiniInstance miniInstance = CoreHolder.geInstance(entry.getKey());
+                                if (miniInstance == null) {
                                     throw new MiniSearchException("instance missing");
                                 }
                                 try {
-                                    entry.getValue().register(iExternalInstance);
+                                    entry.getValue().register(miniInstance);
                                 } catch (Throwable t) {
                                     logger.error("mini-search time-job: {} exception ", entry.getKey(), t);
                                 }
@@ -68,7 +65,7 @@ public class TimingIndexReBuilder {
                                 logger.warn("nnnnn");
                             }
                         }
-            }
+                    }
 
                 }, MiniSearchConfigure.getRebuildTaskInterval()
                 , MiniSearchConfigure.getRebuildTaskInterval()
@@ -78,6 +75,7 @@ public class TimingIndexReBuilder {
 
     /**
      * 注册builder到容器
+     *
      * @param indexName
      * @param builder
      */

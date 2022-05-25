@@ -1,7 +1,6 @@
 package com.ck.common;
 
-import com.ck.common.mini.index.IndexInstance;
-import com.ck.common.mini.index.struct.IExternalInstance;
+import com.ck.common.mini.index.struct.MiniInstance;
 import com.ck.common.mini.util.MiniSearch;
 
 import java.util.Collection;
@@ -13,7 +12,7 @@ import java.util.Collection;
  **/
 public class PinYinTest {
 
-    static IExternalInstance instance = MiniSearch.findInstance("hello_world");
+    static MiniInstance instance = MiniSearch.findInstance("hello_world");
 
     public static void main(String[] args) {
         // add all into index
@@ -37,7 +36,7 @@ public class PinYinTest {
         //
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("woca卧槽666", "sa");
-//        struct.init(data);
+//        struct.initData(data);
 
         instance.add("为什么晚上不能照镜子");
         instance.add("光电鼠标没有球");

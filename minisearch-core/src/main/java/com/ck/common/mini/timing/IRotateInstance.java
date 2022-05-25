@@ -1,6 +1,6 @@
 package com.ck.common.mini.timing;
 
-import com.ck.common.mini.index.struct.IExternalInstance;
+import com.ck.common.mini.index.struct.MiniInstance;
 
 /**
  * @Author caikun
@@ -33,7 +33,7 @@ public interface IRotateInstance {
          *
          * @param instance only work for localization
          */
-        void register(IExternalInstance instance);
+        void register(MiniInstance instance);
 
 
     }

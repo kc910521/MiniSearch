@@ -43,14 +43,14 @@ public class LocalIndexInstance implements IChangeInstance {
     }
 
     @Override
-    public void init(Map<String, Object> data) {
+    public void initData(Map<String, Object> data) {
         this.tree.clear();
         Iterator<Map.Entry<String, Object>> iterator = data.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Object> next = iterator.next();
             add(next.getKey(), next.getValue());
         }
-        logger.info("init success");
+        logger.info("initData success");
     }
 
     @Override
@@ -113,6 +113,11 @@ public class LocalIndexInstance implements IChangeInstance {
     @Override
     public void setTree(SpellingDictTree dictTree) {
         this.tree = dictTree;
+    }
+
+    @Override
+    public void setNLPWorker(NLPWorker nlpWorker) {
+        this.nlpWorker = nlpWorker;
     }
 
 }

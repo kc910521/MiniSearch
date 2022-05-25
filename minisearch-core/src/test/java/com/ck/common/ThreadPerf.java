@@ -1,7 +1,6 @@
 package com.ck.common;
 
-import com.ck.common.mini.index.IndexInstance;
-import com.ck.common.mini.index.struct.IExternalInstance;
+import com.ck.common.mini.index.struct.MiniInstance;
 import com.ck.common.mini.util.MiniSearch;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
  **/
 public class ThreadPerf {
 
-    static IExternalInstance instance = MiniSearch.findInstance("hello_world");
+    static MiniInstance instance = MiniSearch.findInstance("hello_world");
 
     //存放请求响应时间的列表
     static List<Long> timeList = new ArrayList<>();

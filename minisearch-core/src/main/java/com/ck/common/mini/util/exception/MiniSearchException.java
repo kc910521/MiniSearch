@@ -1,8 +1,8 @@
-package com.ck.common.mini.util;
+package com.ck.common.mini.util.exception;
 
 /**
  * @Author caikun
- * @Description 异常
+ * @Description 运行时异常
  * @Date 下午5:33 22-5-20
  **/
 public class MiniSearchException extends RuntimeException {

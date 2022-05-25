@@ -17,7 +17,9 @@ public class Intent<CARRIER> implements Serializable {
 
     /**
      * 消息版本号
-     * 和集群内消息对应，数据顺序一致性保证
+     * 和集群内消息对应，数据顺序一致性保证.
+     * 也可以设置为二进制，作为消费凭据等
+     *
      */
     private long version;
 
@@ -27,9 +29,6 @@ public class Intent<CARRIER> implements Serializable {
     private String action;
 
     private String key;
-
-    public Intent() {
-    }
 
     public Intent(long version) {
         this.version = version;

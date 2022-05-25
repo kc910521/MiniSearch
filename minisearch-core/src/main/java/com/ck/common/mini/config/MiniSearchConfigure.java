@@ -1,11 +1,5 @@
 package com.ck.common.mini.config;
 
-import com.ck.common.mini.index.LocalIndexInstance;
-import com.ck.common.mini.index.proxy.DataLockProxy;
-import com.ck.common.mini.index.IndexInstance;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * @Author caikun
@@ -13,6 +7,8 @@ import java.lang.reflect.InvocationTargetException;
  * 全局总配置
  * @See ./config/ms_default.properties
  * @Date 下午2:31 20-4-21
+ *
+ * todo: 配置文件化
  **/
 public class MiniSearchConfigure {
 

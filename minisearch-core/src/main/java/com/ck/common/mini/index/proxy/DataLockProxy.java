@@ -2,9 +2,8 @@ package com.ck.common.mini.index.proxy;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.core.SpellingDictTree;
-import com.ck.common.mini.index.IndexInstance;
-import com.ck.common.mini.index.LocalIndexInstance;
-import com.ck.common.mini.index.struct.IExternalInstance;
+import com.ck.common.mini.index.struct.MiniInstance;
+import com.ck.common.mini.workshop.nlp.NLPWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +20,12 @@ import java.util.concurrent.locks.StampedLock;
  *
  * @Date 下午6:29 21-11-22
  **/
-public class DataLockProxy implements IExternalInstance {
+public class DataLockProxy implements MiniInstance {
 
     /**
      * 被代理对象
      */
-    private final IExternalInstance idx;
+    private final MiniInstance idx;
     /**
      * 写入等待超时时间
      */
@@ -36,7 +35,7 @@ public class DataLockProxy implements IExternalInstance {
 
     private static final Logger logger = LoggerFactory.getLogger(DataLockProxy.class);
 
-    public DataLockProxy(IExternalInstance idx) {
+    public DataLockProxy(MiniInstance idx) {
         this.idx = idx;
     }
 //
@@ -60,11 +59,11 @@ public class DataLockProxy implements IExternalInstance {
 //    }
 
     @Override
-    public void init(Map<String, Object> data) {
+    public void initData(Map<String, Object> data) {
         Long stamp = null;
         try {
             stamp = lock.tryWriteLock(writeLockTimeoutSec, TimeUnit.SECONDS);
-            idx.init(data);
+            idx.initData(data);
         } catch (InterruptedException e) {
             logger.error("write lock timeout", e);
         } finally {
@@ -224,6 +223,11 @@ public class DataLockProxy implements IExternalInstance {
 
     @Override
     public void setTree(SpellingDictTree dictTree) {
+
+    }
+
+    @Override
+    public void setNLPWorker(NLPWorker nlpWorker) {
 
     }
 }

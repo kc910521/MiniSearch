@@ -2,14 +2,12 @@ package com.ck.common.mini.util;
 
 import com.ck.common.mini.config.MiniSearchConfigure;
 import com.ck.common.mini.external.CoreHolder;
-import com.ck.common.mini.index.IndexInstance;
-import com.ck.common.mini.index.struct.IExternalInstance;
+import com.ck.common.mini.index.struct.MiniInstance;
 import com.ck.common.mini.timing.IRotateInstance;
 import com.ck.common.mini.timing.TimingIndexReBuilder;
+import com.ck.common.mini.util.exception.MiniSearchException;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author caikun
@@ -21,11 +19,11 @@ import java.util.Map;
  **/
 public class MiniSearch {
 
-    public static synchronized IExternalInstance findInstance(String indexName) {
+    public static synchronized MiniInstance findInstance(String indexName) {
         return CoreHolder.findOrSet(indexName);
     }
 
-    public static IExternalInstance findInstance(String indexName, @Nullable MiniSearchConfigure miniSearchConfigure) {
+    public static MiniInstance findInstance(String indexName, @Nullable MiniSearchConfigure miniSearchConfigure) {
         if (miniSearchConfigure == null) {
             return CoreHolder.findOrSet(indexName);
         } else {
@@ -33,8 +31,8 @@ public class MiniSearch {
         }
     }
 
-    private static IExternalInstance getExistInstance(String indexName) {
-        IExternalInstance instance = CoreHolder.geInstance(indexName);
+    private static MiniInstance getExistInstance(String indexName) {
+        MiniInstance instance = CoreHolder.geInstance(indexName);
         if (instance == null) {
             throw new MiniSearchException("instance missing");
         }
@@ -51,9 +49,9 @@ public class MiniSearch {
         if (builder == null) {
             throw new MiniSearchException("builder is null");
         }
-        IExternalInstance instance = getExistInstance(indexName);
+        MiniInstance instance = getExistInstance(indexName);
         if (instance == null) {
-            throw new MiniSearchException("init your index instance first");
+            throw new MiniSearchException("initData your index instance first");
         }
         TimingIndexReBuilder.register(indexName, builder);
     }

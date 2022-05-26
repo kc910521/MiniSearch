@@ -32,12 +32,14 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
 
     private static RedisTemplate redisTemplate;
 
-    private static MiniSearchConfigure miniSearchConfigure;
-
     private final String senderIdentity;
 
+    private MiniSearchConfigure miniSearchConfigure;
+
+
+
     public RedisIndexCoordinateSender() {
-        this.senderIdentity = "as";
+        this.senderIdentity = "";
     }
 
     private void check() {
@@ -79,7 +81,7 @@ public class RedisIndexCoordinateSender implements IndexEventSender {
 
     @Override
     public void loadMiniSearchConfig(MiniSearchConfigure configure) {
-        RedisIndexCoordinateSender.miniSearchConfigure = configure;
+        this.miniSearchConfigure = configure;
     }
 
     public static void loadRedisTemplate(RedisTemplate redisTemplate) {

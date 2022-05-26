@@ -7,7 +7,9 @@ import java.util.Map;
 
 /**
  * @Author caikun
- * @Description //TODO $END
+ * @Description
+ * 对外搜索业务接口
+ *
  * @Date 下午7:03 21-1-27
  **/
 public interface IClusterService {

@@ -25,7 +25,7 @@ public class MiniSearchConfigure {
     /**
      * 全匹配(freeMatch)模式：匹配字符串两端;关闭则转为最左前缀匹配
      *
-     * fixme: 非拼音模式下：建议关闭此选项
+     * 非拼音模式下：建议关闭此选项
      */
     private boolean freeMatch = true;
 

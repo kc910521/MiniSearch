@@ -53,7 +53,7 @@ public class RemoteDataChangeInstance implements IChangeInstance {
         }
         if (this.eventSender == null) {
             logger.error("no eventSender found, com.ck.common.mini.cluster.IndexEventSender should be set by SPI");
-            throw new MiniSearchException("no eventSender found");
+            throw new MiniSearchException("remoting but no eventSender found");
         } else {
             logger.info("RemoteDataChangeInstance all right");
         }

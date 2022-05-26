@@ -151,7 +151,7 @@ public final class LiteTools {
         StringBuilder sbCache = new StringBuilder();
         for (char c : originWords.toCharArray()) {
             if (isBigChar(c)) {
-                ts = CharType.BIGCHAR;
+                ts = CharType.BIG_CHAR;
             } else if (Character.isSpaceChar(c)) {
                 ts = CharType.BLANK;
             } else if (Character.isDigit(c)) {

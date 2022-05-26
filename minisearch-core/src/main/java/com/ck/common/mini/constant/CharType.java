@@ -10,6 +10,8 @@ public enum CharType {
     BLANK,
     DIGIT,
     ALP,
-    BIGCHAR,
-    OTHER;
+    BIG_CHAR,
+    OTHER
+    
+    ;
 }
